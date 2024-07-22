@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.DTO.DoctorDTO;
 import org.example.ProjectTraninng.Common.DTO.DoctorRegisterRequest;
 import org.example.ProjectTraninng.Common.Entities.*;
+import org.example.ProjectTraninng.Common.Enums.Role;
+import org.example.ProjectTraninng.Common.Enums.TokenType;
 import org.example.ProjectTraninng.Core.Repsitory.DoctorRepository;
 import org.example.ProjectTraninng.Core.Repsitory.UserRepository;
 import org.example.ProjectTraninng.Exceptions.UserNotFoundException;

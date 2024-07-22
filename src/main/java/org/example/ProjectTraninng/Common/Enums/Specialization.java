@@ -1,4 +1,4 @@
-package org.example.ProjectTraninng.Common.Entities;
+package org.example.ProjectTraninng.Common.Enums;
 
 public enum Specialization {
     CARDIOLOGIST,

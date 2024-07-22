@@ -10,7 +10,7 @@ import org.example.ProjectTraninng.Common.DTO.RegisterRequest;
 import org.example.ProjectTraninng.Common.Response.AuthenticationResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.SessionManagement;
-import org.example.ProjectTraninng.Common.Entities.Role;
+import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

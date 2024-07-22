@@ -1,7 +1,7 @@
 package org.example.ProjectTraninng.Common.DTO;
 
 import lombok.*;
-import org.example.ProjectTraninng.Common.Entities.Specialization;
+import org.example.ProjectTraninng.Common.Enums.Specialization;
 
 import java.time.LocalTime;
 import java.util.Date;

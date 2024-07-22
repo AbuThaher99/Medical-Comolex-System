@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.ProjectTraninng.Common.Entities.Role;
+import org.example.ProjectTraninng.Common.Enums.Role;
 
 import java.util.Date;
 import java.util.Map;

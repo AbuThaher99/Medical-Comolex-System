@@ -1,4 +1,4 @@
-package org.example.ProjectTraninng.Common.Entities;
+package org.example.ProjectTraninng.Common.Enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package org.example.ProjectTraninng;
 
-import org.example.ProjectTraninng.Common.Entities.Role;
+import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Entities.User;
 
 public class SessionManagement {

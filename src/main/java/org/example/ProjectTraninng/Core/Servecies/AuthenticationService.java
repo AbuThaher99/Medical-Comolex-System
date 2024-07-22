@@ -10,7 +10,7 @@ import org.example.ProjectTraninng.Common.DTO.RegisterRequest;
 import org.example.ProjectTraninng.Common.Entities.Token;
 import org.example.ProjectTraninng.Common.Response.AuthenticationResponse;
 import org.example.ProjectTraninng.Core.Repsitory.TokenRepository;
-import org.example.ProjectTraninng.Common.Entities.TokenType;
+import org.example.ProjectTraninng.Common.Enums.TokenType;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Core.Repsitory.UserRepository;
 import org.example.ProjectTraninng.config.JwtService;
