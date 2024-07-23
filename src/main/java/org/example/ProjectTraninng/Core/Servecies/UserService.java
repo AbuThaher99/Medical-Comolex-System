@@ -11,9 +11,6 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository repository;
-
-
     private final UserRepository userRepository;
 
     public User findByEmail(String email) {

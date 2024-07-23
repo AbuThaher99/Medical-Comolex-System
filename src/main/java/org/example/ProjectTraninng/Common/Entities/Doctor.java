@@ -34,7 +34,7 @@ public class Doctor {
     private LocalTime endTime; // Changed to LocalTime
 
     @OneToOne
-    @JsonManagedReference
+    @JsonManagedReference(value = "userId")
     @JoinColumn(name = "userId")
     private User user;
 }

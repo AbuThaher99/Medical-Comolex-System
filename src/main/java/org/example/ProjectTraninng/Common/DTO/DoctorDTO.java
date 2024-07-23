@@ -23,5 +23,5 @@ public class DoctorDTO {
     private String email;
     private LocalTime beginTime;
     private LocalTime endTime;
-    private Map<String, Object> salary; // Add salary as a Map to handle JSON
+    private Map<String, Object> salary;
 }

@@ -2,7 +2,6 @@ package org.example.ProjectTraninng.Core.Servecies;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.DTO.DepartmentDTO;
-import org.example.ProjectTraninng.Common.DTO.DepartmentRequest;
 import org.example.ProjectTraninng.Common.Entities.Department;
 import org.example.ProjectTraninng.Common.Response.DepartmentResponse;
 import org.example.ProjectTraninng.Core.Repsitory.DepartmentRepsitory;
@@ -27,14 +26,13 @@ public class DepartmentService {
     private  UserRepository userRepository;
 
     @Transactional
-    public DepartmentResponse addDepartment(DepartmentRequest request) throws UserNotFoundException {
-
-        Optional<User> headSecretary = userRepository.findById(request.getHeadDepartmentId());
+    public DepartmentResponse addDepartment(Department request) throws UserNotFoundException {
+        Optional<User> headSecretary = userRepository.findById(request.getHeadDepartment().getId());
         if (headSecretary.isEmpty()) {
             throw new UserNotFoundException("User not found");
         }
 
-        Optional<User> secretary = userRepository.findById(request.getSecretaryId());
+        Optional<User> secretary = userRepository.findById(request.getSecretary().getId());
         if (secretary.isEmpty()) {
             throw new UserNotFoundException("User not found");
         }
@@ -49,16 +47,17 @@ public class DepartmentService {
     }
 
     @Transactional
-    public void updateDepartment(DepartmentRequest request, Long departmentId) throws UserNotFoundException {
+    public void updateDepartment(Department request, Long departmentId) throws UserNotFoundException {
+
         var department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new UserNotFoundException("Department not found"));
         department.setName(request.getName());
 
-        User headSecretary = userRepository.findById(request.getHeadDepartmentId())
+        User headSecretary = userRepository.findById(request.getHeadDepartment().getId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         department.setHeadDepartment(headSecretary);
 
-        User secretary = userRepository.findById(request.getSecretaryId())
+        User secretary = userRepository.findById(request.getSecretary().getId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         department.setSecretary(secretary);
         departmentRepository.save(department);
@@ -66,6 +65,14 @@ public class DepartmentService {
 
     @Transactional
     public void deleteDepartment(Long departmentId) throws UserNotFoundException {
+
+        if(departmentId.equals("")){
+            throw new UserNotFoundException("Please fill all the fields");
+        }
+        if(departmentId == null){
+            throw new UserNotFoundException("Please fill all the fields");
+
+        }
         var department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new UserNotFoundException("Department not found"));
         departmentRepository.deleteById(departmentId);
@@ -81,16 +88,18 @@ public class DepartmentService {
     }
 
     @Transactional
-    public List<DepartmentRequest> getAllDepartment() {
-        List<Department> departments = departmentRepository.findAll();
-        List<DepartmentRequest> departmentRequests = new ArrayList<>();
-        for (Department department : departments) {
-            departmentRequests.add(DepartmentRequest.builder()
+    public List<DepartmentDTO> getAllDepartment() {
+        List<DepartmentDTO> departments = new ArrayList<>();
+        List<Department> allDepartments = departmentRepository.findAll();
+        for (Department department : allDepartments) {
+            DepartmentDTO department1 = DepartmentDTO.builder()
+                    .id(department.getId())
                     .name(department.getName())
-                    .headDepartmentId(department.getHeadDepartment().getId())
-                    .secretaryId(department.getSecretary().getId())
-                    .build());
+                    .headDepartment(department.getHeadDepartment())
+                    .secretary(department.getSecretary())
+                    .build();
+            departments.add(department1);
         }
-        return departmentRequests;
+        return departments;
     }
 }

@@ -1,7 +1,9 @@
 package org.example.ProjectTraninng.Common.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.Date;
@@ -20,16 +22,17 @@ public class Department {
     private Long id;
 
     @Column(name = "name", nullable = false)
+    @NotNull(message = "Name cannot be null")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "headDepartment")
-    @JsonManagedReference
+    @JsonBackReference(value = "headDepartment")
     private User headDepartment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "secretaryId")
-    @JsonManagedReference
+    @JsonBackReference(value = "secretaryDepartment")
     private User secretary;
 
     @Column(name = "createdDate", updatable = false)

@@ -3,33 +3,33 @@ package org.example.ProjectTraninng.WebApi;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.DTO.DepartmentDTO;
-import org.example.ProjectTraninng.Common.DTO.DepartmentRequest;
+import org.example.ProjectTraninng.Common.Entities.Department;
 import org.example.ProjectTraninng.Common.Response.DepartmentResponse;
 import org.example.ProjectTraninng.Core.Servecies.DepartmentService;
 import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/departments")
-@Validated
 public class DepartmentController {
 
     @Autowired
     private final DepartmentService departmentService;
 
     @PostMapping("/addDepartment")
-    public ResponseEntity<DepartmentResponse> addDepartment(@RequestBody @Valid DepartmentRequest request) throws UserNotFoundException {
+    public ResponseEntity<DepartmentResponse> addDepartment(@RequestBody @Valid Department request) throws UserNotFoundException {
        DepartmentResponse res = departmentService.addDepartment(request);
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
     @PutMapping("/updateDepartment/{departmentId}")
-    public ResponseEntity<DepartmentResponse> updateDepartment(@RequestBody  DepartmentRequest request, @PathVariable Long departmentId) throws UserNotFoundException {
+    public ResponseEntity<DepartmentResponse> updateDepartment(@RequestBody @Valid  Department request, @PathVariable Long departmentId) throws UserNotFoundException {
         departmentService.updateDepartment(request, departmentId);
         return new ResponseEntity<>(new DepartmentResponse("Department updated successfully"), HttpStatus.OK);
     }
@@ -47,10 +47,10 @@ public class DepartmentController {
     }
 
     @GetMapping("/getAllDepartments")
-    public ResponseEntity<Iterable<DepartmentRequest>> getAllDepartments() {
-        return ResponseEntity.ok(departmentService.getAllDepartment());
+    public ResponseEntity<List<DepartmentDTO>> getAllDepartments() {
+        List<DepartmentDTO> departments = departmentService.getAllDepartment();
+        return new ResponseEntity<>(departments, HttpStatus.OK);
+
     }
-
-
 
 }

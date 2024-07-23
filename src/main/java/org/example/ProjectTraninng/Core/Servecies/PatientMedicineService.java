@@ -18,6 +18,18 @@ public class PatientMedicineService {
     private final MedicineRepository medicineRepository;
 
     public PatientMedicineRespones AddPatientMedicine(PatientMedicineRequest patientMedicineRequest) throws UserNotFoundException {
+        if(patientMedicineRequest.getQuantity().equals("") || patientMedicineRequest.getPrice().equals("")
+                || patientMedicineRequest.getTreatmentId().equals("") ||
+                patientMedicineRequest.getMedicineId().equals("")){
+            throw new UserNotFoundException("Please fill all the fields");
+
+        }
+        if(patientMedicineRequest.getQuantity() == null || patientMedicineRequest.getPrice() == null
+                || patientMedicineRequest.getTreatmentId() == null ||
+                patientMedicineRequest.getMedicineId() == null){
+            throw new UserNotFoundException("Please fill all the fields");
+
+        }
       treatmentRepository.findById(patientMedicineRequest.getTreatmentId())
                 .orElseThrow(() -> new UserNotFoundException("Treatment not found"));
          medicineRepository.findById(patientMedicineRequest.getMedicineId())
@@ -43,6 +55,18 @@ public class PatientMedicineService {
 //    }
 
     public PatientMedicineRespones UpdatePatientMedicine(PatientMedicineRequest patientMedicineRequest , Long id) throws UserNotFoundException {
+        if(patientMedicineRequest.getQuantity().equals("") || patientMedicineRequest.getPrice().equals("")
+                || patientMedicineRequest.getTreatmentId().equals("") ||
+                patientMedicineRequest.getMedicineId().equals("")){
+            throw new UserNotFoundException("Please fill all the fields");
+
+        }
+        if(patientMedicineRequest.getQuantity() == null || patientMedicineRequest.getPrice() == null
+                || patientMedicineRequest.getTreatmentId() == null ||
+                patientMedicineRequest.getMedicineId() == null){
+            throw new UserNotFoundException("Please fill all the fields");
+
+        }
         PatientMedicine patientMedicine = patientMedicineRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Patient medicine not found"));
 

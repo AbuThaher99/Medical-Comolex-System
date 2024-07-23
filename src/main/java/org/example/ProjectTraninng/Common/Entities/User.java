@@ -2,6 +2,7 @@ package org.example.ProjectTraninng.Common.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -59,15 +61,21 @@ public class User implements UserDetails {
     private List<Token> tokens;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonBackReference
+    @JsonBackReference(value = "userId")
     private Doctor doctor;
 
+
+    @OneToMany(mappedBy = "headDepartment",fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "headDepartment")
+    private Set<Department> headDepartments;
+
+    @OneToMany(mappedBy = "secretary",fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "secretaryDepartment")
+    private Set<Department> secretaryDepartments;
     @Column(name = "createdDate", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @org.hibernate.annotations.CreationTimestamp
     private Date createdDate;
-
-
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {

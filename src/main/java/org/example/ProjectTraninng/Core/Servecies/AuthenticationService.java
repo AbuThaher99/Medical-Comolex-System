@@ -13,6 +13,7 @@ import org.example.ProjectTraninng.Core.Repsitory.TokenRepository;
 import org.example.ProjectTraninng.Common.Enums.TokenType;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Core.Repsitory.UserRepository;
+import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.config.JwtService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,8 +33,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse adduser(RegisterRequest request) {
-        // Convert salary details to JSON string
+    public AuthenticationResponse adduser(RegisterRequest request) throws UserNotFoundException {
         String salaryJson = convertSalaryToJson(request.getSalary());
 
         var user = User.builder()
@@ -45,7 +45,7 @@ public class AuthenticationService {
                 .address(request.getAddress())
                 .phone(request.getPhone())
                 .dateOfBirth(request.getDateOfBirth())
-                .salary(salaryJson)  // Set the salary JSON string
+                .salary(salaryJson)
                 .build();
 
         var savedUser = repository.save(user);
@@ -67,7 +67,15 @@ public class AuthenticationService {
         }
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws UserNotFoundException {
+        if(request.getEmail().equals("") || request.getPassword().equals("")){
+            throw new UserNotFoundException("Please fill all the fields");
+
+        }
+        if(request.getEmail().equals(null) || request.getPassword().equals(null)){
+            throw new UserNotFoundException("Please fill all the fields");
+
+        }
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
