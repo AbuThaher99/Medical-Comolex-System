@@ -23,6 +23,14 @@ public class TreatmentService {
     private final DoctorRepository doctorRepository;
 
     public TreatmentResponse createTreatment(TreatmentRequest request) throws UserNotFoundException {
+        if (request.getDescription().equals("") ||
+                request.getDoctorId().equals("") || request.getPatientId().equals("")) {
+            throw new UserNotFoundException("Please fill all the fields");
+        }
+        if (request.getDescription() == null ||
+                request.getDoctorId() == null || request.getPatientId() == null) {
+            throw new UserNotFoundException("Please fill all the fields");
+        }
         Patients patients = patientRepository.findById(request.getPatientId()).orElseThrow(
                 () -> new UserNotFoundException("Patient not found"));
 

@@ -31,8 +31,7 @@ public class DoctorService {
     private final JwtService jwtService;
     private final DoctorRepository doctorRepository;
 
-    public AuthenticationResponse addDoctor(DoctorRegisterRequest request) {
-        // Create salary JSON string based on salary details
+    public AuthenticationResponse addDoctor(DoctorRegisterRequest request) throws UserNotFoundException {
         String salaryJson = convertSalaryToJson(request.getSalary());
 
         var user = User.builder()
@@ -44,11 +43,10 @@ public class DoctorService {
                 .address(request.getAddress())
                 .phone(request.getPhone())
                 .dateOfBirth(request.getDateOfBirth())
-                .salary(salaryJson)  // Set the salary JSON string
+                .salary(salaryJson)
                 .build();
 
         var savedUser = userRepository.save(user);
-
         Doctor doctor = Doctor.builder()
                 .user(savedUser)
                 .specialization(request.getSpecialization())
@@ -98,14 +96,10 @@ public class DoctorService {
         userRepository.deleteById(user.getId());
     }
 
-    public DoctorDTO findDoctorByUsername(String email) throws UserNotFoundException {
+    public DoctorDTO findDoctorByEmail(String email) throws UserNotFoundException {
         Doctor doctor = doctorRepository.findByUserEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Doctor not found with Email: " + email));
-
-        // Retrieve salary JSON string from the User entity
         String salaryJson = doctor.getUser().getSalary();
-
-        // Convert JSON string to a Map
         Map<String, Object> salary = convertJsonToSalary(salaryJson);
 
         return DoctorDTO.builder()

@@ -3,6 +3,7 @@ package org.example.ProjectTraninng.WebApi;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.DTO.DoctorDTO;
 import org.example.ProjectTraninng.Common.DTO.DoctorRegisterRequest;
+import org.example.ProjectTraninng.Common.Entities.Doctor;
 import org.example.ProjectTraninng.Common.Response.DoctorResponse;
 import org.example.ProjectTraninng.Core.Servecies.DoctorService;
 import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
@@ -20,7 +21,7 @@ public class DoctorController {
     @PostMapping("/addDoctor")
     public ResponseEntity<AuthenticationResponse> addDoctor(
             @RequestBody DoctorRegisterRequest request
-    ) {
+    ) throws UserNotFoundException {
         return ResponseEntity.ok(doctorService.addDoctor(request));
     }
 
@@ -35,9 +36,9 @@ public class DoctorController {
         doctorService.deleteDoctor(doctorId);
         return ResponseEntity.ok(DoctorResponse.builder().message("Doctor deleted successfully").build());
     }
-    @GetMapping("/getDoctor/{username}")
-    public ResponseEntity<DoctorDTO> getDoctor(@PathVariable String username) throws UserNotFoundException {
-        DoctorDTO doctor = doctorService.findDoctorByUsername(username);
+    @GetMapping("/getDoctor/{email}")
+    public ResponseEntity<DoctorDTO> getDoctor(@PathVariable String email) throws UserNotFoundException {
+        DoctorDTO doctor = doctorService.findDoctorByEmail(email);
         return ResponseEntity.ok(doctor);
     }
 

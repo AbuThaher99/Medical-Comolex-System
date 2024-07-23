@@ -1,7 +1,8 @@
 package org.example.ProjectTraninng.WebApi;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Common.DTO.MedicineRequest;
+import org.example.ProjectTraninng.Common.Entities.Medicine;
 import org.example.ProjectTraninng.Common.Response.MedicineResponse;
 import org.example.ProjectTraninng.Core.Servecies.MedicineService;
 import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
@@ -15,27 +16,27 @@ public class MedicineController {
     private final MedicineService medicineService;
 
     @PostMapping("/addMedicine")
-    public ResponseEntity<MedicineResponse> addMedicine(@RequestBody MedicineRequest request) throws UserNotFoundException {
+    public ResponseEntity<MedicineResponse> addMedicine(@RequestBody  Medicine request) throws UserNotFoundException {
         return ResponseEntity.ok(medicineService.addMedicine(request));
     }
 
     @PutMapping("/updateMedicine/{medicineName}")
-    public ResponseEntity<MedicineResponse> updateMedicine(@RequestBody MedicineRequest request, @PathVariable String medicineName) throws UserNotFoundException {
+    public ResponseEntity<MedicineResponse> updateMedicine(@RequestBody @Valid Medicine request, @PathVariable  String medicineName) throws UserNotFoundException {
         return ResponseEntity.ok(medicineService.updateMedicine(request, medicineName));
     }
 
     @DeleteMapping("/deleteMedicine/{medicineName}")
-    public ResponseEntity<MedicineResponse> deleteMedicine(@PathVariable String medicineName) throws UserNotFoundException {
+    public ResponseEntity<MedicineResponse> deleteMedicine(@PathVariable  String medicineName) throws UserNotFoundException {
         return ResponseEntity.ok(medicineService.deleteMedicine(medicineName));
     }
 
     @GetMapping("/getMedicine/{medicineName}")
-    public ResponseEntity<MedicineRequest> getMedicine(@PathVariable String medicineName) throws UserNotFoundException {
+    public ResponseEntity<Medicine> getMedicine(@PathVariable String medicineName) throws UserNotFoundException {
         return ResponseEntity.ok(medicineService.getMedicine(medicineName));
     }
 
     @GetMapping("/getAllMedicines")
-    public ResponseEntity<Iterable<MedicineRequest>> getAllMedicines() {
+    public ResponseEntity<Iterable<Medicine>> getAllMedicines() {
         return ResponseEntity.ok(medicineService.getAllMedicines());
     }
 }

@@ -1,6 +1,7 @@
 package org.example.ProjectTraninng.Common.Entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,14 +23,15 @@ public class Medicine {
     private Long id;
 
     @Column(name = "name", nullable = false)
+    @NotNull(message = "Name is required")
     private String name;
-
+    @NotNull(message = "The Buy Price is required")
     @Column(name = "buyPrice", nullable = false)
     private Double buyPrice;
-
+    @NotNull(message = "The Purchase Price is required")
     @Column(name = "purchasePrice", nullable = false)
     private Double purchasePrice;
-
+    @NotNull(message = "The Expiration Date is required")
     @Column(name = "expirationDate", nullable = false)
     private Date expirationDate;
 

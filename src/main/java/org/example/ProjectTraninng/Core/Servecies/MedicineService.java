@@ -1,7 +1,7 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Common.DTO.MedicineRequest;
 import org.example.ProjectTraninng.Common.Entities.Medicine;
 import org.example.ProjectTraninng.Common.Response.MedicineResponse;
 import org.example.ProjectTraninng.Core.Repsitory.MedicineRepository;
@@ -18,9 +18,13 @@ public class MedicineService  {
     private final MedicineRepository medicineRepository;
     private final WarehouseStoreRepository warehouseStoreRepository;
 
-    public MedicineResponse addMedicine(MedicineRequest request) throws UserNotFoundException {
-       medicineRepository.findByName(request.getName()).orElseThrow(
-                () -> new UserNotFoundException("Medicine already exists"));
+    @Transactional
+    public MedicineResponse addMedicine(Medicine request) throws UserNotFoundException {
+        System.out.println("Medicine Name " +request.getName());
+        boolean exists = medicineRepository.findByName(request.getName()).isPresent();
+        if (exists) {
+            throw new UserNotFoundException("Medicine already exists");
+        }
         Medicine medicine = Medicine.builder()
                 .name(request.getName())
                 .buyPrice(request.getBuyPrice())
@@ -31,11 +35,13 @@ public class MedicineService  {
         return MedicineResponse.builder().message("Medicine added successfully").build();
     }
 
-    public MedicineResponse updateMedicine(MedicineRequest request , String name) throws UserNotFoundException {
+    public MedicineResponse updateMedicine(Medicine request , String name) throws UserNotFoundException {
+
         var medicineOptional = medicineRepository.findByName(name).orElseThrow(
                 () -> new UserNotFoundException("Medicine not found"));
 
         Medicine medicine = medicineOptional;
+        medicine.setName(request.getName());
         medicine.setBuyPrice(request.getBuyPrice());
         medicine.setPurchasePrice(request.getPurchasePrice());
         medicine.setExpirationDate(request.getExpirationDate());
@@ -53,28 +59,33 @@ public class MedicineService  {
         return MedicineResponse.builder().message("Medicine deleted successfully").build();
     }
 
-    public MedicineRequest getMedicine(String name) throws UserNotFoundException {
+    public Medicine getMedicine(String name) throws UserNotFoundException {
+
         var medicineOptional = medicineRepository.findByName(name).orElseThrow(
                 () -> new UserNotFoundException("Medicine not found"));;
 
         Medicine medicine = medicineOptional;
-        return MedicineRequest.builder()
+        return Medicine.builder()
+                .id(medicine.getId())
                 .name(medicine.getName())
                 .buyPrice(medicine.getBuyPrice())
                 .purchasePrice(medicine.getPurchasePrice())
                 .expirationDate(medicine.getExpirationDate())
+                .createdDate(medicine.getCreatedDate())
                 .build();
     }
 
-    public List<MedicineRequest> getAllMedicines() {
+    public List<Medicine> getAllMedicines() {
         List<Medicine> medicines = medicineRepository.findAll();
-        List<MedicineRequest> medicineRequests = new ArrayList<>();
+        List<Medicine> medicineRequests = new ArrayList<>();
         for (Medicine medicine : medicines) {
-            medicineRequests.add(MedicineRequest.builder()
+            medicineRequests.add(Medicine.builder()
+                    .id(medicine.getId())
                     .name(medicine.getName())
                     .buyPrice(medicine.getBuyPrice())
                     .purchasePrice(medicine.getPurchasePrice())
                     .expirationDate(medicine.getExpirationDate())
+                    .createdDate(medicine.getCreatedDate())
                     .build());
         }
         return medicineRequests;
