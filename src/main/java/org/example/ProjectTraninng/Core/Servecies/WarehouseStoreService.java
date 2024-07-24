@@ -1,12 +1,10 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Common.DTO.WarehouseStoreRequest;
 import org.example.ProjectTraninng.Common.Entities.WarehouseStore;
-import org.example.ProjectTraninng.Common.Response.WarehouseStoreResponse;
-import org.example.ProjectTraninng.Core.Repsitory.MedicineRepository;
-import org.example.ProjectTraninng.Core.Repsitory.WarehouseStoreRepository;
-import org.example.ProjectTraninng.Common.DTO.QuantityRequest;
+import org.example.ProjectTraninng.Common.Responses.WarehouseStoreResponse;
+import org.example.ProjectTraninng.Core.Repsitories.MedicineRepository;
+import org.example.ProjectTraninng.Core.Repsitories.WarehouseStoreRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,19 +13,19 @@ public class WarehouseStoreService {
     private final WarehouseStoreRepository warehouseStoreRepository;
     private final MedicineRepository medicineRepository;
 
-    public WarehouseStoreResponse addMedicineToWarehouse(WarehouseStoreRequest warehouseStoreRequest) {
-        if (!medicineRepository.existsById(warehouseStoreRequest.getMedicineId())) {
+    public WarehouseStoreResponse addMedicineToWarehouse(WarehouseStore warehouseStoreRequest) {
+        if (!medicineRepository.existsById(warehouseStoreRequest.getMedicine().getId())) {
             return WarehouseStoreResponse.builder()
                     .message("Medicine not found")
                     .build();
         }
-        if (warehouseStoreRepository.existsByMedicineId(warehouseStoreRequest.getMedicineId())) {
+        if (warehouseStoreRepository.existsByMedicineId(warehouseStoreRequest.getMedicine().getId())) {
             return WarehouseStoreResponse.builder()
                     .message("Medicine already exists in the warehouse store")
                     .build();
         }
         WarehouseStore warehouseStore = WarehouseStore.builder()
-                .medicineId(warehouseStoreRequest.getMedicineId())
+                .medicine(warehouseStoreRequest.getMedicine())
                 .quantity(warehouseStoreRequest.getQuantity())
                 .build();
         warehouseStoreRepository.save(warehouseStore);
@@ -36,7 +34,7 @@ public class WarehouseStoreService {
                 .build();
     }
 
-    public WarehouseStoreResponse updateMedicineQuantity(QuantityRequest quantityRequest , Long medicineId) {
+    public WarehouseStoreResponse updateMedicineQuantity(WarehouseStore quantityRequest , Long medicineId) {
         if (!warehouseStoreRepository.existsByMedicineId(medicineId)) {
             return WarehouseStoreResponse.builder()
                     .message("Medicine not found in the warehouse store")

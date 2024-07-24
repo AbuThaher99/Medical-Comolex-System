@@ -3,9 +3,9 @@ package org.example.ProjectTraninng.WebApi;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Medicine;
-import org.example.ProjectTraninng.Common.Response.MedicineResponse;
+import org.example.ProjectTraninng.Common.Responses.MedicineResponse;
 import org.example.ProjectTraninng.Core.Servecies.MedicineService;
-import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
+import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

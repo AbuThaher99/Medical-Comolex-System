@@ -1,4 +1,4 @@
-package org.example.ProjectTraninng.Core.Repsitory;
+package org.example.ProjectTraninng.Core.Repsitories;
 
 import org.example.ProjectTraninng.Common.Entities.Token;
 import org.example.ProjectTraninng.Common.Entities.User;

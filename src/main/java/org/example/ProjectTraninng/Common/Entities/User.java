@@ -3,17 +3,17 @@ package org.example.ProjectTraninng.Common.Entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import org.example.ProjectTraninng.Common.Enums.Role;
+import org.example.ProjectTraninng.Common.Converters.MapToJsonConverter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Builder
@@ -28,29 +28,39 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Long id;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password", nullable = false)
+    @NotNull(message = "Password cannot be blank")
     private String password;
 
     @Column(name = "firstName", nullable = false)
+    @NotNull(message = "First name cannot be blank")
     private String firstName;
 
     @Column(name = "lastName", nullable = false)
+    @NotNull(message = "Last name cannot be blank")
     private String lastName;
 
-    @Column(name = "address")
+    @Column(name = "address" , nullable = false)
+    @NotNull(message = "Address cannot be blank")
     private String address;
 
-    @Column(name = "phone")
+    @Column(name = "phone" , nullable = false)
+    @NotNull(message = "Phone cannot be blank")
     private String phone;
 
-    @Column(name = "dateOfBirth")
+    @Column(name = "dateOfBirth" , nullable = false)
+    @NotNull(message = "Date of birth cannot be blank")
     private Date dateOfBirth;
 
     @Column(name = "email", unique = true, nullable = false)
+    @NotNull(message = "Email cannot be blank")
     private String email;
 
     @Column(name = "salary", columnDefinition = "JSON")
-    private String salary;
+    @Convert(converter = MapToJsonConverter.class)
+    @NotNull(message = "Salary cannot be blank")
+    private Map<String, Object> salary;
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -72,6 +82,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "secretary",fetch = FetchType.LAZY)
     @JsonManagedReference(value = "secretaryDepartment")
     private Set<Department> secretaryDepartments;
+
     @Column(name = "createdDate", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @org.hibernate.annotations.CreationTimestamp

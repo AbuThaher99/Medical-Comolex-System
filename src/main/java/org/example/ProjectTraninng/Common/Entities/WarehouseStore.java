@@ -2,11 +2,14 @@ package org.example.ProjectTraninng.Common.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Medicine;
+
+import java.util.Date;
 
 @Data
 @Builder
@@ -21,14 +24,18 @@ public class WarehouseStore {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "medicineId", nullable = false)
-    private Long medicineId;
-
     @Column(name = "quantity", nullable = false)
+    @NotNull(message = "Quantity is required")
     private Integer quantity;
 
     @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "medicineId", insertable = false, updatable = false)
+    @JsonBackReference(value = "medicineId")
+    @JoinColumn(name = "medicineId", nullable = false)
     private Medicine medicine;
+
+    @Column(name = "createdDate", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @org.hibernate.annotations.CreationTimestamp
+    private Date createdDate;
+
 }

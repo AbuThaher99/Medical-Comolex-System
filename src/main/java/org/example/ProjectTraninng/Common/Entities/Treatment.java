@@ -1,6 +1,9 @@
 package org.example.ProjectTraninng.Common.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +12,7 @@ import org.example.ProjectTraninng.Common.Entities.Doctor;
 import org.example.ProjectTraninng.Common.Entities.Patients;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -23,13 +27,21 @@ public class Treatment {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "patientId", nullable = false)
-    private Patients patient;
+    @JsonBackReference(value = "patientId")
+    @NotNull(message = "Patient is required")
+    private Patients patient; // done
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "doctorId", nullable = false)
-    private Doctor doctor;
+    @JsonBackReference(value = "doctorId")
+    @NotNull(message = "Doctor is required")
+    private Doctor doctor; //done
+
+    @OneToMany(mappedBy = "treatment")
+    @JsonManagedReference(value = "treatmentId")
+    private List<PatientMedicine> patientMedicines;
 
     @Column(name = "treatmentDate", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -37,6 +49,7 @@ public class Treatment {
     private Date treatmentDate;
 
     @Column(name = "diseaseDescription", nullable = false, length = 255)
+    @NotNull(message = "Disease description is required")
     private String diseaseDescription;
 
     @Column(name = "note", columnDefinition = "TEXT")

@@ -1,19 +1,17 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Common.DTO.AuthenticationRequest;
-import org.example.ProjectTraninng.Common.DTO.RegisterRequest;
+import org.example.ProjectTraninng.Common.DTOs.LoginDTO;
 import org.example.ProjectTraninng.Common.Entities.Token;
-import org.example.ProjectTraninng.Common.Response.AuthenticationResponse;
-import org.example.ProjectTraninng.Core.Repsitory.TokenRepository;
+import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
+import org.example.ProjectTraninng.Core.Repsitories.TokenRepository;
 import org.example.ProjectTraninng.Common.Enums.TokenType;
 import org.example.ProjectTraninng.Common.Entities.User;
-import org.example.ProjectTraninng.Core.Repsitory.UserRepository;
-import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
+import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
+import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.config.JwtService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -33,21 +30,8 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse adduser(RegisterRequest request) throws UserNotFoundException {
-        String salaryJson = convertSalaryToJson(request.getSalary());
-
-        var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
-                .address(request.getAddress())
-                .phone(request.getPhone())
-                .dateOfBirth(request.getDateOfBirth())
-                .salary(salaryJson)
-                .build();
-
+    public AuthenticationResponse adduser(User user) throws UserNotFoundException {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
@@ -58,24 +42,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    private String convertSalaryToJson(Map<String, Object> salaryDetails) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.writeValueAsString(salaryDetails);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error processing salary JSON", e);
-        }
-    }
-
-    public AuthenticationResponse authenticate(AuthenticationRequest request) throws UserNotFoundException {
-        if(request.getEmail().equals("") || request.getPassword().equals("")){
-            throw new UserNotFoundException("Please fill all the fields");
-
-        }
-        if(request.getEmail().equals(null) || request.getPassword().equals(null)){
-            throw new UserNotFoundException("Please fill all the fields");
-
-        }
+    public AuthenticationResponse authenticate(LoginDTO request) throws UserNotFoundException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -116,10 +83,7 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userEmail;
@@ -144,8 +108,5 @@ public class AuthenticationService {
         }
     }
 
-    public User extractUserFromToken(String token) {
-        String username = jwtService.extractUsername(token);
-        return repository.findByEmail(username).orElse(null);
-    }
+
 }

@@ -1,4 +1,4 @@
-package org.example.ProjectTraninng.Core.Repsitory;
+package org.example.ProjectTraninng.Core.Repsitories;
 
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;

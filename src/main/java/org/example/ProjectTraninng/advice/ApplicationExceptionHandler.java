@@ -1,6 +1,6 @@
 package org.example.ProjectTraninng.advice;
 
-import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
+import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;

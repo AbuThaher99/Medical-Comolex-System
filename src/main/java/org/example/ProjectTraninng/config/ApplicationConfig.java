@@ -3,7 +3,7 @@ package org.example.ProjectTraninng.config;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Audit.*;
-import org.example.ProjectTraninng.Core.Repsitory.UserRepository;
+import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
