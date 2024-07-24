@@ -1,4 +1,4 @@
-package org.example.ProjectTraninng.Core.Repsitory;
+package org.example.ProjectTraninng.Core.Repsitories;
 
 import jakarta.transaction.Transactional;
 import org.example.ProjectTraninng.Common.Entities.WarehouseStore;
@@ -13,10 +13,10 @@ public interface WarehouseStoreRepository extends JpaRepository<WarehouseStore, 
     @Override
     Optional<WarehouseStore> findById(Long aLong);
     boolean existsByMedicineId(Long medicineId);
-    @Query("select w from WarehouseStore w where w.medicineId = :medicineId")
+    @Query("select w from WarehouseStore w where w.medicine.id = :medicineId")
     WarehouseStore findByMedicineId(@Param("medicineId") Long medicineId);
     @Modifying
     @Transactional
-    @Query("delete FROM WarehouseStore w where w.medicineId = :medicineId")
+    @Query("delete FROM WarehouseStore w where w.medicine.id = :medicineId")
     void deleteByMedicineId(@Param("medicineId") Long medicineId);
 }

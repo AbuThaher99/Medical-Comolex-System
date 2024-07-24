@@ -2,11 +2,10 @@ package org.example.ProjectTraninng.WebApi;
 
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Common.DTO.DepartmentDTO;
 import org.example.ProjectTraninng.Common.Entities.Department;
-import org.example.ProjectTraninng.Common.Response.DepartmentResponse;
+import org.example.ProjectTraninng.Common.Responses.DepartmentResponse;
 import org.example.ProjectTraninng.Core.Servecies.DepartmentService;
-import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
+import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,14 +40,14 @@ public class DepartmentController {
     }
 
     @GetMapping("/getDepartment/{departmentId}")
-    public ResponseEntity<DepartmentDTO> getDepartment(@PathVariable Long departmentId) throws UserNotFoundException {
-        DepartmentDTO department = departmentService.findDepartmentById(departmentId);
+    public ResponseEntity<Department> getDepartment(@PathVariable Long departmentId) throws UserNotFoundException {
+        Department department = departmentService.findDepartmentById(departmentId);
         return new ResponseEntity<>(department, HttpStatus.OK);
     }
 
     @GetMapping("/getAllDepartments")
-    public ResponseEntity<List<DepartmentDTO>> getAllDepartments() {
-        List<DepartmentDTO> departments = departmentService.getAllDepartment();
+    public ResponseEntity<List<Department>> getAllDepartments() {
+        List<Department> departments = departmentService.getAllDepartment();
         return new ResponseEntity<>(departments, HttpStatus.OK);
 
     }

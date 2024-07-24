@@ -1,11 +1,10 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Common.DTO.PatientRequest;
 import org.example.ProjectTraninng.Common.Entities.Patients;
-import org.example.ProjectTraninng.Common.Response.PatientResponse;
-import org.example.ProjectTraninng.Core.Repsitory.PatientRepository;
-import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
+import org.example.ProjectTraninng.Common.Responses.PatientResponse;
+import org.example.ProjectTraninng.Core.Repsitories.PatientRepository;
+import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,19 +16,13 @@ import java.util.Optional;
 public class PatientService {
     private final PatientRepository patientRepository;
 
-    public PatientResponse addPatient(PatientRequest request) throws UserNotFoundException {
-        if(request.getFirstName().equals("") || request.getLastName().equals("") || request.getAge().equals("")){
-            throw new UserNotFoundException("Please fill all the fields");
+    public PatientResponse addPatient(Patients request) throws UserNotFoundException {
 
+
+        boolean exists =   patientRepository.findByFirstName(request.getFirstName()).isPresent();
+        if (exists) {
+            throw new UserNotFoundException("Patient already exists");
         }
-
-        if(request.getFirstName().equals(null) || request.getLastName().equals(null) || request.getAge() == null ){
-            throw new UserNotFoundException("Please fill all the fields");
-
-        }
-
-        patientRepository.findByFirstName(request.getFirstName()).orElseThrow(
-                () -> new UserNotFoundException("Patient already exists"));
 
         Patients patient = Patients.builder()
                 .firstName(request.getFirstName())
@@ -42,20 +35,13 @@ public class PatientService {
         return PatientResponse.builder().message("Patient added successfully").build();
     }
 
-    public Optional<PatientRequest> getPatient(String firstName) throws UserNotFoundException {
-        if(firstName.equals("")){
-            throw new UserNotFoundException("Please fill all the fields");
+    public Optional<Patients> getPatient(String firstName) throws UserNotFoundException {
 
-        }
-        if(firstName.equals(null)){
-            throw new UserNotFoundException("Please fill all the fields");
-
-        }
         patientRepository.findByFirstName(firstName).orElseThrow(
-                () -> new UserNotFoundException("Patient already exists"));
+                () -> new UserNotFoundException("Patient Not Found"));
 
         return patientRepository.findByFirstName(firstName)
-                .map(patient -> PatientRequest.builder()
+                .map(patient -> Patients.builder()
                         .firstName(patient.getFirstName())
                         .lastName(patient.getLastName())
                         .age(patient.getAge())
@@ -65,30 +51,17 @@ public class PatientService {
     }
 
     public PatientResponse deletePatientByFirstName(String firstName) throws UserNotFoundException {
-        if(firstName.equals("")) {
-            throw new UserNotFoundException("Please fill all the fields");
-        }
-        if(firstName.equals(null)) {
-            throw new UserNotFoundException("Please fill all the fields");
-        }
          patientRepository.findByFirstName(firstName).orElseThrow(
                 () -> new UserNotFoundException("Patient not found"));
       return PatientResponse.builder().message("Patient deleted successfully").build();
     }
 
-    public PatientResponse updatePatient(PatientRequest request, String firstName) throws UserNotFoundException {
-        if(request.getFirstName().equals("") || request.getLastName().equals("") || request.getAge().equals("")){
-            throw new UserNotFoundException("Please fill all the fields");
-
-        }
-        if(request.getFirstName().equals(null) || request.getLastName().equals(null) || request.getAge() == null ){
-            throw new UserNotFoundException("Please fill all the fields");
-
-        }
-       var patientOptional = patientRepository.findByFirstName(firstName).orElseThrow(
+    public PatientResponse updatePatient(Patients request, String firstName) throws UserNotFoundException {
+        Patients patientOptional = patientRepository.findByFirstName(firstName).orElseThrow(
                 () -> new UserNotFoundException("Patient not found"));
 
             Patients patient = patientOptional;
+
             patient.setFirstName(request.getFirstName());
             patient.setLastName(request.getLastName());
             patient.setAge(request.getAge());
@@ -100,11 +73,11 @@ public class PatientService {
     }
 
 
-    public List<PatientRequest> getAllPatients() {
+    public List<Patients> getAllPatients() {
         List<Patients> patients = patientRepository.findAll();
-        List<PatientRequest> patientRequests = new ArrayList<>();
+        List<Patients> patientRequests = new ArrayList<>();
         for (Patients patient : patients) {
-            patientRequests.add(PatientRequest.builder()
+            patientRequests.add(Patients.builder()
                     .firstName(patient.getFirstName())
                     .lastName(patient.getLastName())
                     .age(patient.getAge())

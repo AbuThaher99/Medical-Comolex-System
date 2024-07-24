@@ -3,10 +3,10 @@ package org.example.ProjectTraninng.Core.Servecies;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Medicine;
-import org.example.ProjectTraninng.Common.Response.MedicineResponse;
-import org.example.ProjectTraninng.Core.Repsitory.MedicineRepository;
-import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
-import org.example.ProjectTraninng.Core.Repsitory.WarehouseStoreRepository;
+import org.example.ProjectTraninng.Common.Responses.MedicineResponse;
+import org.example.ProjectTraninng.Core.Repsitories.MedicineRepository;
+import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
+import org.example.ProjectTraninng.Core.Repsitories.WarehouseStoreRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

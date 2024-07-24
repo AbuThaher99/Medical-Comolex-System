@@ -1,26 +1,20 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Common.DTO.DoctorDTO;
-import org.example.ProjectTraninng.Common.DTO.DoctorRegisterRequest;
 import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Enums.TokenType;
-import org.example.ProjectTraninng.Core.Repsitory.DoctorRepository;
-import org.example.ProjectTraninng.Core.Repsitory.UserRepository;
-import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
-import org.example.ProjectTraninng.Core.Repsitory.TokenRepository;
+import org.example.ProjectTraninng.Core.Repsitories.DoctorRepository;
+import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
+import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
+import org.example.ProjectTraninng.Core.Repsitories.TokenRepository;
 import org.example.ProjectTraninng.config.JwtService;
-import org.example.ProjectTraninng.Common.Response.AuthenticationResponse;
+import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -31,22 +25,9 @@ public class DoctorService {
     private final JwtService jwtService;
     private final DoctorRepository doctorRepository;
 
-    public AuthenticationResponse addDoctor(DoctorRegisterRequest request) throws UserNotFoundException {
-        String salaryJson = convertSalaryToJson(request.getSalary());
-
-        var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.DOCTOR)
-                .address(request.getAddress())
-                .phone(request.getPhone())
-                .dateOfBirth(request.getDateOfBirth())
-                .salary(salaryJson)
-                .build();
-
-        var savedUser = userRepository.save(user);
+    public AuthenticationResponse addDoctor(Doctor request) throws UserNotFoundException {
+        request.getUser().setRole(Role.DOCTOR);
+        var savedUser = userRepository.save(request.getUser());
         Doctor doctor = Doctor.builder()
                 .user(savedUser)
                 .specialization(request.getSpecialization())
@@ -65,19 +46,20 @@ public class DoctorService {
                 .build();
     }
 
-    public void updateDoctor(DoctorRegisterRequest request, Long doctorId) throws UserNotFoundException {
+    public void updateDoctor(Doctor request, Long doctorId) throws UserNotFoundException {
         var doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new UserNotFoundException("Doctor not found"));
 
         var user = doctor.getUser();
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setAddress(request.getAddress());
-        user.setPhone(request.getPhone());
-        user.setDateOfBirth(request.getDateOfBirth());
-        user.setSalary(convertSalaryToJson(request.getSalary()));
+        user.setRole(Role.DOCTOR);
+        user.setFirstName(request.getUser().getFirstName());
+        user.setLastName(request.getUser().getLastName());
+        user.setAddress(request.getUser().getAddress());
+        user.setDateOfBirth(request.getUser().getDateOfBirth());
+        user.setPhone(request.getUser().getPhone());
+        user.setEmail(request.getUser().getEmail());
+        user.getSalary().putAll(request.getUser().getSalary());
+
         userRepository.save(user);
 
         doctor.setSpecialization(request.getSpecialization());
@@ -96,67 +78,14 @@ public class DoctorService {
         userRepository.deleteById(user.getId());
     }
 
-    public DoctorDTO findDoctorByEmail(String email) throws UserNotFoundException {
+    public Doctor findDoctorByEmail(String email) throws UserNotFoundException {
         Doctor doctor = doctorRepository.findByUserEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Doctor not found with Email: " + email));
-        String salaryJson = doctor.getUser().getSalary();
-        Map<String, Object> salary = convertJsonToSalary(salaryJson);
+        return doctor;
 
-        return DoctorDTO.builder()
-                .specialization(doctor.getSpecialization())
-                .beginTime(doctor.getBeginTime())
-                .endTime(doctor.getEndTime())
-                .firstName(doctor.getUser().getFirstName())
-                .lastName(doctor.getUser().getLastName())
-                .dateOfBirth(doctor.getUser().getDateOfBirth())
-                .address(doctor.getUser().getAddress())
-                .phone(doctor.getUser().getPhone())
-                .email(doctor.getUser().getEmail())
-                .salary(salary) // Add salary as Map
-                .build();
     }
-
-    private String convertSalaryToJson(Map<String, Object> salaryDetails) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.writeValueAsString(salaryDetails);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error processing salary JSON", e);
-        }
-    }
-
-    private Map<String, Object> convertJsonToSalary(String salaryJson) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(salaryJson, Map.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error converting salary JSON", e);
-        }
-    }
-
-    // make a getAllDoctors method
-
-    public List<DoctorRegisterRequest> getAllDoctors() {
-        List<Doctor> doctors = doctorRepository.findAll();
-        List<DoctorRegisterRequest> doctorRequests = new ArrayList<>();
-
-        for (Doctor doctor : doctors) {
-            doctorRequests.add(DoctorRegisterRequest.builder()
-                    .firstName(doctor.getUser().getFirstName())
-                    .lastName(doctor.getUser().getLastName())
-                    .email(doctor.getUser().getEmail())
-                    .password(doctor.getUser().getPassword())
-                    .address(doctor.getUser().getAddress())
-                    .phone(doctor.getUser().getPhone())
-                    .dateOfBirth(doctor.getUser().getDateOfBirth())
-                    .salary(convertJsonToSalary(doctor.getUser().getSalary()))
-                    .specialization(doctor.getSpecialization())
-                    .beginTime(doctor.getBeginTime())
-                    .endTime(doctor.getEndTime())
-                    .build());
-        }
-
-        return doctorRequests;
+    public List<Doctor> getAllDoctors() {
+        return doctorRepository.findAll();
     }
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()

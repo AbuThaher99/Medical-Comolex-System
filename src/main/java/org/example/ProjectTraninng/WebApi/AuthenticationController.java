@@ -5,11 +5,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import org.example.ProjectTraninng.Common.DTO.AuthenticationRequest;
-import org.example.ProjectTraninng.Common.DTO.RegisterRequest;
-import org.example.ProjectTraninng.Common.Response.AuthenticationResponse;
+import org.example.ProjectTraninng.Common.DTOs.LoginDTO;
+import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
-import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
+import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.SessionManagement;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Entities.User;
@@ -29,7 +28,7 @@ public class AuthenticationController extends SessionManagement {
     private final AuthenticationService service;
 
     @PostMapping("/adduser")
-    public ResponseEntity<AuthenticationResponse> adduser(@RequestBody @Valid RegisterRequest request) throws UserNotFoundException {
+    public ResponseEntity<AuthenticationResponse> adduser(@RequestBody @Valid User request) throws UserNotFoundException {
 //        String token = extractToken(httpServletRequest);
 //        User user = service.extractUserFromToken(token);
 //        validateLoggedInAdmin(user);
@@ -40,7 +39,7 @@ public class AuthenticationController extends SessionManagement {
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody AuthenticationRequest request
+            @RequestBody @Valid LoginDTO request
     ) throws UserNotFoundException {
         return ResponseEntity.ok(service.authenticate(request));
     }

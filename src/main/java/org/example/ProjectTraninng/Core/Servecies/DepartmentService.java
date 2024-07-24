@@ -1,13 +1,12 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Common.DTO.DepartmentDTO;
 import org.example.ProjectTraninng.Common.Entities.Department;
-import org.example.ProjectTraninng.Common.Response.DepartmentResponse;
-import org.example.ProjectTraninng.Core.Repsitory.DepartmentRepsitory;
-import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
+import org.example.ProjectTraninng.Common.Responses.DepartmentResponse;
+import org.example.ProjectTraninng.Core.Repsitories.DepartmentRepsitory;
+import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.Common.Entities.User;
-import org.example.ProjectTraninng.Core.Repsitory.UserRepository;
+import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,38 +64,35 @@ public class DepartmentService {
 
     @Transactional
     public void deleteDepartment(Long departmentId) throws UserNotFoundException {
-
-        if(departmentId.equals("")){
-            throw new UserNotFoundException("Please fill all the fields");
-        }
-        if(departmentId == null){
-            throw new UserNotFoundException("Please fill all the fields");
-
-        }
         var department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new UserNotFoundException("Department not found"));
         departmentRepository.deleteById(departmentId);
     }
 
-    public DepartmentDTO findDepartmentById(Long departmentId) throws UserNotFoundException {
+    public Department findDepartmentById(Long departmentId) throws UserNotFoundException {
         return departmentRepository.findById(departmentId)
-                .map(department -> DepartmentDTO.builder()
+                .map(department -> Department.builder()
+                        .id(department.getId())
                         .name(department.getName())
+                        .headDepartment(department.getHeadDepartment())
+                        .secretary(department.getSecretary())
+                        .createdDate(department.getCreatedDate())
                         .build())
                 .orElseThrow(() -> new UserNotFoundException("Department not found"));
 
     }
 
     @Transactional
-    public List<DepartmentDTO> getAllDepartment() {
-        List<DepartmentDTO> departments = new ArrayList<>();
+    public List<Department> getAllDepartment() {
+        List<Department> departments = new ArrayList<>();
         List<Department> allDepartments = departmentRepository.findAll();
         for (Department department : allDepartments) {
-            DepartmentDTO department1 = DepartmentDTO.builder()
+            Department department1 = Department.builder()
                     .id(department.getId())
                     .name(department.getName())
                     .headDepartment(department.getHeadDepartment())
                     .secretary(department.getSecretary())
+                    .createdDate(department.getCreatedDate())
                     .build();
             departments.add(department1);
         }

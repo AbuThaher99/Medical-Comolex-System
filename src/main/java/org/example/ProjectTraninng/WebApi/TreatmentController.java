@@ -1,10 +1,11 @@
 package org.example.ProjectTraninng.WebApi;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Common.DTO.TreatmentRequest;
-import org.example.ProjectTraninng.Common.Response.TreatmentResponse;
+import org.example.ProjectTraninng.Common.Entities.Treatment;
+import org.example.ProjectTraninng.Common.Responses.TreatmentResponse;
 import org.example.ProjectTraninng.Core.Servecies.TreatmentService;
-import org.example.ProjectTraninng.Exceptions.UserNotFoundException;
+import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,12 +16,12 @@ public class TreatmentController {
     private final TreatmentService treatmentService;
 
     @PostMapping("/addTreatment")
-    public ResponseEntity<TreatmentResponse> addTreatment(@RequestBody TreatmentRequest request) throws UserNotFoundException {
+    public ResponseEntity<TreatmentResponse> addTreatment(@RequestBody @Valid Treatment request) throws UserNotFoundException {
         return ResponseEntity.ok(treatmentService.createTreatment(request));
     }
 
     @PutMapping("/updateTreatment/{treatmentId}")
-    public ResponseEntity<TreatmentResponse> updateTreatment(@RequestBody TreatmentRequest request, @PathVariable Long treatmentId) throws UserNotFoundException {
+    public ResponseEntity<TreatmentResponse> updateTreatment(@RequestBody @Valid Treatment request, @PathVariable Long treatmentId) throws UserNotFoundException {
         return ResponseEntity.ok(treatmentService.updateTreatment(request, treatmentId));
     }
 
@@ -30,17 +31,17 @@ public class TreatmentController {
     }
 
     @GetMapping("/getTreatment/{treatmentId}")
-    public ResponseEntity<TreatmentRequest> getTreatment(@PathVariable Long treatmentId) throws UserNotFoundException {
+    public ResponseEntity<Treatment> getTreatment(@PathVariable Long treatmentId) throws UserNotFoundException {
         return ResponseEntity.ok(treatmentService.getTreatment(treatmentId));
     }
 
     @GetMapping("/getAllTreatments")
-    public ResponseEntity<Iterable<TreatmentRequest>> getAllTreatments() {
+    public ResponseEntity<Iterable<Treatment>> getAllTreatments() {
         return ResponseEntity.ok(treatmentService.getAllTreatments());
     }
 
     @GetMapping("/getTreatmentByPatientId/{patientId}")
-    public ResponseEntity<Iterable<TreatmentRequest>> getTreatmentByPatientId(@PathVariable Long patientId) throws UserNotFoundException {
+    public ResponseEntity<Iterable<Treatment>> getTreatmentByPatientId(@PathVariable Long patientId) throws UserNotFoundException {
         return ResponseEntity.ok(treatmentService.getAllTreatmentsForPatient(patientId));
     }
 

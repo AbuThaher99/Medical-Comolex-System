@@ -1,4 +1,4 @@
-package org.example.ProjectTraninng.Common.Response;
+package org.example.ProjectTraninng.Common.Responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DoctorResponse {
+public class DepartmentResponse {
     @JsonProperty
     private String message;
 }
