@@ -28,7 +28,7 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Long id;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+
     @Column(name = "password", nullable = false)
     @NotNull(message = "Password cannot be blank")
     private String password;
@@ -70,18 +70,16 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<Token> tokens;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonBackReference(value = "userId")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @JsonBackReference
     private Doctor doctor;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "headId" , referencedColumnName = "id")
+    private Set<Department> headId;
 
-
-    @OneToMany(mappedBy = "headDepartment",fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "headDepartment")
-    private Set<Department> headDepartments;
-
-    @OneToMany(mappedBy = "secretary",fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "secretaryDepartment")
-    private Set<Department> secretaryDepartments;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "secretaryId" , referencedColumnName = "id")
+    private Set<Department> secretaryId;
 
     @Column(name = "createdDate", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -94,7 +92,6 @@ public class User implements UserDetails {
     }
 
     @Override
-    @JsonIgnore
     public String getPassword() {
         return password;
     }

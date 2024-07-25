@@ -25,15 +25,18 @@ public class Department {
     @NotNull(message = "Name cannot be null")
     private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "headDepartment")
-    @JsonBackReference(value = "headDepartment")
-    private User headDepartment;
+    @ManyToOne
+    @JoinColumn(name = "headId")
+    private User headId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+//    @ManyToOne
+//    @JoinColumn(name = "fk_emp_id")
+//    private Employee employee;
+    //@JsonBackReference
+
+    @ManyToOne
     @JoinColumn(name = "secretaryId")
-    @JsonBackReference(value = "secretaryDepartment")
-    private User secretary;
+    private User secretaryId;
 
     @Column(name = "createdDate", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)

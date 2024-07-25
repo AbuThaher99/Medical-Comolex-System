@@ -20,7 +20,6 @@ public class MedicineService  {
 
     @Transactional
     public MedicineResponse addMedicine(Medicine request) throws UserNotFoundException {
-        System.out.println("Medicine Name " +request.getName());
         boolean exists = medicineRepository.findByName(request.getName()).isPresent();
         if (exists) {
             throw new UserNotFoundException("Medicine already exists");
@@ -63,31 +62,12 @@ public class MedicineService  {
 
         var medicineOptional = medicineRepository.findByName(name).orElseThrow(
                 () -> new UserNotFoundException("Medicine not found"));;
-
-        Medicine medicine = medicineOptional;
-        return Medicine.builder()
-                .id(medicine.getId())
-                .name(medicine.getName())
-                .buyPrice(medicine.getBuyPrice())
-                .purchasePrice(medicine.getPurchasePrice())
-                .expirationDate(medicine.getExpirationDate())
-                .createdDate(medicine.getCreatedDate())
-                .build();
+        return medicineOptional;
     }
 
     public List<Medicine> getAllMedicines() {
         List<Medicine> medicines = medicineRepository.findAll();
-        List<Medicine> medicineRequests = new ArrayList<>();
-        for (Medicine medicine : medicines) {
-            medicineRequests.add(Medicine.builder()
-                    .id(medicine.getId())
-                    .name(medicine.getName())
-                    .buyPrice(medicine.getBuyPrice())
-                    .purchasePrice(medicine.getPurchasePrice())
-                    .expirationDate(medicine.getExpirationDate())
-                    .createdDate(medicine.getCreatedDate())
-                    .build());
-        }
-        return medicineRequests;
+
+        return medicines;
     }
 }

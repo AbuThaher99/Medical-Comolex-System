@@ -1,7 +1,9 @@
 package org.example.ProjectTraninng.Common.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -33,20 +35,17 @@ public class Doctor {
 
     @Column(name = "beginTime", nullable = false)
     @NotNull(message = "Begin time cannot be Null")
-    private LocalTime beginTime; // Changed to LocalTime
+    private LocalTime beginTime;
 
     @Column(name = "endTime", nullable = false)
     @NotNull(message = "End time cannot be Null")
-    private LocalTime endTime; // Changed to LocalTime
+    private LocalTime endTime;
 
-    @OneToOne
-    @JsonManagedReference(value = "userId")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
-    @JsonIgnore
     private User user;
-
-    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "doctorId")
-    @JsonIgnore
-    private Set<Treatment> treatments; // done
+    @OneToMany( cascade = CascadeType.ALL)
+    @JoinColumn(name = "doctorId" , referencedColumnName = "id")
+    @JsonManagedReference("doctor-treatment")
+    private Set<Treatment> doctorId; // done
 }

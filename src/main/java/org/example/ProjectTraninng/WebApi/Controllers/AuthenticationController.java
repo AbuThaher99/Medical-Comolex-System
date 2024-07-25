@@ -1,17 +1,13 @@
-package org.example.ProjectTraninng.WebApi;
+package org.example.ProjectTraninng.WebApi.Controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
 import org.example.ProjectTraninng.Common.DTOs.LoginDTO;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
-import org.example.ProjectTraninng.SessionManagement;
-import org.example.ProjectTraninng.Common.Enums.Role;
-import org.example.ProjectTraninng.Common.Entities.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,21 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/Login")
 @RequiredArgsConstructor
-public class AuthenticationController extends SessionManagement {
-
+public class AuthenticationController {
     private final AuthenticationService service;
-
-    @PostMapping("/adduser")
-    public ResponseEntity<AuthenticationResponse> adduser(@RequestBody @Valid User request) throws UserNotFoundException {
-//        String token = extractToken(httpServletRequest);
-//        User user = service.extractUserFromToken(token);
-//        validateLoggedInAdmin(user);
-//        , HttpServletRequest httpServletRequest
-
-        return ResponseEntity.ok(service.adduser(request));
-    }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
@@ -50,19 +35,6 @@ public class AuthenticationController extends SessionManagement {
             HttpServletResponse response
     ) throws IOException {
         service.refreshToken(request, response);
-    }
-    private String extractToken(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
-        }
-        return null;
-    }
-
-    public void validateLoggedInAdmin(User user){
-       if(user.getRole() != Role.ADMIN){
-           throw new RuntimeException("You are not authorized to perform this operation");
-       }
     }
 
 }

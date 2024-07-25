@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.DTOs.LoginDTO;
 import org.example.ProjectTraninng.Common.Entities.Token;
+import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.example.ProjectTraninng.Core.Repsitories.TokenRepository;
 import org.example.ProjectTraninng.Common.Enums.TokenType;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +41,45 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .message("User " +user.getRole()+ " added successfully")
                 .build();
+    }
+
+    public AuthenticationResponse UpdateUser(User userRequest ,Long id) throws UserNotFoundException {
+        var user = repository.findById(id)
+                .orElseThrow( () -> new UserNotFoundException("User not found") );
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        var savedUser = repository.save(user);
+        var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+        saveUserToken(savedUser, jwtToken);
+        return AuthenticationResponse.builder()
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .message("User updated successfully")
+                .build();
+    }
+
+    public AuthenticationResponse DeleteUser(Long id) throws UserNotFoundException {
+        var user = repository.findById(id)
+                .orElseThrow( () -> new UserNotFoundException("User not found") );
+        repository.delete(user);
+        return AuthenticationResponse.builder()
+                .message("User deleted successfully")
+                .build();
+    }
+
+    public User GetUser(Long id) throws UserNotFoundException {
+        var user = repository.findById(id)
+                .orElseThrow( () -> new UserNotFoundException("User not found") );
+        return user;
+    }
+    public List<User> GetAllUsers() {
+        return repository.findAll();
+    }
+
+    public List<User> getAllUsersByRole(Role role) {
+        return repository.findAllByRole(role);
     }
 
     public AuthenticationResponse authenticate(LoginDTO request) throws UserNotFoundException {
@@ -108,5 +148,15 @@ public class AuthenticationService {
         }
     }
 
-
+    public String extractToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
+    }
+    public User extractUserFromToken(String token) {
+        String username = jwtService.extractUsername(token);
+        return repository.findByEmail(username).orElse(null);
+    }
 }

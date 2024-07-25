@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.ProjectTraninng.Common.Entities.Doctor;
-import org.example.ProjectTraninng.Common.Entities.Patients;
 
 import java.util.Date;
 import java.util.List;
@@ -27,20 +25,21 @@ public class Treatment {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patientId", nullable = false)
-    @JsonBackReference(value = "patientId")
     @NotNull(message = "Patient is required")
-    private Patients patient; // done
+    @JsonBackReference("patient-treatment")
+    private Patients patient;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "doctorId", nullable = false)
-    @JsonBackReference(value = "doctorId")
     @NotNull(message = "Doctor is required")
-    private Doctor doctor; //done
+    @JsonBackReference("doctor-treatment")
+    private Doctor doctorId;
 
-    @OneToMany(mappedBy = "treatment")
-    @JsonManagedReference(value = "treatmentId")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "treatmentId", referencedColumnName = "id")
+    @JsonManagedReference("treatment-patientMedicine")
     private List<PatientMedicine> patientMedicines;
 
     @Column(name = "treatmentDate", updatable = false)

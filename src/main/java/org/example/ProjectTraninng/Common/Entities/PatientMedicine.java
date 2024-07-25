@@ -1,15 +1,12 @@
 package org.example.ProjectTraninng.Common.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @Builder
@@ -32,17 +29,15 @@ public class PatientMedicine {
     @NotNull(message = "Price is required")
     private Double price;
 
-
     @ManyToOne
-    @JoinColumn(name = "treatmentId",  nullable = false)
-    @JsonBackReference(value = "treatmentId")
+    @JoinColumn(name = "treatmentId", nullable = false)
     @NotNull(message = "Treatment is required")
+    @JsonBackReference("treatment-patientMedicine")
     private Treatment treatment;
 
     @ManyToOne
-    @JoinColumn(name = "medicineId" ,nullable = false)
-    @JsonBackReference(value = "medicineId")
+    @JoinColumn(name = "medicineId", nullable = false)
     @NotNull(message = "Medicine is required")
+    @JsonBackReference("medicine-patientMedicine")
     private Medicine medicine;
-
 }

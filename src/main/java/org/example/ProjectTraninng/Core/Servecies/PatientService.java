@@ -42,11 +42,14 @@ public class PatientService {
 
         return patientRepository.findByFirstName(firstName)
                 .map(patient -> Patients.builder()
+                        .id(patient.getId())
                         .firstName(patient.getFirstName())
                         .lastName(patient.getLastName())
                         .age(patient.getAge())
                         .address(patient.getAddress())
                         .phone(patient.getPhone())
+                        .createdDate(patient.getCreatedDate())
+                        .treatments(patient.getTreatments())
                         .build());
     }
 
@@ -78,11 +81,14 @@ public class PatientService {
         List<Patients> patientRequests = new ArrayList<>();
         for (Patients patient : patients) {
             patientRequests.add(Patients.builder()
+                    .id(patient.getId())
                     .firstName(patient.getFirstName())
                     .lastName(patient.getLastName())
                     .age(patient.getAge())
                     .address(patient.getAddress())
                     .phone(patient.getPhone())
+                    .createdDate(patient.getCreatedDate())
+                    .treatments(patient.getTreatments())
                     .build());
         }
         return patientRequests;

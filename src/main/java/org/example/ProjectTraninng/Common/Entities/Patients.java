@@ -1,5 +1,6 @@
 package org.example.ProjectTraninng.Common.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -45,8 +46,9 @@ public class Patients {
     @Pattern(regexp = "^(\\+\\d{1,3}[-]?)?\\d{10}$", message = "Invalid phone number")
     private String phone;
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "patientId")
+    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @JoinColumn(name = "patientId" , referencedColumnName = "id")
+    @JsonManagedReference("treatments-patient")
     private Set<Treatment> treatments; // done
 
 
@@ -54,4 +56,5 @@ public class Patients {
     @Temporal(TemporalType.TIMESTAMP)
     @org.hibernate.annotations.CreationTimestamp
     private Date createdDate;
+
 }
