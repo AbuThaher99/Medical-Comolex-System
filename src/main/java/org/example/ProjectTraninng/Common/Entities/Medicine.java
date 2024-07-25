@@ -40,12 +40,14 @@ public class Medicine {
     @Column(name = "expirationDate", nullable = false)
     private Date expirationDate;
 
-    @OneToMany(mappedBy = "medicine")
-    @JsonManagedReference(value = "medicineId")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "medicineId", referencedColumnName = "id")
+    @JsonManagedReference("medicine-patientMedicine")
     private List<PatientMedicine> patientMedicines;
 
-    @OneToMany(mappedBy = "medicine")
-    @JsonManagedReference(value = "medicineId")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "medicineId", referencedColumnName = "id")
+    @JsonManagedReference("medicine-warehouseStore")
     private List<WarehouseStore> warehouseStores;
 
     @Column(name = "createdDate", updatable = false)

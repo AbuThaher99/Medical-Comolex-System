@@ -12,7 +12,8 @@ import java.util.Optional;
 public interface WarehouseStoreRepository extends JpaRepository<WarehouseStore, Long> {
     @Override
     Optional<WarehouseStore> findById(Long aLong);
-    boolean existsByMedicineId(Long medicineId);
+   // @Query("select w from WarehouseStore w where w.medicine.id = :medicineId")
+    boolean existsByMedicineId( Long medicineId);
     @Query("select w from WarehouseStore w where w.medicine.id = :medicineId")
     WarehouseStore findByMedicineId(@Param("medicineId") Long medicineId);
     @Modifying

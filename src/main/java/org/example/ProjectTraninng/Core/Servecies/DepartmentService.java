@@ -26,20 +26,20 @@ public class DepartmentService {
 
     @Transactional
     public DepartmentResponse addDepartment(Department request) throws UserNotFoundException {
-        Optional<User> headSecretary = userRepository.findById(request.getHeadDepartment().getId());
+        Optional<User> headSecretary = userRepository.findById(request.getHeadId().getId());
         if (headSecretary.isEmpty()) {
             throw new UserNotFoundException("User not found");
         }
 
-        Optional<User> secretary = userRepository.findById(request.getSecretary().getId());
+        Optional<User> secretary = userRepository.findById(request.getSecretaryId().getId());
         if (secretary.isEmpty()) {
             throw new UserNotFoundException("User not found");
         }
 
         Department department = Department.builder()
                 .name(request.getName())
-                .headDepartment(headSecretary.get()).
-                secretary(secretary.get())
+                .headId(headSecretary.get()).
+                secretaryId(secretary.get())
                 .build();
         departmentRepository.save(department);
       return   DepartmentResponse.builder().message("Department added successfully").build();
@@ -52,13 +52,13 @@ public class DepartmentService {
                 .orElseThrow(() -> new UserNotFoundException("Department not found"));
         department.setName(request.getName());
 
-        User headSecretary = userRepository.findById(request.getHeadDepartment().getId())
+        User headSecretary = userRepository.findById(request.getHeadId().getId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        department.setHeadDepartment(headSecretary);
+        department.setHeadId(headSecretary);
 
-        User secretary = userRepository.findById(request.getSecretary().getId())
+        User secretary = userRepository.findById(request.getSecretaryId().getId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        department.setSecretary(secretary);
+        department.setSecretaryId(secretary);
         departmentRepository.save(department);
     }
 
@@ -74,8 +74,8 @@ public class DepartmentService {
                 .map(department -> Department.builder()
                         .id(department.getId())
                         .name(department.getName())
-                        .headDepartment(department.getHeadDepartment())
-                        .secretary(department.getSecretary())
+                        .headId(department.getHeadId())
+                        .secretaryId(department.getSecretaryId())
                         .createdDate(department.getCreatedDate())
                         .build())
                 .orElseThrow(() -> new UserNotFoundException("Department not found"));
@@ -90,8 +90,8 @@ public class DepartmentService {
             Department department1 = Department.builder()
                     .id(department.getId())
                     .name(department.getName())
-                    .headDepartment(department.getHeadDepartment())
-                    .secretary(department.getSecretary())
+                    .headId(department.getHeadId())
+                    .secretaryId(department.getSecretaryId())
                     .createdDate(department.getCreatedDate())
                     .build();
             departments.add(department1);

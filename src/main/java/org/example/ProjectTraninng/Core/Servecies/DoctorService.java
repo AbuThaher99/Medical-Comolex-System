@@ -24,27 +24,41 @@ public class DoctorService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final DoctorRepository doctorRepository;
-
+    @Transactional
     public AuthenticationResponse addDoctor(Doctor request) throws UserNotFoundException {
-        request.getUser().setRole(Role.DOCTOR);
-        var savedUser = userRepository.save(request.getUser());
+        User user = request.getUser();
+        User existingUser = userRepository.findByEmail(user.getEmail())
+                .orElse(null);
+        if (existingUser != null) {
+            if (existingUser.getDoctor() != null) {
+                throw new UserNotFoundException("User already has an associated doctor");
+            } else {
+                user = existingUser;
+            }
+        } else {
+            user.setRole(Role.DOCTOR);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user = userRepository.save(user);
+        }
+
         Doctor doctor = Doctor.builder()
-                .user(savedUser)
+                .user(user)
                 .specialization(request.getSpecialization())
                 .beginTime(request.getBeginTime())
                 .endTime(request.getEndTime())
                 .build();
 
         doctorRepository.save(doctor);
-
-        var jwtToken = jwtService.generateToken(savedUser);
-        var refreshToken = jwtService.generateRefreshToken(savedUser);
-        saveUserToken(savedUser, jwtToken);
+        var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+        saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .message("Doctor added successfully")
                 .build();
     }
+
 
     public void updateDoctor(Doctor request, Long doctorId) throws UserNotFoundException {
         var doctor = doctorRepository.findById(doctorId)
@@ -80,7 +94,7 @@ public class DoctorService {
 
     public Doctor findDoctorByEmail(String email) throws UserNotFoundException {
         Doctor doctor = doctorRepository.findByUserEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Doctor not found with Email: " + email));
+                .orElseThrow(() -> new UserNotFoundException("Doctor not found with email: " + email));
         return doctor;
 
     }

@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.ProjectTraninng.Common.Entities.Medicine;
 
 import java.util.Date;
 
@@ -29,13 +28,12 @@ public class WarehouseStore {
     private Integer quantity;
 
     @ManyToOne
-    @JsonBackReference(value = "medicineId")
     @JoinColumn(name = "medicineId", nullable = false)
+    @JsonBackReference("medicine-warehouseStore")
     private Medicine medicine;
 
     @Column(name = "createdDate", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @org.hibernate.annotations.CreationTimestamp
     private Date createdDate;
-
 }

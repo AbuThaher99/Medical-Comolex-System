@@ -26,14 +26,14 @@ public class TreatmentService {
         Patients patients = patientRepository.findById(request.getPatient().getId()).orElseThrow(
                 () -> new UserNotFoundException("Patient not found"));
 
-        Doctor doctor = doctorRepository.findById(request.getDoctor().getId()).orElseThrow(
+        Doctor doctor = doctorRepository.findById(request.getDoctorId().getId()).orElseThrow(
                 () -> new UserNotFoundException("Doctor not found"));
         if (doctor == null) {
             return TreatmentResponse.builder().message("Doctor not found").build();
         }
         Treatment treatment = Treatment.builder()
                 .patient(patients)
-                .doctor(doctor)
+                .doctorId(doctor)
                 .diseaseDescription(request.getDiseaseDescription())
                 .note(request.getNote())
                 .build();
@@ -45,7 +45,7 @@ public class TreatmentService {
         var treatmentOptional = treatmentRepository.findById(treatmentId).orElseThrow(
                 () -> new UserNotFoundException("Treatment not found"));
 
-        doctorRepository.findById(request.getDoctor().getId()).orElseThrow(
+        doctorRepository.findById(request.getDoctorId().getId()).orElseThrow(
                 () -> new UserNotFoundException("Doctor not found"));
 
         patientRepository.findById(request.getPatient().getId()).orElseThrow(
@@ -72,7 +72,7 @@ public class TreatmentService {
         Treatment treatment = treatmentOptional;
         return Treatment.builder()
                 .patient(treatment.getPatient())
-                .doctor(treatment.getDoctor())
+                .doctorId(treatment.getDoctorId())
                 .diseaseDescription(treatment.getDiseaseDescription())
                 .note(treatment.getNote())
                 .build();
@@ -86,7 +86,7 @@ public class TreatmentService {
             treatmentRequests.add(Treatment.builder()
                     .id(treatment.getId())
                     .patient(treatment.getPatient())
-                    .doctor(treatment.getDoctor())
+                    .doctorId(treatment.getDoctorId())
                     .diseaseDescription(treatment.getDiseaseDescription())
                     .note(treatment.getNote())
                     .treatmentDate(treatment.getTreatmentDate())
@@ -101,18 +101,8 @@ public class TreatmentService {
         patientRepository.findById(patientId).orElseThrow(
                 () -> new UserNotFoundException("Patient not found"));
         List<Treatment> treatments = treatmentRepository.findAllByPatientId(patientId);
-        List<Treatment> treatmentRequests = new ArrayList<>();
-        for (Treatment treatment : treatments) {
-            treatmentRequests.add(Treatment.builder()
-                    .id(treatment.getId())
-                    .patient(treatment.getPatient())
-                    .doctor(treatment.getDoctor())
-                    .diseaseDescription(treatment.getDiseaseDescription())
-                    .note(treatment.getNote())
-                    .treatmentDate(treatment.getTreatmentDate())
-                    .build());
-        }
-        return treatmentRequests;
+
+        return treatments;
     }
 
 

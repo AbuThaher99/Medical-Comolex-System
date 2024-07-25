@@ -5,6 +5,7 @@ import org.example.ProjectTraninng.Common.Entities.WarehouseStore;
 import org.example.ProjectTraninng.Common.Responses.WarehouseStoreResponse;
 import org.example.ProjectTraninng.Core.Repsitories.MedicineRepository;
 import org.example.ProjectTraninng.Core.Repsitories.WarehouseStoreRepository;
+import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,16 +14,12 @@ public class WarehouseStoreService {
     private final WarehouseStoreRepository warehouseStoreRepository;
     private final MedicineRepository medicineRepository;
 
-    public WarehouseStoreResponse addMedicineToWarehouse(WarehouseStore warehouseStoreRequest) {
+    public WarehouseStoreResponse addMedicineToWarehouse(WarehouseStore warehouseStoreRequest) throws UserNotFoundException {
         if (!medicineRepository.existsById(warehouseStoreRequest.getMedicine().getId())) {
-            return WarehouseStoreResponse.builder()
-                    .message("Medicine not found")
-                    .build();
+           throw new UserNotFoundException("Medicine not found");
         }
         if (warehouseStoreRepository.existsByMedicineId(warehouseStoreRequest.getMedicine().getId())) {
-            return WarehouseStoreResponse.builder()
-                    .message("Medicine already exists in the warehouse store")
-                    .build();
+           throw new UserNotFoundException("Medicine already exists in the warehouse store");
         }
         WarehouseStore warehouseStore = WarehouseStore.builder()
                 .medicine(warehouseStoreRequest.getMedicine())
