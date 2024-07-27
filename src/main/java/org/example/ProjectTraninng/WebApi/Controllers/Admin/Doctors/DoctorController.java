@@ -15,6 +15,7 @@ import org.example.ProjectTraninng.Core.Servecies.DoctorService;
 import org.example.ProjectTraninng.SessionManagement;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ import java.util.List;
 public class DoctorController extends SessionManagement {
     private final DoctorService doctorService;
     private final AuthenticationService service;
-    @PostMapping("")
+    @PostMapping("/")
     public ResponseEntity<AuthenticationResponse> addDoctor(@RequestBody @Valid Doctor request , HttpServletRequest httpServletRequest) throws UserNotFoundException {
        String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
@@ -70,15 +71,12 @@ public class DoctorController extends SessionManagement {
     }
 
     @GetMapping("")
-    public  GeneralResponse<Doctor> getAllDoctors(HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public Page<Doctor> getAllDoctors(@RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "10") int size, HttpServletRequest httpServletRequest) throws UserNotFoundException {
        String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInAdmin(user);
-        List<Doctor> doctors = doctorService.getAllDoctors();
-        GeneralResponse<Doctor> response = new GeneralResponse<>();
-        response.setList(doctors);
-        response.setCount(10);
-        return response;
+        return doctorService.getAllDoctors(page, size);
     }
     @PostMapping("/refresh-token")
     public void refreshToken(
@@ -87,12 +85,7 @@ public class DoctorController extends SessionManagement {
     ) throws IOException {
         service.refreshToken(request, response);
     }
-    @Override
-    public void validateLoggedInAdmin(User user) throws UserNotFoundException {
-        if(user.getRole() != Role.ADMIN){
-            throw new UserNotFoundException("You are not authorized to perform this operation");
-        }
-    }
+
 
 
 }

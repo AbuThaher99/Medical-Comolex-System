@@ -8,17 +8,21 @@ import org.example.ProjectTraninng.Common.DTOs.LoginDTO;
 import org.example.ProjectTraninng.Common.Entities.Token;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
+import org.example.ProjectTraninng.Core.Repsitories.DepartmentRepsitory;
 import org.example.ProjectTraninng.Core.Repsitories.TokenRepository;
 import org.example.ProjectTraninng.Common.Enums.TokenType;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.config.JwtService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,9 +35,11 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-
+    private final DepartmentRepsitory departmentRepsitory;
+    @Transactional
     public AuthenticationResponse adduser(User user) throws UserNotFoundException {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setDeleted(false);
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
@@ -44,7 +50,7 @@ public class AuthenticationService {
                 .message("User " +user.getRole()+ " added successfully")
                 .build();
     }
-
+    @Transactional
     public AuthenticationResponse UpdateUser(User userRequest ,Long id) throws UserNotFoundException {
         var user = repository.findById(id)
                 .orElseThrow( () -> new UserNotFoundException("User not found") );
@@ -59,29 +65,38 @@ public class AuthenticationService {
                 .message("User updated successfully")
                 .build();
     }
-
+    @Transactional
     public AuthenticationResponse DeleteUser(Long id) throws UserNotFoundException {
         var user = repository.findById(id)
-                .orElseThrow( () -> new UserNotFoundException("User not found") );
-        repository.delete(user);
+                .orElseThrow( () -> new UserNotFoundException("User not found"));
+        user.setDeleted(true);
+        departmentRepsitory.setHeadIdToNull(id);
+        departmentRepsitory.setSecretaryIdToNull(id);
+        repository.save(user);
         return AuthenticationResponse.builder()
                 .message("User deleted successfully")
-                .build();
+                 .build();
     }
-
+    @Transactional
     public User GetUser(Long id) throws UserNotFoundException {
         var user = repository.findById(id)
                 .orElseThrow( () -> new UserNotFoundException("User not found") );
+        if(user.isDeleted()){
+            throw new UserNotFoundException("User not found");
+        }
+
         return user;
     }
-    public List<User> GetAllUsers() {
-        return repository.findAll();
+    @Transactional
+    public Page<User> GetAllUsers( int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return repository.findAll(pageRequest);
     }
-
-    public List<User> getAllUsersByRole(Role role) {
-        return repository.findAllByRole(role);
+    @Transactional
+    public Page<User> getAllUsersByRole(Role role, int page, int size) {
+        return repository.findAllByRole(role, PageRequest.of(page, size));
     }
-
+    @Transactional
     public AuthenticationResponse authenticate(LoginDTO request) throws UserNotFoundException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -90,7 +105,9 @@ public class AuthenticationService {
                 )
         );
         var user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
+                .orElseThrow(
+                        () -> new UserNotFoundException("User not found")
+                );
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
@@ -159,4 +176,6 @@ public class AuthenticationService {
         String username = jwtService.extractUsername(token);
         return repository.findByEmail(username).orElse(null);
     }
+
+
 }

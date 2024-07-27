@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.example.ProjectTraninng.Common.Enums.Specialization;
 
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -43,9 +44,12 @@ public class Doctor {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
+    @JsonBackReference("doctorUser")
     private User user;
-    @OneToMany( cascade = CascadeType.ALL)
+
+
+    @OneToMany( cascade = CascadeType.ALL , fetch = FetchType.LAZY , orphanRemoval = true)
     @JoinColumn(name = "doctorId" , referencedColumnName = "id")
     @JsonManagedReference("doctor-treatment")
-    private Set<Treatment> doctorId; // done
+    private List<Treatment> treatments; // done
 }

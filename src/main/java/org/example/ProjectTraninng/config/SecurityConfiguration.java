@@ -22,12 +22,12 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-    private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
+    private static final String[] WHITE_LIST_URL = {"/Login/authenticate/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
             "http://127.0.0.1:5500",
-            "/UserAdmin/adduser/**"};
+            "/admin/user/**"};
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
@@ -51,7 +51,7 @@ public class SecurityConfiguration {
                                 .addLogoutHandler(logoutHandler)
                                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 )
-                .cors(withDefaults()); // Add this line to enable CORS
+                .cors(withDefaults());
         return http.build();
     }
 }

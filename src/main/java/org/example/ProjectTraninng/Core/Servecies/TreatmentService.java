@@ -1,15 +1,15 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Common.Entities.Doctor;
-import org.example.ProjectTraninng.Common.Entities.Treatment;
+import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Responses.TreatmentResponse;
-import org.example.ProjectTraninng.Core.Repsitories.DoctorRepository;
-import org.example.ProjectTraninng.Core.Repsitories.TreatmentRepository;
+import org.example.ProjectTraninng.Core.Repsitories.*;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
-import org.example.ProjectTraninng.Core.Repsitories.PatientRepository;
-import org.example.ProjectTraninng.Common.Entities.Patients;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,32 +20,41 @@ public class TreatmentService {
     private final TreatmentRepository treatmentRepository;
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
+    private final TreatmentDeletedRepository treatmentDeletedRepository;
+    private final DeletedPatientMedicineRepository deletedPatientMedicineRepository;
 
+    @Transactional
     public TreatmentResponse createTreatment(Treatment request) throws UserNotFoundException {
 
         Patients patients = patientRepository.findById(request.getPatient().getId()).orElseThrow(
                 () -> new UserNotFoundException("Patient not found"));
 
-        Doctor doctor = doctorRepository.findById(request.getDoctorId().getId()).orElseThrow(
+        Doctor doctor = doctorRepository.findById(request.getDoctor().getId()).orElseThrow(
                 () -> new UserNotFoundException("Doctor not found"));
         if (doctor == null) {
             return TreatmentResponse.builder().message("Doctor not found").build();
         }
+
+
         Treatment treatment = Treatment.builder()
                 .patient(patients)
-                .doctorId(doctor)
+                .doctor(doctor)
                 .diseaseDescription(request.getDiseaseDescription())
                 .note(request.getNote())
                 .build();
+        for (PatientMedicine patientMedicine : request.getPatientMedicines()) {
+            patientMedicine.setTreatment(treatment);
+        }
+        treatment.setPatientMedicines(request.getPatientMedicines());
         treatmentRepository.save(treatment);
         return  TreatmentResponse.builder().message("Treatment created successfully").build();
     }
-
+    @Transactional
     public TreatmentResponse updateTreatment(Treatment request, Long treatmentId) throws UserNotFoundException {
         var treatmentOptional = treatmentRepository.findById(treatmentId).orElseThrow(
                 () -> new UserNotFoundException("Treatment not found"));
 
-        doctorRepository.findById(request.getDoctorId().getId()).orElseThrow(
+        doctorRepository.findById(request.getDoctor().getId()).orElseThrow(
                 () -> new UserNotFoundException("Doctor not found"));
 
         patientRepository.findById(request.getPatient().getId()).orElseThrow(
@@ -53,56 +62,77 @@ public class TreatmentService {
 
 
         Treatment treatment = treatmentOptional;
+        treatment.setPatient(request.getPatient());
+        treatment.setDoctor(request.getDoctor());
         treatment.setDiseaseDescription(request.getDiseaseDescription());
         treatment.setNote(request.getNote());
+        for (PatientMedicine patientMedicine : request.getPatientMedicines()) {
+            patientMedicine.setTreatment(treatment);
+        }
+        treatment.setPatientMedicines(request.getPatientMedicines());
+
         treatmentRepository.save(treatment);
         return TreatmentResponse.builder().message("Treatment updated successfully").build();
     }
 
-        public TreatmentResponse deleteTreatment(Long treatmentId) throws UserNotFoundException {
-            var treatmentOptional = treatmentRepository.findById(treatmentId).orElseThrow(
-                    () -> new UserNotFoundException("Treatment not found"));
-            treatmentRepository.delete(treatmentOptional);
-            return TreatmentResponse.builder().message("Treatment deleted successfully").build();
-        }
+    public TreatmentResponse deleteTreatment(Long treatmentId) throws UserNotFoundException {
+        var treatmentOptional = treatmentRepository.findById(treatmentId).orElseThrow(
+                () -> new UserNotFoundException("Treatment not found"));
 
+        Treatment treatment = treatmentOptional;
+
+        TreatmentDeleted treatmentDeleted = TreatmentDeleted.builder()
+                .doctor(treatment.getDoctor())
+                .diseaseDescription(treatment.getDiseaseDescription())
+                .note(treatment.getNote())
+                .treatmentDate(treatment.getTreatmentDate())
+                .treatmentDeletedId(treatment.getId())
+                .build();
+
+        treatmentDeletedRepository.save(treatmentDeleted);
+
+        List<DeletedPatientMedicine> deletedPatientMedicines = new ArrayList<>();
+        for (PatientMedicine patientMedicine : treatment.getPatientMedicines()) {
+            DeletedPatientMedicine deletedPatientMedicine = DeletedPatientMedicine.builder()
+                    .quantity(patientMedicine.getQuantity())
+                    .price(patientMedicine.getPrice())
+                    .treatmentDeleted(treatmentDeleted)
+                    .medicine(patientMedicine.getMedicine())
+                    .build();
+            deletedPatientMedicines.add(deletedPatientMedicine);
+        }
+        deletedPatientMedicineRepository.saveAll(deletedPatientMedicines);
+
+        treatmentRepository.delete(treatmentOptional);
+
+        return TreatmentResponse.builder().message("Treatment and associated patient medicines deleted successfully").build();
+    }
+
+    @Transactional
     public Treatment getTreatment(Long treatmentId) throws UserNotFoundException {
         var treatmentOptional = treatmentRepository.findById(treatmentId).orElseThrow(
                 () -> new UserNotFoundException("Treatment not found"));
         Treatment treatment = treatmentOptional;
         return Treatment.builder()
                 .patient(treatment.getPatient())
-                .doctorId(treatment.getDoctorId())
+                .doctor(treatment.getDoctor())
                 .diseaseDescription(treatment.getDiseaseDescription())
                 .note(treatment.getNote())
                 .build();
     }
-
-    public List<Treatment> getAllTreatments() {
-
-        List<Treatment> treatments = treatmentRepository.findAll();
-        List<Treatment> treatmentRequests = new ArrayList<>();
-        for (Treatment treatment : treatments) {
-            treatmentRequests.add(Treatment.builder()
-                    .id(treatment.getId())
-                    .patient(treatment.getPatient())
-                    .doctorId(treatment.getDoctorId())
-                    .diseaseDescription(treatment.getDiseaseDescription())
-                    .note(treatment.getNote())
-                    .treatmentDate(treatment.getTreatmentDate())
-                    .build());
-        }
-        return treatmentRequests;
+    @Transactional
+    public Page<Treatment> getAllTreatments(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return treatmentRepository.findAll(pageable);
     }
 
-    // make a getAllTreatments  method for specific patient
-
-    public List<Treatment> getAllTreatmentsForPatient(Long patientId) throws UserNotFoundException {
+    @Transactional
+    public Page<Treatment> getAllTreatmentsForPatient(Long patientId,int size ,int page) throws UserNotFoundException {
         patientRepository.findById(patientId).orElseThrow(
                 () -> new UserNotFoundException("Patient not found"));
-        List<Treatment> treatments = treatmentRepository.findAllByPatientId(patientId);
+        Pageable pageable = PageRequest.of(page, size);
 
-        return treatments;
+        return treatmentRepository.findAllByPatientId(patientId, pageable);
     }
 
 

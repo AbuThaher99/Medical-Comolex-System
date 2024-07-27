@@ -11,6 +11,9 @@ import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.Core.Repsitories.TokenRepository;
 import org.example.ProjectTraninng.config.JwtService;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +62,7 @@ public class DoctorService {
                 .build();
     }
 
-
+    @Transactional
     public void updateDoctor(Doctor request, Long doctorId) throws UserNotFoundException {
         var doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new UserNotFoundException("Doctor not found"));
@@ -72,6 +75,7 @@ public class DoctorService {
         user.setDateOfBirth(request.getUser().getDateOfBirth());
         user.setPhone(request.getUser().getPhone());
         user.setEmail(request.getUser().getEmail());
+        user.setPassword(passwordEncoder.encode(request.getUser().getPassword()));
         user.getSalary().putAll(request.getUser().getSalary());
 
         userRepository.save(user);
@@ -91,15 +95,17 @@ public class DoctorService {
         doctorRepository.deleteById(doctorId);
         userRepository.deleteById(user.getId());
     }
-
+    @Transactional
     public Doctor findDoctorByEmail(String email) throws UserNotFoundException {
         Doctor doctor = doctorRepository.findByUserEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Doctor not found with email: " + email));
         return doctor;
 
     }
-    public List<Doctor> getAllDoctors() {
-        return doctorRepository.findAll();
+    @Transactional
+    public Page<Doctor> getAllDoctors(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return doctorRepository.findAll(pageable);
     }
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()

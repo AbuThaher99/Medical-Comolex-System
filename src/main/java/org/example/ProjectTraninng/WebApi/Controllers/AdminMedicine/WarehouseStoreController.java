@@ -11,6 +11,7 @@ import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.WarehouseStoreService;
 import org.example.ProjectTraninng.SessionManagement;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,24 +20,29 @@ import org.springframework.web.bind.annotation.*;
 public class WarehouseStoreController extends SessionManagement {
     private final WarehouseStoreService warehouseStoreService;
     private final AuthenticationService service;
-    @PostMapping("")
+    @PostMapping("/")
     public WarehouseStoreResponse addToWarehouse(@RequestBody @Valid WarehouseStore warehouseStoreRequest, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
+        validateLoggedInWarehouseEmployee(user);
         return warehouseStoreService.addMedicineToWarehouse(warehouseStoreRequest);
     }
     @PutMapping("/{medicineId}")
     public WarehouseStoreResponse updateWarehouseQuantity(@RequestBody @Valid WarehouseStore quantity , @PathVariable Long medicineId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
+        validateLoggedInWarehouseEmployee(user);
         return warehouseStoreService.updateMedicineQuantity(quantity, medicineId);
     }
-    @Override
-    public void validateLoggedInAdmin(User user) throws UserNotFoundException {
-        if(user.getRole() != Role.ADMIN && user.getRole() != Role.WAREHOUSE_EMPLOYEE){
-            throw new UserNotFoundException("You are not authorized to perform this operation");
-        }
+
+    @GetMapping("")
+    public Page<WarehouseStore> getWarehouseStore(@RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "10") int size, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+        String token = service.extractToken(httpServletRequest);
+        User user = service.extractUserFromToken(token);
+        validateLoggedInWarehouseEmployee(user);
+
+        return warehouseStoreService.getWarehouseStore(page, size);
     }
+
 }

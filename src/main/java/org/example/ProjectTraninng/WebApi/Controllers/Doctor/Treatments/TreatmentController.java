@@ -12,6 +12,7 @@ import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.TreatmentService;
 import org.example.ProjectTraninng.SessionManagement;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class TreatmentController extends SessionManagement {
     public ResponseEntity<TreatmentResponse> addTreatment(@RequestBody @Valid Treatment request, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
+        validateLoggedInDoctor(user);
         return ResponseEntity.ok(treatmentService.createTreatment(request));
     }
 
@@ -35,7 +36,7 @@ public class TreatmentController extends SessionManagement {
     public ResponseEntity<TreatmentResponse> updateTreatment(@RequestBody @Valid Treatment request, @PathVariable Long treatmentId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
        String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
+        validateLoggedInDoctor(user);
         return ResponseEntity.ok(treatmentService.updateTreatment(request, treatmentId));
     }
 
@@ -43,7 +44,7 @@ public class TreatmentController extends SessionManagement {
     public ResponseEntity<TreatmentResponse> deleteTreatment(@PathVariable Long treatmentId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
+        validateLoggedInDoctor(user);
         return ResponseEntity.ok(treatmentService.deleteTreatment(treatmentId));
     }
 
@@ -51,36 +52,26 @@ public class TreatmentController extends SessionManagement {
     public ResponseEntity<Treatment> getTreatment(@PathVariable Long treatmentId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
+        validateLoggedInDoctor(user);
         return ResponseEntity.ok(treatmentService.getTreatment(treatmentId));
     }
 
     @GetMapping("")
-    public GeneralResponse<Treatment> getAllTreatments(HttpServletRequest httpServletRequest) throws UserNotFoundException {
-        String token = service.extractToken(httpServletRequest);
-        User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
-
-        GeneralResponse<Treatment> response = new GeneralResponse<>();
-        response.setList(treatmentService.getAllTreatments());
-        response.setCount(10);
-        return response;
+    public Page<Treatment> getAllTreatments(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size) {
+        return treatmentService.getAllTreatments(page, size);
     }
 
     @GetMapping("/{patientId}")
-    public ResponseEntity<Iterable<Treatment>> getTreatmentByPatientId(@PathVariable Long patientId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<Iterable<Treatment>> getTreatmentByPatientId(@PathVariable Long patientId,@RequestParam(defaultValue = "0") int page,
+                                                                       @RequestParam(defaultValue = "10") int size, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
-        return ResponseEntity.ok(treatmentService.getAllTreatmentsForPatient(patientId));
+        validateLoggedInDoctor(user);
+        return ResponseEntity.ok(treatmentService.getAllTreatmentsForPatient(patientId, page, size));
     }
 
-    @Override
-    public void validateLoggedInAdmin(User user) throws UserNotFoundException {
-        if(user.getRole() != Role.ADMIN && user.getRole() != Role.DOCTOR){
-            throw new UserNotFoundException("You are not authorized to perform this operation");
-        }
-    }
+
 
 
 }

@@ -71,20 +71,28 @@ public class User implements UserDetails {
     private List<Token> tokens;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL , fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonBackReference("doctorUser")
     private Doctor doctor;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "headId" , referencedColumnName = "id")
-    private Set<Department> headId;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "headId" , referencedColumnName = "id")
+    @JsonManagedReference("headUser")
+    private List<Department> headId;
+
+    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
     @JoinColumn(name = "secretaryId" , referencedColumnName = "id")
-    private Set<Department> secretaryId;
+    @JsonManagedReference("secretaryUser")
+    private List<Department> secretaryId;
 
     @Column(name = "createdDate", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @org.hibernate.annotations.CreationTimestamp
     private Date createdDate;
+
+    @Column(name = "isDeleted" , nullable = false )
+    @JsonIgnore
+    private boolean isDeleted;
+
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {

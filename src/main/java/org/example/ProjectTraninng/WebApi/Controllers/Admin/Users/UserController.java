@@ -13,6 +13,7 @@ import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.SessionManagement;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Entities.User;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,13 +27,11 @@ public class UserController extends SessionManagement {
 
     private final AuthenticationService service;
 
-    @PostMapping("")
-    public ResponseEntity<AuthenticationResponse> adduser(@RequestBody @Valid User request) throws UserNotFoundException {
-//        String token = extractToken(httpServletRequest);
-//        User user = service.extractUserFromToken(token);
-//        validateLoggedInAdmin(user);
-//        , HttpServletRequest httpServletRequest
-
+    @PostMapping("/")
+    public ResponseEntity<AuthenticationResponse> adduser(@RequestBody @Valid User request, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+        String token = service.extractToken(httpServletRequest);
+        User user = service.extractUserFromToken(token);
+        validateLoggedInAdmin(user);
         return ResponseEntity.ok(service.adduser(request));
     }
 
@@ -61,23 +60,21 @@ public class UserController extends SessionManagement {
     }
 
     @GetMapping("")
-    public  GeneralResponse<User> getallusers(HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public Page<User> getallusers(@RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "10") int size,HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
           validateLoggedInAdmin(user);
-          List<User> users = service.GetAllUsers();
-        GeneralResponse<User> response = new GeneralResponse<>();
-        response.setList(users);
-        response.setCount(10);
-        return response;
+        return service.GetAllUsers(page, size);
     }
 
-    @GetMapping("/{role}")
-    public ResponseEntity<List<User>> getAllUsersByRole(@PathVariable Role role, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    @GetMapping("byRole/{role}")
+    public Page<User> getAllUsersByRole(@PathVariable Role role,@RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
          validateLoggedInAdmin(user);
-        return ResponseEntity.ok(service.getAllUsersByRole(role));
+        return service.getAllUsersByRole(role, page, size);
     }
 
     @PostMapping("/refresh-token")
@@ -87,11 +84,5 @@ public class UserController extends SessionManagement {
     ) throws IOException {
         service.refreshToken(request, response);
     }
-
-    public void validateLoggedInAdmin(User user) throws UserNotFoundException {
-       if(user.getRole() != Role.ADMIN){
-           throw new UserNotFoundException("You are not authorized to perform this operation");
-       }
-     }
 
 }

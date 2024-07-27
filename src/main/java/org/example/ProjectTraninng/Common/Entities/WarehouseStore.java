@@ -1,6 +1,7 @@
 package org.example.ProjectTraninng.Common.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,10 @@ public class WarehouseStore {
     @JoinColumn(name = "medicineId", nullable = false)
     @JsonBackReference("medicine-warehouseStore")
     private Medicine medicine;
+
+    @Column(name = "isDeleted" , nullable = false )
+    @JsonIgnore
+    private boolean isDeleted;
 
     @Column(name = "createdDate", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)

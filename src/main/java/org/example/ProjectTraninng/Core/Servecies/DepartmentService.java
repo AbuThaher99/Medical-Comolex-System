@@ -8,6 +8,9 @@ import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,9 +69,10 @@ public class DepartmentService {
     public void deleteDepartment(Long departmentId) throws UserNotFoundException {
         var department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new UserNotFoundException("Department not found"));
-        departmentRepository.deleteById(departmentId);
+        department.setDeleted(true);
+        departmentRepository.save(department);
     }
-
+    @Transactional
     public Department findDepartmentById(Long departmentId) throws UserNotFoundException {
         return departmentRepository.findById(departmentId)
                 .map(department -> Department.builder()
@@ -83,19 +87,8 @@ public class DepartmentService {
     }
 
     @Transactional
-    public List<Department> getAllDepartment() {
-        List<Department> departments = new ArrayList<>();
-        List<Department> allDepartments = departmentRepository.findAll();
-        for (Department department : allDepartments) {
-            Department department1 = Department.builder()
-                    .id(department.getId())
-                    .name(department.getName())
-                    .headId(department.getHeadId())
-                    .secretaryId(department.getSecretaryId())
-                    .createdDate(department.getCreatedDate())
-                    .build();
-            departments.add(department1);
-        }
-        return departments;
+    public Page<Department> getAllDepartment(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return departmentRepository.findAll(pageable);
     }
 }

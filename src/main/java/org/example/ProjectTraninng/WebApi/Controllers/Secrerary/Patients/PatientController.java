@@ -12,6 +12,7 @@ import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.PatientService;
 import org.example.ProjectTraninng.SessionManagement;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class PatientController extends SessionManagement {
     public ResponseEntity<PatientResponse> addPatient(@RequestBody @Valid Patients request , HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
+        validateLoggedInSecretary(user);
         return ResponseEntity.ok(patientService.addPatient(request));
     }
 
@@ -39,7 +40,7 @@ public class PatientController extends SessionManagement {
     public ResponseEntity<?> getPatient(@PathVariable String firstName, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
+        validateLoggedInSecretary(user);
         Optional<Patients> patientRequest = patientService.getPatient(firstName);
         if (patientRequest.isPresent()) {
             return ResponseEntity.ok(patientRequest.get());
@@ -51,7 +52,7 @@ public class PatientController extends SessionManagement {
         public ResponseEntity<?> deletePatientByEmail(@PathVariable String firstName, HttpServletRequest httpServletRequest) throws UserNotFoundException {
             String token = service.extractToken(httpServletRequest);
             User user = service.extractUserFromToken(token);
-            validateLoggedInAdmin(user);
+            validateLoggedInSecretary(user);
         PatientResponse isDeleted = patientService.deletePatientByFirstName(firstName);
             return ResponseEntity.ok(isDeleted);
         }
@@ -60,29 +61,20 @@ public class PatientController extends SessionManagement {
     public ResponseEntity<?> updatePatient(@RequestBody @Valid Patients request, @PathVariable String firstName, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
+        validateLoggedInSecretary(user);
         PatientResponse d= patientService.updatePatient(request, firstName);
           return ResponseEntity.ok(d);
 
     }
 
     @GetMapping("")
-    public   GeneralResponse<Patients> getAllPatients(HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public Page<Patients> getAllPatients(@RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "10") int size, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
-        List<Patients> patients = patientService.getAllPatients();
-        GeneralResponse<Patients> response = new GeneralResponse<>();
-        response.setList(patients);
-        response.setCount(10);
-        return response;
+        validateLoggedInSecretary(user);
+        return patientService.getAllPatients(page, size);
     }
 
-    @Override
-    public void validateLoggedInAdmin(User user) throws UserNotFoundException {
-        System.out.println(user.getRole());
-        if(user.getRole() != Role.ADMIN && user.getRole() != Role.SECRETARY){
-            throw new UserNotFoundException("You are not authorized to perform this operation");
-        }
-    }
+
 }

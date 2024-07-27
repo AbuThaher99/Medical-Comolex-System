@@ -14,6 +14,7 @@ import org.example.ProjectTraninng.Core.Servecies.DepartmentService;
 import org.example.ProjectTraninng.SessionManagement;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class DepartmentController extends SessionManagement {
     private final DepartmentService departmentService;
     private final AuthenticationService service;
 
-    @PostMapping("")
+    @PostMapping("/")
     public ResponseEntity<DepartmentResponse> addDepartment(@RequestBody @Valid Department request, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
@@ -66,23 +67,14 @@ public class DepartmentController extends SessionManagement {
     }
 
     @GetMapping("")
-    public GeneralResponse<Department> getAllDepartments( HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public Page<Department> getAllDepartments(@RequestParam(defaultValue = "0") int page,
+                                              @RequestParam(defaultValue = "10") int size, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInAdmin(user);
-        List<Department> departments = departmentService.getAllDepartment();
-        GeneralResponse<Department> response = new GeneralResponse<>();
-        response.setList(departments);
-        response.setCount(10);
-        return response;
+        return departmentService.getAllDepartment(page, size);
 
     }
 
-    @Override
-    public void validateLoggedInAdmin(User user) throws UserNotFoundException {
-        if(user.getRole() != Role.ADMIN){
-            throw new UserNotFoundException("You are not authorized to perform this operation");
-        }
-    }
 
 }

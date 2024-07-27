@@ -1,6 +1,7 @@
 package org.example.ProjectTraninng.Common.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -25,8 +26,13 @@ public class Department {
     @NotNull(message = "Name cannot be null")
     private String name;
 
-    @ManyToOne
+    @Column(name = "isDeleted" , nullable = false )
+    @JsonIgnore
+    private boolean isDeleted;
+
+    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     @JoinColumn(name = "headId")
+    @JsonBackReference("headUser")
     private User headId;
 
 //    @ManyToOne
@@ -34,8 +40,9 @@ public class Department {
 //    private Employee employee;
     //@JsonBackReference
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     @JoinColumn(name = "secretaryId")
+    @JsonBackReference("secretaryUser")
     private User secretaryId;
 
     @Column(name = "createdDate", updatable = false)
