@@ -28,6 +28,9 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "image")
+    private String image;
+
 
     @Column(name = "password", nullable = false)
     @NotNull(message = "Password cannot be blank")

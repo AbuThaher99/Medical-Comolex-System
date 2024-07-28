@@ -16,6 +16,7 @@ import org.example.ProjectTraninng.Common.Entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,7 +29,7 @@ public class UserController extends SessionManagement {
     private final AuthenticationService service;
 
     @PostMapping("/")
-    public ResponseEntity<AuthenticationResponse> adduser(@RequestBody @Valid User request, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<AuthenticationResponse> adduser(@RequestBody @Valid User request, HttpServletRequest httpServletRequest) throws UserNotFoundException, IOException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInAdmin(user);
@@ -83,6 +84,14 @@ public class UserController extends SessionManagement {
             HttpServletResponse response
     ) throws IOException {
         service.refreshToken(request, response);
+    }
+
+    @PutMapping("/UploadImage/{id}")
+    public String uploadImage(@RequestParam("file") MultipartFile file,@PathVariable Long id ,HttpServletRequest httpServletRequest) throws UserNotFoundException, IOException {
+        String token = service.extractToken(httpServletRequest);
+        User user = service.extractUserFromToken(token);
+        validateLoggedInAdmin(user);
+        return service.uploadImageToFileSystem(file, id);
     }
 
 }
