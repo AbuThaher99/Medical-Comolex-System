@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.DTOs.LoginDTO;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
+import org.example.ProjectTraninng.Core.Servecies.LogoutService;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +24,7 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody @Valid LoginDTO request
-    ) throws UserNotFoundException {
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody @Valid LoginDTO request) throws UserNotFoundException {
         return ResponseEntity.ok(service.authenticate(request));
     }
 
@@ -36,5 +35,6 @@ public class AuthenticationController {
     ) throws IOException {
         service.refreshToken(request, response);
     }
+
 
 }

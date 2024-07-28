@@ -11,4 +11,24 @@ public class SessionManagement {
         }
     }
 
+    public void validateLoggedInDoctor(User user) throws UserNotFoundException {
+        if(user.getRole() != Role.ADMIN && user.getRole() != Role.DOCTOR){
+            throw new UserNotFoundException("You are not authorized to perform this operation");
+        }
+    }
+
+    public void validateLoggedInSecretary(User user) throws UserNotFoundException {
+        if(user.getRole() != Role.ADMIN && user.getRole() != Role.SECRETARY){
+            throw new UserNotFoundException("You are not authorized to perform this operation");
+        }
+    }
+
+    public void validateLoggedInWarehouseEmployee(User user) throws UserNotFoundException {
+        if(user.getRole() != Role.ADMIN && user.getRole() != Role.WAREHOUSE_EMPLOYEE){
+            throw new UserNotFoundException("You are not authorized to perform this operation");
+        }
+    }
+
+
+
 }

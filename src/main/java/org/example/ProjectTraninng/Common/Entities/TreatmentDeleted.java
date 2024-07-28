@@ -14,34 +14,25 @@ import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name = "treatments")
-public class Treatment {
+@Table(name = "treatmens_deleted")
+public class TreatmentDeleted {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patientId")
-    @NotNull(message = "Patient is required")
-    @JsonBackReference("patient-treatment")
-    private Patients patient;
+    @Column(name = "treatmentDeletedId")
+    private Long treatmentDeletedId;
 
 
     @ManyToOne
     @JoinColumn(name = "doctorId", nullable = false)
-    @NotNull(message = "Doctor is required")
     @JsonBackReference("doctor-treatment")
     private Doctor doctor;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY , orphanRemoval = true)
-    @JoinColumn(name = "treatmentId", referencedColumnName = "id")
-    @JsonManagedReference("treatment-patientMedicine")
-    private List<PatientMedicine> patientMedicines;
 
 
     @Column(name = "treatmentDate", updatable = false)
@@ -50,7 +41,6 @@ public class Treatment {
     private Date treatmentDate;
 
     @Column(name = "diseaseDescription", nullable = false, length = 255)
-    @NotNull(message = "Disease description is required")
     private String diseaseDescription;
 
     @Column(name = "note", columnDefinition = "TEXT")

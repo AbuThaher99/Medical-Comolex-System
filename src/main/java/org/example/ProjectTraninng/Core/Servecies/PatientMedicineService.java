@@ -1,16 +1,14 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Common.Entities.Medicine;
-import org.example.ProjectTraninng.Common.Entities.PatientMedicine;
-import org.example.ProjectTraninng.Common.Entities.Patients;
-import org.example.ProjectTraninng.Common.Entities.Treatment;
+import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Responses.PatientMedicineRespones;
-import org.example.ProjectTraninng.Core.Repsitories.PatientMedicineRepository;
-import org.example.ProjectTraninng.Core.Repsitories.PatientRepository;
+import org.example.ProjectTraninng.Core.Repsitories.*;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
-import org.example.ProjectTraninng.Core.Repsitories.MedicineRepository;
-import org.example.ProjectTraninng.Core.Repsitories.TreatmentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +20,8 @@ public class PatientMedicineService {
     private final TreatmentRepository treatmentRepository;
     private final MedicineRepository medicineRepository;
     private final PatientRepository patientsService;
-
+    private final DeletedPatientMedicineRepository deletedPatientMedicineRepository;
+    @Transactional
     public PatientMedicineRespones AddPatientMedicine(PatientMedicine patientMedicineRequest) throws UserNotFoundException {
   Treatment treatment = treatmentRepository.findById(patientMedicineRequest.getTreatment().getId())
                 .orElseThrow(() -> new UserNotFoundException("Treatment not found"));
@@ -40,14 +39,26 @@ public class PatientMedicineService {
                 .message("Patient medicine created successfully")
                 .build();
     }
+    @Transactional
+    public PatientMedicineRespones delete(Long id) throws UserNotFoundException {
+        PatientMedicine patientMedicine = patientMedicineRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException("Patient medicine not found"));
 
-//    public PatientMedicineRespones delete(Long id) {
-//        patientMedicineRepository.deleteById(id);
-//        return PatientMedicineRespones.builder()
-//                .message("Patient medicine deleted successfully")
-//                .build();
-//    }
+        // save the patient medicine in a deleted_patient_medicine table
+        DeletedPatientMedicine deletedPatientMedicine = DeletedPatientMedicine.builder()
+                .quantity(patientMedicine.getQuantity())
+                .price(patientMedicine.getPrice())
+                .medicine(patientMedicine.getMedicine())
+                .treatmentDeleted(null)
+                .build();
+        deletedPatientMedicineRepository.save(deletedPatientMedicine);
 
+        patientMedicineRepository.deleteById(patientMedicine.getId());
+        return PatientMedicineRespones.builder()
+                .message("Patient medicine deleted successfully")
+                .build();
+    }
+    @Transactional
     public PatientMedicineRespones UpdatePatientMedicine(PatientMedicine patientMedicineRequest , Long id) throws UserNotFoundException {
         PatientMedicine patientMedicine = patientMedicineRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Patient medicine not found"));
@@ -67,7 +78,7 @@ public class PatientMedicineService {
                 .message("Patient medicine updated successfully")
                 .build();
     }
-
+    @Transactional
     public PatientMedicine GetPatientMedicine(Long id) throws UserNotFoundException {
         PatientMedicine patientMedicine = patientMedicineRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Patient medicine not found"));
@@ -78,32 +89,37 @@ public class PatientMedicineService {
                 .medicine(patientMedicine.getMedicine())
                 .build();
     }
-
-    public List<PatientMedicine> GetAllPatientMedicines() throws UserNotFoundException {
-        return patientMedicineRepository.findAll();
+    @Transactional
+    public Page<PatientMedicine> GetAllPatientMedicines(int size , int page) throws UserNotFoundException {
+        Pageable pageable = PageRequest.of(page, size);
+        return patientMedicineRepository.findAll(pageable);
     }
-    public List<PatientMedicine> getAllPatientMedicinesByTreatmentId(Long treatmentId) throws UserNotFoundException {
+    @Transactional
+    public Page<PatientMedicine> getAllPatientMedicinesByTreatmentId(Long treatmentId,int size , int page) throws UserNotFoundException {
         boolean exists = treatmentRepository.findById(treatmentId).isPresent();
         if (!exists) {
             throw new UserNotFoundException("Treatment not found");
         }
-        return patientMedicineRepository.findAllByTreatmentId(treatmentId);
+        Pageable pageable = PageRequest.of(page, size);
+        return patientMedicineRepository.findAllByTreatmentId(treatmentId,pageable);
     }
-
-    public List<PatientMedicine> getAllPatientMedicinesByMedicineId(Long medicineId) throws UserNotFoundException {
+    @Transactional
+    public Page<PatientMedicine> getAllPatientMedicinesByMedicineId(Long medicineId,int size , int page) throws UserNotFoundException {
             boolean exists = medicineRepository.findById(medicineId).isPresent();
             if (!exists) {
                 throw new UserNotFoundException("Medicine not found");
             }
-            return patientMedicineRepository.findAllByMedicineId(medicineId);
+            Pageable pageable = PageRequest.of(page, size);
+            return patientMedicineRepository.findAllByMedicineId(medicineId,pageable);
         }
 
-
-        public List<PatientMedicine> getAllPatientMedicinesByPatientId(Long patientId) throws UserNotFoundException {
+    @Transactional
+        public Page<PatientMedicine> getAllPatientMedicinesByPatientId(Long patientId,int size ,int page) throws UserNotFoundException {
             boolean exists = patientsService.findById(patientId).isPresent();
             if (!exists) {
                 throw new UserNotFoundException("Patient not found");
             }
-            return patientMedicineRepository.findAllByPatientId(patientId);
+            Pageable pageable = PageRequest.of(page, size);
+            return patientMedicineRepository.findAllByPatientId(patientId,pageable);
         }
 }

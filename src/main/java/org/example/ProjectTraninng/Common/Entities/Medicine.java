@@ -1,5 +1,6 @@
 package org.example.ProjectTraninng.Common.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -49,6 +50,10 @@ public class Medicine {
     @JoinColumn(name = "medicineId", referencedColumnName = "id")
     @JsonManagedReference("medicine-warehouseStore")
     private List<WarehouseStore> warehouseStores;
+
+    @Column(name = "isDeleted" , nullable = false )
+    @JsonIgnore
+    private boolean isDeleted;
 
     @Column(name = "createdDate", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
