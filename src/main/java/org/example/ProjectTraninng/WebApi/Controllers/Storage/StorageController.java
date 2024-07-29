@@ -31,4 +31,27 @@ public class StorageController {
                 .contentType(MediaType.parseMediaType(imageData.getType()))
                 .body(imageData.getData());
     }
+
+    @GetMapping("/patientExcel")
+    public ResponseEntity<?> generatePatientToExcel() throws IOException {
+        String filePath = service.GanratePationToExcel();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(filePath);
+    }
+
+    @GetMapping("/medicineExcel")
+    public ResponseEntity<?> generateMedicineToExcel() throws IOException {
+        String filePath = service.GanarateMedicineToExcel();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(filePath);
+    }
+
+    @GetMapping("/patientTreatmentExcel")
+    public ResponseEntity<?> generatePatientTreatmentToExcel() throws IOException {
+        String filePath = service.GanaratePatientTreatmentToExcel();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(filePath);
+    }
+
+
 }
