@@ -23,9 +23,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +37,9 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final DepartmentRepsitory departmentRepsitory;
+
     @Transactional
-    public AuthenticationResponse adduser(User user) throws UserNotFoundException {
+    public AuthenticationResponse adduser(User user ) throws UserNotFoundException, IOException {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setDeleted(false);
         var savedUser = repository.save(user);
@@ -177,5 +179,17 @@ public class AuthenticationService {
         return repository.findByEmail(username).orElse(null);
     }
 
+
+
+
+    public String uploadImageToFileSystem(MultipartFile file,Long userId) throws IOException, UserNotFoundException {
+       User user = repository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
+        String imageFolder = "C:\\Users\\AbuThaher\\Desktop\\Traning Project\\ProjectTraninng\\src\\main\\resources\\Images\\";
+        String filePath=imageFolder+file.getOriginalFilename();
+        user.setImage(filePath);
+        repository.save(user);
+        file.transferTo(new File(filePath));
+        return filePath;
+    }
 
 }
