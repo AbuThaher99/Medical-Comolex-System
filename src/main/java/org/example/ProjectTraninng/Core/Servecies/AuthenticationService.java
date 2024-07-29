@@ -90,9 +90,9 @@ public class AuthenticationService {
         return user;
     }
     @Transactional
-    public Page<User> GetAllUsers( int page, int size) {
+    public Page<User> GetAllUsers( int page, int size ,String search ,Role role) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        return repository.findAll(pageRequest);
+        return repository.findAll(pageRequest,search,role);
     }
     @Transactional
     public Page<User> getAllUsersByRole(Role role, int page, int size) {

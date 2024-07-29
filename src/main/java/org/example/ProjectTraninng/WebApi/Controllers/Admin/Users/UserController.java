@@ -62,11 +62,11 @@ public class UserController extends SessionManagement {
 
     @GetMapping("")
     public Page<User> getallusers(@RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "10") int size,HttpServletRequest httpServletRequest) throws UserNotFoundException {
+                                  @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "") String search ,  @RequestParam(defaultValue = "") Role role,HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
           validateLoggedInAdmin(user);
-        return service.GetAllUsers(page, size);
+        return service.GetAllUsers(page, size,search,role);
     }
 
     @GetMapping("byRole/{role}")
