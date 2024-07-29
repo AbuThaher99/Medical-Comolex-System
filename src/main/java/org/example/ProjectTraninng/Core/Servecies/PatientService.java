@@ -121,10 +121,10 @@ public class PatientService {
     }
 
     @Transactional
-    public Page<Patients> getAllPatients(int page, int size ,String search , Long doctorId) {
+    public Page<Patients> getAllPatients(int page, int size ,String search , List<Long> doctorIds) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return patientRepository.findAll(pageable , search , doctorId);
+        return patientRepository.findAll(pageable , search , doctorIds);
     }
 
 }
