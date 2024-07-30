@@ -69,11 +69,11 @@ public class PatientController extends SessionManagement {
 
     @GetMapping("")
     public Page<Patients> getAllPatients(@RequestParam(defaultValue = "0") int page,
-                                         @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "") String search , @RequestParam(defaultValue = "") Long doctorId ,HttpServletRequest httpServletRequest) throws UserNotFoundException {
+                                         @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "") String search , @RequestParam(required = false) List<Long> doctorIds ,HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInSecretary(user);
-        return patientService.getAllPatients(page, size , search , doctorId);
+        return patientService.getAllPatients(page, size , search , doctorIds);
     }
 
 

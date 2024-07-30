@@ -10,12 +10,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface PatientRepository extends JpaRepository<Patients, Long> {
     Optional<Patients> findByFirstName(String firstName);
 
-    @Query("SELECT p FROM Patients p JOIN p.treatments t WHERE (p.firstName LIKE %:search% OR p.lastName LIKE %:search% OR p.address LIKE %:search% OR p.phone LIKE %:search%) andgi t.doctor.id = :doctorId")
-    Page<Patients> findAll(Pageable pageable , @Param("search") String search , @Param("doctorId") Long doctorId);
+
+    @Query("SELECT p FROM Patients p WHERE " +
+            "(:search IS NULL OR :search = '' OR LOWER(p.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(p.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(p.address) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(p.phone) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
+            "(:doctorIds IS NULL OR p.id IN (SELECT t.patient.id FROM Treatment t WHERE t.doctor.id IN :doctorIds))")
+    Page<Patients> findAll(Pageable pageable, @Param("search") String search, @Param("doctorIds") List<Long> doctorIds);
+
+
 }
