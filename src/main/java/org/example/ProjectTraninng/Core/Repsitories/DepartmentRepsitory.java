@@ -23,7 +23,9 @@ public interface DepartmentRepsitory extends JpaRepository<Department, Long>{
     @Transactional
     @Query("UPDATE Department d SET d.secretaryId = null WHERE d.secretaryId.id = :id")
    void setSecretaryIdToNull(@Param("id")Long id);
-    @Query("SELECT d FROM Department d WHERE d.isDeleted = false")
-    Page<Department> findAll(Pageable pageable);
+    @Query("SELECT d FROM Department d WHERE d.isDeleted = false and (:search IS NULL or :search = '' or" +
+            " d.name like %:search% or d.headId.firstName like %:search% or d.headId.lastName like %:search% or " +
+            "d.secretaryId.firstName like %:search% or d.secretaryId.lastName like %:search%)")
+    Page<Department> findAll(Pageable pageable , @Param("search") String name);
 
 }

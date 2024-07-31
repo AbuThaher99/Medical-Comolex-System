@@ -1,5 +1,6 @@
 package org.example.ProjectTraninng.Common.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -50,6 +51,13 @@ public class Medicine {
     @JoinColumn(name = "medicineId", referencedColumnName = "id")
     @JsonManagedReference("medicine-warehouseStore")
     private List<WarehouseStore> warehouseStores;
+
+    @ManyToOne
+    @JoinColumn(name = "supplierId")
+    @NotNull(message = "Supplier is required")
+    @JsonBackReference("supplier-medicine")
+    private Supplier supplier;
+
 
     @Column(name = "isDeleted" , nullable = false )
     @JsonIgnore

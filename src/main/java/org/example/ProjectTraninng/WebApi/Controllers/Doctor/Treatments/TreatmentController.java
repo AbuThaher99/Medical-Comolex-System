@@ -16,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("doctor/treatments")
@@ -58,8 +60,15 @@ public class TreatmentController extends SessionManagement {
 
     @GetMapping("")
     public Page<Treatment> getAllTreatments(@RequestParam(defaultValue = "0") int page,
-                                            @RequestParam(defaultValue = "10") int size) {
-        return treatmentService.getAllTreatments(page, size);
+                                            @RequestParam(defaultValue = "10") int size,
+                                            @RequestParam(required = false)List<Long> patientIds,
+                                            @RequestParam(required = false) Long patientId,
+                                            @RequestParam(required = false)String search,
+                                            HttpServletRequest httpServletRequest) throws UserNotFoundException {
+        String token = service.extractToken(httpServletRequest);
+        User user = service.extractUserFromToken(token);
+        validateLoggedInDoctor(user);
+        return treatmentService.getAllTreatments(page, size , patientIds, patientId, search);
     }
 
     @GetMapping("/{patientId}")

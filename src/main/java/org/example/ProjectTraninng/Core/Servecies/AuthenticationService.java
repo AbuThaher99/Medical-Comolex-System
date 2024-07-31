@@ -1,14 +1,17 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.DTOs.LoginDTO;
+import org.example.ProjectTraninng.Common.Entities.Email;
 import org.example.ProjectTraninng.Common.Entities.Token;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.example.ProjectTraninng.Core.Repsitories.DepartmentRepsitory;
+import org.example.ProjectTraninng.Core.Repsitories.EmailRepository;
 import org.example.ProjectTraninng.Core.Repsitories.TokenRepository;
 import org.example.ProjectTraninng.Common.Enums.TokenType;
 import org.example.ProjectTraninng.Common.Entities.User;
@@ -27,6 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +42,8 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final DepartmentRepsitory departmentRepsitory;
+    private final EmailService emailService;
+    private final EmailRepository emailRepository;
 
     @Transactional
     public AuthenticationResponse adduser(User user ) throws UserNotFoundException, IOException {
@@ -180,16 +187,50 @@ public class AuthenticationService {
     }
 
 
+    @Transactional
+    public AuthenticationResponse resetPassword(String email, String password) throws UserNotFoundException {
+        var user = repository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        user.setPassword(passwordEncoder.encode(password));
+        var savedUser = repository.save(user);
+        var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+        saveUserToken(savedUser, jwtToken);
 
+        return AuthenticationResponse.builder()
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .message("Password reset successfully")
+                .build();
+    }
 
-    public String uploadImageToFileSystem(MultipartFile file,Long userId) throws IOException, UserNotFoundException {
-       User user = repository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
-        String imageFolder = "C:\\Users\\AbuThaher\\Desktop\\Traning Project\\ProjectTraninng\\src\\main\\resources\\Images\\";
-        String filePath=imageFolder+file.getOriginalFilename();
-        user.setImage(filePath);
-        repository.save(user);
-        file.transferTo(new File(filePath));
-        return filePath;
+    @Transactional
+    public void sendVerificationCode(String email) throws UserNotFoundException, MessagingException {
+        var userEmail = repository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        String verificationCode = UUID.randomUUID().toString();
+        Email emailEntity = Email.builder()
+                .email(email)
+                .verificationCode(verificationCode)
+                .verified(false)
+                .build();
+        emailRepository.save(emailEntity);
+        String verificationUrl = "http://localhost:8080/Login/resetPassword?verificationCode=" + verificationCode + "&email=" + email;
+        emailService.sendVerificationEmail(email, "Email Verification", verificationUrl);
+    }
+
+    @Transactional
+    public AuthenticationResponse verifyCodeAndResetPassword(String email, String verificationCode, String newPassword) throws UserNotFoundException {
+        Email emailEntity = emailRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("email not found"));
+        if(emailEntity.getVerificationCode().equals(verificationCode)) {
+            emailEntity.setVerified(true);
+            emailRepository.save(emailEntity);
+        }else{
+            throw new UserNotFoundException("Invalid verification code ");
+        }
+           return resetPassword(email, newPassword);
     }
 
 }

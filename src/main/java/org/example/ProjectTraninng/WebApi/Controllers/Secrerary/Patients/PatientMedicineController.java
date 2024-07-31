@@ -51,11 +51,16 @@ public class PatientMedicineController extends SessionManagement {
 
      @GetMapping("")
     public Page<PatientMedicine> GetAllPatientMedicine(@RequestParam(defaultValue = "0") int page,
-                                                       @RequestParam(defaultValue = "10") int size,HttpServletRequest httpServletRequest) throws UserNotFoundException {
+                                                       @RequestParam(defaultValue = "10") int size,
+                                                       @RequestParam(defaultValue = "") String search,
+                                                       @RequestParam(required = false) List<Long> treatmentIds,
+                                                       @RequestParam(required = false) List<Long> medicineIds,
+                                                       @RequestParam(required = false) List<Long> patientIds,
+                                                       HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
          validateLoggedInSecretary(user);
-         return patientMedicineService.GetAllPatientMedicines(page, size);
+         return patientMedicineService.GetAllPatientMedicines(page, size, search, treatmentIds, medicineIds, patientIds);
      }
 
      @GetMapping("/patientId/{patientId}")

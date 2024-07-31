@@ -68,11 +68,11 @@ public class DepartmentController extends SessionManagement {
 
     @GetMapping("")
     public Page<Department> getAllDepartments(@RequestParam(defaultValue = "0") int page,
-                                              @RequestParam(defaultValue = "10") int size, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+                                              @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String search  ,HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInAdmin(user);
-        return departmentService.getAllDepartment(page, size);
+        return departmentService.getAllDepartment(page, size,search);
 
     }
 

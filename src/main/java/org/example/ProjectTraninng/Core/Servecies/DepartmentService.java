@@ -87,8 +87,8 @@ public class DepartmentService {
     }
 
     @Transactional
-    public Page<Department> getAllDepartment(int page, int size) {
+    public Page<Department> getAllDepartment(int page, int size , String search) {
         Pageable pageable = PageRequest.of(page, size);
-        return departmentRepository.findAll(pageable);
+        return departmentRepository.findAll(pageable,search);
     }
 }

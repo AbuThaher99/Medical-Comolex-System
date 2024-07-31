@@ -6,6 +6,7 @@ import org.example.ProjectTraninng.Common.Entities.Medicine;
 import org.example.ProjectTraninng.Common.Entities.WarehouseStore;
 import org.example.ProjectTraninng.Common.Responses.MedicineResponse;
 import org.example.ProjectTraninng.Core.Repsitories.MedicineRepository;
+import org.example.ProjectTraninng.Core.Repsitories.SupplierRepository;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.Core.Repsitories.WarehouseStoreRepository;
 import org.springframework.data.domain.Page;
@@ -21,26 +22,28 @@ import java.util.List;
 public class MedicineService  {
     private final MedicineRepository medicineRepository;
     private final WarehouseStoreRepository warehouseStoreRepository;
+    private  final SupplierRepository supplierRepository;
 
     @Transactional
     public MedicineResponse addMedicine(Medicine request) throws UserNotFoundException {
-        boolean exists = medicineRepository.findByName(request.getName()).isPresent();
+        boolean exists = medicineRepository.findByNameAndSupplierId(request.getName(), request.getSupplier().getId()).isPresent();
         if (exists) {
-            throw new UserNotFoundException("Medicine already exists");
+            throw new UserNotFoundException("Medicine with the same name and supplier already exists");
         }
         Medicine medicine = Medicine.builder()
                 .name(request.getName())
                 .buyPrice(request.getBuyPrice())
                 .purchasePrice(request.getPurchasePrice())
                 .expirationDate(request.getExpirationDate())
+                .supplier(request.getSupplier())
                 .build();
         medicineRepository.save(medicine);
         return MedicineResponse.builder().message("Medicine added successfully").build();
     }
     @Transactional
-    public MedicineResponse updateMedicine(Medicine request , String name) throws UserNotFoundException {
+    public MedicineResponse updateMedicine(Medicine request , Long id) throws UserNotFoundException {
 
-        var medicineOptional = medicineRepository.findByName(name).orElseThrow(
+        var medicineOptional = medicineRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("Medicine not found"));
 
         Medicine medicine = medicineOptional;
@@ -53,8 +56,8 @@ public class MedicineService  {
     }
 
     @Transactional
-    public MedicineResponse deleteMedicine(String name) throws UserNotFoundException {
-        var medicineOptional = medicineRepository.findByName(name).orElseThrow(
+    public MedicineResponse deleteMedicine(Long id) throws UserNotFoundException {
+        var medicineOptional = medicineRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("Medicine not found"));
         Medicine medicine = medicineOptional;
         medicine.setDeleted(true);
@@ -71,15 +74,15 @@ public class MedicineService  {
     }
 
     @Transactional
-    public Medicine getMedicine(String name) throws UserNotFoundException {
+    public Medicine getMedicine(Long id) throws UserNotFoundException {
 
-        var medicineOptional = medicineRepository.findByName(name).orElseThrow(
+        var medicineOptional = medicineRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("Medicine not found"));;
         return medicineOptional;
     }
     @Transactional
-    public Page<Medicine> getAllMedicines(int page, int size) {
+    public Page<Medicine> getAllMedicines(int page, int size , String search) {
         Pageable pageable = PageRequest.of(page, size);
-        return medicineRepository.findAll(pageable);
+        return medicineRepository.findAll(pageable , search);
     }
 }

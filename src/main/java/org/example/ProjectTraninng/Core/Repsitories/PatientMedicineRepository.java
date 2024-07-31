@@ -26,4 +26,17 @@ public interface PatientMedicineRepository extends JpaRepository<PatientMedicine
     @Transactional
     @Query("delete from PatientMedicine pm where pm.id = :id")
     void deleteById(@Param("id") Long id);
+
+    @Query("SELECT pm FROM PatientMedicine pm " +
+            "WHERE (:search IS NULL or :search = '' or " +
+            "cast(pm.price AS String) like lower(concat('%', :search, '%')) " +
+            "or cast(pm.quantity AS string) like lower(concat('%', :search, '%'))) " +
+            "AND (:treatmentIds IS NULL OR pm.treatment.id IN :treatmentIds) " +
+            "AND (:medicineIds IS NULL OR pm.medicine.id IN :medicineIds) " +
+            "AND (:patientIds IS NULL OR pm.treatment.patient.id IN :patientIds)")
+    Page<PatientMedicine> findAll(Pageable pageable,
+                                  @Param("search") String search,
+                                  @Param("treatmentIds") List<Long> treatmentIds,
+                                  @Param("medicineIds") List<Long> medicineIds,
+                                  @Param("patientIds") List<Long> patientIds);
 }

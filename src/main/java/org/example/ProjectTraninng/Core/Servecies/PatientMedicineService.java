@@ -90,9 +90,19 @@ public class PatientMedicineService {
                 .build();
     }
     @Transactional
-    public Page<PatientMedicine> GetAllPatientMedicines(int size , int page) throws UserNotFoundException {
-        Pageable pageable = PageRequest.of(page, size);
-        return patientMedicineRepository.findAll(pageable);
+    public Page<PatientMedicine> GetAllPatientMedicines(int page , int size,String search ,List<Long> treatmentIds,List<Long> medicineIds,List<Long> patientIds) throws UserNotFoundException {
+        Pageable pageable = PageRequest.of(page, size );
+        if (patientIds != null && patientIds.isEmpty()) {
+            patientIds = null;
+        }
+        if (treatmentIds != null && treatmentIds.isEmpty()) {
+            treatmentIds = null;
+        }
+
+        if (medicineIds != null && medicineIds.isEmpty()) {
+            medicineIds = null;
+        }
+        return patientMedicineRepository.findAll(pageable,search, treatmentIds,medicineIds,patientIds);
     }
     @Transactional
     public Page<PatientMedicine> getAllPatientMedicinesByTreatmentId(Long treatmentId,int size , int page) throws UserNotFoundException {
