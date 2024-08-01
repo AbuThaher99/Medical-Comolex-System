@@ -22,7 +22,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-    private static final String[] WHITE_LIST_URL = {"/Login/authenticate/**",
+    private static final String[] WHITE_LIST_URL = {"/auth/authenticate/**",
             "/Login/resetPassword/**",
             "/v2/api-docs",
             "/v3/api-docs",

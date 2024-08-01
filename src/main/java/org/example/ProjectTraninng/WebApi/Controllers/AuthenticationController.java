@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.DTOs.LoginDTO;
-import org.example.ProjectTraninng.Common.DTOs.ResetPasswordDTO;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.LogoutService;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/Login")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService service;
@@ -47,6 +46,14 @@ public class AuthenticationController {
     ) throws UserNotFoundException {
         AuthenticationResponse response = service.verifyCodeAndResetPassword(
                 email, verificationCode, newPassword);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<AuthenticationResponse> changePassword(@RequestParam String email,
+                                                                 @RequestParam String oldPassword,
+                                                                 @RequestParam String newPassword) throws UserNotFoundException {
+        AuthenticationResponse response = service.ChangePassword(email, oldPassword, newPassword);
         return ResponseEntity.ok(response);
     }
 
