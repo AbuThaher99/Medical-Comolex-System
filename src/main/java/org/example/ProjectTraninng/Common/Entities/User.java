@@ -96,6 +96,11 @@ public class User implements UserDetails {
     @JsonIgnore
     private boolean isDeleted;
 
+    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @JoinColumn(name = "salaryId" , referencedColumnName = "id")
+    @JsonManagedReference("salaryUser")
+    private List<SalaryPayment> salaryId;
+
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {

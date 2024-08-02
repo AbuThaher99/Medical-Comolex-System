@@ -3,10 +3,7 @@ package org.example.ProjectTraninng.Core.Servecies;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.example.ProjectTraninng.Common.Entities.*;
-import org.example.ProjectTraninng.Core.Repsitories.FileDataRepository;
-import org.example.ProjectTraninng.Core.Repsitories.MedicineRepository;
-import org.example.ProjectTraninng.Core.Repsitories.PatientRepository;
-import org.example.ProjectTraninng.Core.Repsitories.WarehouseStoreRepository;
+import org.example.ProjectTraninng.Core.Repsitories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +26,9 @@ public class StorageService {
 
     @Autowired
     private WarehouseStoreRepository warehouseStoreRepository;
+
+    @Autowired
+    private UserRepository userRepository;
     String imageFolder = "C:\\Users\\AbuThaher\\Desktop\\Traning Project\\ProjectTraninng\\src\\main\\resources\\Images\\";
     String excelFolder = "C:\\Users\\AbuThaher\\Desktop\\Traning Project\\ProjectTraninng\\src\\main\\resources\\Excels\\";
     public String uploadImageToFileSystem(MultipartFile file) throws IOException {
@@ -311,6 +311,8 @@ public class StorageService {
             return "error";
         }
     }
+
+
 
 
 
