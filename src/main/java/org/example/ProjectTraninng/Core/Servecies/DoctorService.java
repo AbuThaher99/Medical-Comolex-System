@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Enums.Role;
+import org.example.ProjectTraninng.Common.Enums.Specialization;
 import org.example.ProjectTraninng.Common.Enums.TokenType;
 import org.example.ProjectTraninng.Core.Repsitories.DoctorRepository;
 import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
@@ -103,9 +104,9 @@ public class DoctorService {
 
     }
     @Transactional
-    public Page<Doctor> getAllDoctors(int page, int size) {
+    public Page<Doctor> getAllDoctors(int page, int size , String search , Specialization specialization) {
         Pageable pageable = PageRequest.of(page, size);
-        return doctorRepository.findAll(pageable);
+        return doctorRepository.findAll(pageable, search, specialization);
     }
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()

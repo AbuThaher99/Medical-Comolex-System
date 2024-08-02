@@ -34,9 +34,6 @@ public class PatientMedicine {
     @NotNull(message = "Treatment is required")
     @JsonBackReference("treatment-patientMedicine")
     private Treatment treatment;
-
-
-
     @ManyToOne
     @JoinColumn(name = "medicineId", nullable = false)
     @NotNull(message = "Medicine is required")

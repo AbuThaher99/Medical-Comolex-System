@@ -33,37 +33,37 @@ public class MedicineController extends SessionManagement {
         return ResponseEntity.ok(medicineService.addMedicine(request));
     }
 
-    @PutMapping("/{medicineName}")
-    public ResponseEntity<MedicineResponse> updateMedicine(@RequestBody @Valid Medicine request, @PathVariable  String medicineName, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    @PutMapping("/{medicineId}")
+    public ResponseEntity<MedicineResponse> updateMedicine(@RequestBody @Valid Medicine request, @PathVariable  Long medicineId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);
-        return ResponseEntity.ok(medicineService.updateMedicine(request, medicineName));
+        return ResponseEntity.ok(medicineService.updateMedicine(request, medicineId));
     }
 
-    @DeleteMapping("/{medicineName}")
-    public ResponseEntity<MedicineResponse> deleteMedicine(@PathVariable  String medicineName, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    @DeleteMapping("/{medicineId}")
+    public ResponseEntity<MedicineResponse> deleteMedicine(@PathVariable  Long medicineId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
        String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);
-        return ResponseEntity.ok(medicineService.deleteMedicine(medicineName));
+        return ResponseEntity.ok(medicineService.deleteMedicine(medicineId));
     }
 
-    @GetMapping("/{medicineName}")
-    public ResponseEntity<Medicine> getMedicine(@PathVariable String medicineName, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    @GetMapping("/{medicineId}")
+    public ResponseEntity<Medicine> getMedicine(@PathVariable Long medicineId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);
-        return ResponseEntity.ok(medicineService.getMedicine(medicineName));
+        return ResponseEntity.ok(medicineService.getMedicine(medicineId));
     }
 
     @GetMapping("")
     public Page<Medicine> getAllMedicines(@RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int size, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+                                          @RequestParam(defaultValue = "10") int size, @RequestParam(required = false ) String search , HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);
-        return medicineService.getAllMedicines(page, size);
+        return medicineService.getAllMedicines(page, size,search);
     }
 
 }

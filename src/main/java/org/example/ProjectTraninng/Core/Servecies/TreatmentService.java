@@ -121,9 +121,12 @@ public class TreatmentService {
                 .build();
     }
     @Transactional
-    public Page<Treatment> getAllTreatments(int page, int size) {
+    public Page<Treatment> getAllTreatments(int page, int size,List<Long> patientIds ,Long patientId,String search) {
         Pageable pageable = PageRequest.of(page, size);
-        return treatmentRepository.findAll(pageable);
+        if (patientIds != null && patientIds.isEmpty()) {
+            patientIds = null;
+        }
+        return treatmentRepository.findAll(pageable,patientIds,patientId,search);
     }
 
     @Transactional

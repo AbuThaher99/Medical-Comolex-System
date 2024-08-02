@@ -19,4 +19,26 @@ public interface TreatmentRepository extends JpaRepository<Treatment, Long> {
 
     @Query("SELECT t FROM Treatment t WHERE t.patient.id = :patientId")
     List<Treatment> findAllByPatientIdD(@Param("patientId") Long patientId);
+
+//    @Query("SELECT t FROM Treatment t WHERE " +
+//            "(:search IS NULL OR :search = '' OR " +
+//            "LOWER(t.diseaseDescription) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+//            "LOWER(t.note) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
+//            "(:patientId IS NULL OR t.patient.id = :patientId OR :patientIds IS NULL OR t.patient.id IN :patientIds )")
+//    Page<Treatment> findAll(Pageable pageable,
+//                            @Param("patientIds") List<Long> patientIds,
+//                            @Param("patientId") Long patientId,
+//                            @Param("search") String search);
+
+
+    @Query("SELECT t FROM Treatment t " +
+            "WHERE (:search IS NULL OR :search = '' OR t.diseaseDescription LIKE %:search% OR t.note LIKE %:search%) " +
+            "AND (:patientIds IS NULL OR t.patient.id IN :patientIds) " +
+            "AND (:patientId IS NULL OR t.patient.id = :patientId)")
+    Page<Treatment> findAll(Pageable pageable,
+                            @Param("patientIds") List<Long> patientIds,
+                            @Param("patientId") Long patientId,
+                            @Param("search") String search);
+
+
 }

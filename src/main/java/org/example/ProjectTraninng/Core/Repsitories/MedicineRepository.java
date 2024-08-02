@@ -21,4 +21,16 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long> {
 
     @Query("select m from Medicine m where m.isDeleted = false")
     List<Medicine> findAll();
+
+    @Query("select m FROM Medicine m where m.isDeleted = false and " +
+            "(:search IS NULL or :search = '' or " +
+            "lower(m.name) LIKE lower(concat('%', :search, '%')) or " +
+            "cast(m.buyPrice AS string) LIKE concat('%', :search, '%') or " +
+            "cast(m.purchasePrice AS string) LIKE concat('%', :search, '%') or " +
+            "cast(m.expirationDate AS string) LIKE concat('%', :search, '%'))")
+    Page<Medicine> findAll(Pageable pageable, @Param("search") String search);
+
+    @Query("select m from Medicine m where m.name = :name and m.supplier.id = :supplierId and m.isDeleted = false")
+    Optional<Medicine> findByNameAndSupplierId(@Param("name") String name,@Param("supplierId") Long supplierId);
+
 }

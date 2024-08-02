@@ -86,12 +86,6 @@ public class UserController extends SessionManagement {
         service.refreshToken(request, response);
     }
 
-    @PutMapping("/UploadImage/{id}")
-    public String uploadImage(@RequestParam("file") MultipartFile file,@PathVariable Long id ,HttpServletRequest httpServletRequest) throws UserNotFoundException, IOException {
-        String token = service.extractToken(httpServletRequest);
-        User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
-        return service.uploadImageToFileSystem(file, id);
-    }
+
 
 }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Doctor;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Common.Enums.Role;
+import org.example.ProjectTraninng.Common.Enums.Specialization;
 import org.example.ProjectTraninng.Common.Responses.DoctorResponse;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
@@ -72,11 +73,13 @@ public class DoctorController extends SessionManagement {
 
     @GetMapping("")
     public Page<Doctor> getAllDoctors(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "10") int size, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+                                      @RequestParam(defaultValue = "10") int size,  @RequestParam(required = false) String search ,
+                                      @RequestParam(required = false) Specialization specialization,
+                                      HttpServletRequest httpServletRequest) throws UserNotFoundException {
        String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInAdmin(user);
-        return doctorService.getAllDoctors(page, size);
+        return doctorService.getAllDoctors(page, size, search, specialization);
     }
     @PostMapping("/refresh-token")
     public void refreshToken(
