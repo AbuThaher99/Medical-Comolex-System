@@ -38,7 +38,7 @@ public class Doctor extends BaseEntity {
     private LocalTime endTime;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId",nullable = false)
     @JsonBackReference("doctorUser")
     private User user;
 

@@ -24,17 +24,13 @@ public class Department extends BaseEntity {
 
     @Column(name = "isDeleted" , nullable = false )
     @JsonIgnore
-    private boolean isDeleted;
+    @Builder.Default
+    private boolean isDeleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     @JoinColumn(name = "headId")
     @JsonBackReference("headUser")
     private User headId;
-
-//    @ManyToOne
-//    @JoinColumn(name = "fk_emp_id")
-//    private Employee employee;
-    //@JsonBackReference
 
     @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     @JoinColumn(name = "secretaryId")

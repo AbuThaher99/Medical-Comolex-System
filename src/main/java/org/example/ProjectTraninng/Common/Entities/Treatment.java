@@ -22,7 +22,7 @@ public class Treatment extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patientId")
+    @JoinColumn(name = "patientId" , nullable = false)
     @NotNull(message = "Patient is required")
     @JsonBackReference("patient-treatment")
     private Patients patient;
@@ -40,7 +40,7 @@ public class Treatment extends BaseEntity {
     private List<PatientMedicine> patientMedicines;
 
 
-    @Column(name = "treatmentDate", updatable = false)
+    @Column(name = "treatmentDate", updatable = false , nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @org.hibernate.annotations.CreationTimestamp
     private Date treatmentDate;

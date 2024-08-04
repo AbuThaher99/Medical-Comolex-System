@@ -19,10 +19,10 @@ public abstract class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id" )
     private Long id;
 
-    @Column(name = "createdDate", updatable = false)
+    @Column(name = "createdDate", updatable = false , nullable = false )
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date createdDate;

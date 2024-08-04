@@ -31,6 +31,7 @@ public class WarehouseStore extends BaseEntity {
 
     @Column(name = "isDeleted" , nullable = false )
     @JsonIgnore
-    private boolean isDeleted;
+    @Builder.Default
+    private boolean isDeleted = false;
 
 }

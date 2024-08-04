@@ -17,10 +17,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "treatmens_deleted")
+@Table(name = "treatments_deleted")
 public class TreatmentDeleted extends BaseEntity {
 
-    @Column(name = "treatmentDeletedId")
+    @Column(name = "treatmentDeletedId" , nullable = false , updatable = false)
     private Long treatmentDeletedId;
 
 
@@ -30,7 +30,7 @@ public class TreatmentDeleted extends BaseEntity {
     private Doctor doctor;
 
 
-    @Column(name = "treatmentDate", updatable = false)
+    @Column(name = "treatmentDate", updatable = false , nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @org.hibernate.annotations.CreationTimestamp
     private Date treatmentDate;

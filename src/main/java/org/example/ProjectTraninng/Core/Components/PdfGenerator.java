@@ -74,7 +74,6 @@ public class PdfGenerator {
         userTable.setSpacingBefore(10);
         userTable.setSpacingAfter(10);
 
-        // Customizable header cell colors
         addColoredHeaderCell(userTable, "ID", hexToBaseColor(headerBgColor), hexToBaseColor(headerTextColor));
         addColoredHeaderCell(userTable, "First Name", hexToBaseColor(headerBgColor), hexToBaseColor(headerTextColor));
         addColoredHeaderCell(userTable, "Last Name", hexToBaseColor(headerBgColor), hexToBaseColor(headerTextColor));
@@ -139,7 +138,7 @@ public class PdfGenerator {
         PdfPCell cell = new PdfPCell(phrase);
         cell.setBackgroundColor(backgroundColor);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        cell.setBorderWidth(2);
+        cell.setBorderWidth(1.4f);
         cell.setBorderColor(BaseColor.BLACK);
         table.addCell(cell);
     }
@@ -164,7 +163,7 @@ public class PdfGenerator {
         PdfPCell cell = new PdfPCell(new Phrase(text, FontFactory.getFont(FontFactory.HELVETICA, 12)));
         cell.setBackgroundColor(color);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        cell.setBorderWidth(2f);
+        cell.setBorderWidth(1.4f);
         cell.setBorderColor(BaseColor.BLACK);
         table.addCell(cell);
     }
