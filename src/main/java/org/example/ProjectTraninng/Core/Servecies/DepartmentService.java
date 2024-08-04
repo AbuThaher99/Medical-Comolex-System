@@ -74,15 +74,9 @@ public class DepartmentService {
     }
     @Transactional
     public Department findDepartmentById(Long departmentId) throws UserNotFoundException {
-        return departmentRepository.findById(departmentId)
-                .map(department -> Department.builder()
-                        .id(department.getId())
-                        .name(department.getName())
-                        .headId(department.getHeadId())
-                        .secretaryId(department.getSecretaryId())
-                        .createdDate(department.getCreatedDate())
-                        .build())
+  var department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new UserNotFoundException("Department not found"));
+        return department;
 
     }
 

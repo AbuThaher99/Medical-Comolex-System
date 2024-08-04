@@ -6,18 +6,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "deleted_patient_medicine")
-public class DeletedPatientMedicine {
+public class DeletedPatientMedicine extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
@@ -32,4 +30,7 @@ public class DeletedPatientMedicine {
     @ManyToOne
     @JoinColumn(name = "medicineId", nullable = false)
     private Medicine medicine;
+
+
+
 }

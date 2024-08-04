@@ -17,11 +17,8 @@ import java.util.List;
 @Entity
 @Table(name = "patients_deleted")
 
-public class PatientsDeleted {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+public class PatientsDeleted extends BaseEntity {
+
 
     @Column(name = "patientDeletedId")
     private Long patientDeletedId;
@@ -46,8 +43,4 @@ public class PatientsDeleted {
     @JsonManagedReference("patient-treatment-deleted")
     private List<Treatment> treatments;
 
-    @Column(name = "createdDate", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @org.hibernate.annotations.CreationTimestamp
-    private Date createdDate;
 }

@@ -45,20 +45,11 @@ public class PatientService {
     @Transactional
     public Optional<Patients> getPatient(String firstName) throws UserNotFoundException {
 
-        patientRepository.findByFirstName(firstName).orElseThrow(
-                () -> new UserNotFoundException("Patient Not Found"));
-
-        return patientRepository.findByFirstName(firstName)
-                .map(patient -> Patients.builder()
-                        .id(patient.getId())
-                        .firstName(patient.getFirstName())
-                        .lastName(patient.getLastName())
-                        .age(patient.getAge())
-                        .address(patient.getAddress())
-                        .phone(patient.getPhone())
-                        .createdDate(patient.getCreatedDate())
-                        .treatments(patient.getTreatments())
-                        .build());
+     Optional<Patients> patients = patientRepository.findByFirstName(firstName);
+        if (patients.isEmpty()) {
+            throw new UserNotFoundException("Patient not found");
+        }
+        return patients;
     }
     @Transactional
     public PatientResponse deletePatientByFirstName(String firstName) throws UserNotFoundException {

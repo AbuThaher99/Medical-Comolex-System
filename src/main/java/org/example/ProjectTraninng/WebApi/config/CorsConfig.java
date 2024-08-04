@@ -1,4 +1,4 @@
-package org.example.ProjectTraninng.config;
+package org.example.ProjectTraninng.WebApi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

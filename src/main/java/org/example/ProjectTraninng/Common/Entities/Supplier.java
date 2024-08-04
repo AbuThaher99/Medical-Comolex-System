@@ -17,11 +17,8 @@ import java.util.List;
 @Entity
 @Table(name = "supplier")
 
-public class Supplier {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+public class Supplier extends BaseEntity {
+
 
     @Column(name = "name", nullable = false)
     @NotNull(message = "Name is required")
@@ -44,11 +41,6 @@ public class Supplier {
     @Column(name = "isDeleted" , nullable = false )
     @JsonIgnore
     private boolean isDeleted;
-
-    @Column(name = "createdDate", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @org.hibernate.annotations.CreationTimestamp
-    private Date createdDate;
 
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

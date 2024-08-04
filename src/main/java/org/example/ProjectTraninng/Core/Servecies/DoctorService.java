@@ -10,15 +10,13 @@ import org.example.ProjectTraninng.Core.Repsitories.DoctorRepository;
 import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.Core.Repsitories.TokenRepository;
-import org.example.ProjectTraninng.config.JwtService;
+import org.example.ProjectTraninng.WebApi.config.JwtService;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -91,6 +89,7 @@ public class DoctorService {
     public void deleteDoctor(Long doctorId) throws UserNotFoundException {
         var doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new UserNotFoundException("Doctor not found"));
+
         var user = doctor.getUser();
         tokenRepository.deleteAllByUser(user);
         doctorRepository.deleteById(doctorId);
@@ -100,6 +99,8 @@ public class DoctorService {
     public Doctor findDoctorByEmail(String email) throws UserNotFoundException {
         Doctor doctor = doctorRepository.findByUserEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Doctor not found with email: " + email));
+
+
         return doctor;
 
     }

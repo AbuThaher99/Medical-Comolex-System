@@ -17,12 +17,8 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Table(name = "warehouse_store")
-public class WarehouseStore {
+public class WarehouseStore extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
 
     @Column(name = "quantity", nullable = false)
     @NotNull(message = "Quantity is required")
@@ -37,8 +33,4 @@ public class WarehouseStore {
     @JsonIgnore
     private boolean isDeleted;
 
-    @Column(name = "createdDate", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @org.hibernate.annotations.CreationTimestamp
-    private Date createdDate;
 }

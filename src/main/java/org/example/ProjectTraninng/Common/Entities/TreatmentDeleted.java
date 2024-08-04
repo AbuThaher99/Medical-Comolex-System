@@ -18,12 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "treatmens_deleted")
-public class TreatmentDeleted {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+public class TreatmentDeleted extends BaseEntity {
 
     @Column(name = "treatmentDeletedId")
     private Long treatmentDeletedId;

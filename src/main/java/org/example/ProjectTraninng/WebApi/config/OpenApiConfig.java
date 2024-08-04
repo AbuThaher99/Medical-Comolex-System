@@ -1,4 +1,4 @@
-package org.example.ProjectTraninng.config;
+package org.example.ProjectTraninng.WebApi.config;
 
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;

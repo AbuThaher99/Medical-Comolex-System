@@ -14,12 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "patient_medicine")
-public class PatientMedicine {
+public class PatientMedicine extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
 
     @Column(name = "quantity", nullable = false)
     @NotNull(message = "Quantity is required")

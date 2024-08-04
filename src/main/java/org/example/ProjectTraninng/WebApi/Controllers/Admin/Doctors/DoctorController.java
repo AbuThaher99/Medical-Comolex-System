@@ -62,13 +62,7 @@ public class DoctorController extends SessionManagement {
 
         Doctor doctor = doctorService.findDoctorByEmail(email);
        // System.out.println(doctor);
-        return ResponseEntity.ok(Doctor.builder()
-                .id(doctor.getId())
-                .user(doctor.getUser())
-                .specialization(doctor.getSpecialization())
-                .endTime(doctor.getEndTime())
-                .beginTime(doctor.getBeginTime())
-                .build());
+        return ResponseEntity.ok(doctor);
     }
 
     @GetMapping("")

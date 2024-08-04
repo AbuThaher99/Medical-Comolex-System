@@ -17,7 +17,7 @@ import org.example.ProjectTraninng.Common.Enums.TokenType;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
-import org.example.ProjectTraninng.config.JwtService;
+import org.example.ProjectTraninng.WebApi.config.JwtService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
@@ -26,11 +26,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 import java.util.UUID;
 
 @Service
