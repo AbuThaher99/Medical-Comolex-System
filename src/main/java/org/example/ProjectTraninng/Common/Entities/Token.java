@@ -13,12 +13,8 @@ import org.example.ProjectTraninng.Common.Enums.TokenType;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Token {
+public class Token extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
 
     @Column(unique = true)
     private String token;

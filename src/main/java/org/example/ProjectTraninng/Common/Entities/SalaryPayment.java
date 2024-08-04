@@ -13,11 +13,9 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Table(name = "salaryPayments")
-public class SalaryPayment {
+public class SalaryPayment extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
 
     @ManyToOne(fetch = FetchType.LAZY )
     @JoinColumn(name = "salaryId", nullable = false)

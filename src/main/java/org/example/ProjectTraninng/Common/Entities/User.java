@@ -21,12 +21,8 @@ import java.util.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
 
     @Column(name = "image")
     private String image;
@@ -87,14 +83,11 @@ public class User implements UserDetails {
     @JsonManagedReference("secretaryUser")
     private List<Department> secretaryId;
 
-    @Column(name = "createdDate", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @org.hibernate.annotations.CreationTimestamp
-    private Date createdDate;
 
-    @Column(name = "isDeleted" , nullable = false )
+    @Column(name = "isDeleted")
     @JsonIgnore
-    private boolean isDeleted;
+    @Builder.Default
+    private boolean isDeleted = false;
 
     @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
     @JoinColumn(name = "salaryId" , referencedColumnName = "id")

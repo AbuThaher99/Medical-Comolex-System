@@ -18,12 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "treatments")
-public class Treatment {
+public class Treatment extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patientId")

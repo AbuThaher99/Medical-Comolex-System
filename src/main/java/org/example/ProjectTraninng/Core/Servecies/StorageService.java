@@ -34,7 +34,7 @@ public class StorageService {
     public String uploadImageToFileSystem(MultipartFile file) throws IOException {
         String filePath=imageFolder+file.getOriginalFilename();
 
-        ImageData fileData=fileDataRepository.save(ImageData.builder()
+        FileData fileData=fileDataRepository.save(FileData.builder()
                 .name(file.getOriginalFilename())
                 .type(file.getContentType())
                 .filePath(filePath).build());
@@ -47,8 +47,8 @@ public class StorageService {
         return null;
     }
 
-    public ImageData downloadImageFromFileSystem(String fileName) throws IOException {
-        Optional<ImageData> fileData = fileDataRepository.findByName(fileName);
+    public FileData downloadImageFromFileSystem(String fileName) throws IOException {
+        Optional<FileData> fileData = fileDataRepository.findByName(fileName);
         if (fileData.isPresent()) {
             String filePath = fileData.get().getFilePath();
             byte[] images = Files.readAllBytes(new File(filePath).toPath());
@@ -87,7 +87,7 @@ public class StorageService {
         try (OutputStream fileOut = new FileOutputStream(filePath)) {
             workbook.write(fileOut);
             workbook.close();
-            ImageData fileData = fileDataRepository.save(ImageData.builder()
+            FileData fileData = fileDataRepository.save(FileData.builder()
                     .name("PationData"+ System.currentTimeMillis() + ".xls")
                     .type("application/vnd.ms-excel")
                     .filePath(filePath).build());
@@ -133,7 +133,7 @@ public class StorageService {
         try (OutputStream fileOut = new FileOutputStream(filePath)) {
             workbook.write(fileOut);
             workbook.close();
-            ImageData fileData = fileDataRepository.save(ImageData.builder()
+            FileData fileData = fileDataRepository.save(FileData.builder()
                     .name("MedicineData"+ System.currentTimeMillis() + ".xls")
                     .type("application/vnd.ms-excel")
                     .filePath(filePath).build());
@@ -300,7 +300,7 @@ public class StorageService {
         try (OutputStream fileOut = new FileOutputStream(filePath)) {
             workbook.write(fileOut);
             workbook.close();
-            ImageData fileData = fileDataRepository.save(ImageData.builder()
+            FileData fileData = fileDataRepository.save(FileData.builder()
                     .name("PatientTreatmentData" + System.currentTimeMillis() + ".xls")
                     .type("application/vnd.ms-excel")
                     .filePath(filePath).build());

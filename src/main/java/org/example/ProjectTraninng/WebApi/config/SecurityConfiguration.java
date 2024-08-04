@@ -1,4 +1,4 @@
-package org.example.ProjectTraninng.config;
+package org.example.ProjectTraninng.WebApi.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,12 +23,10 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration {
 
     private static final String[] WHITE_LIST_URL = {"/auth/authenticate/**",
-            "/Login/resetPassword/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
-            "http://127.0.0.1:5500",
-            "/admin/user/**"};
+            "http://127.0.0.1:5500"};
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;

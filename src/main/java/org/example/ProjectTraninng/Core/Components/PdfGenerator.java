@@ -3,7 +3,7 @@ package org.example.ProjectTraninng.Core.Components;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import lombok.Data;
-import org.example.ProjectTraninng.Common.Entities.ImageData;
+import org.example.ProjectTraninng.Common.Entities.FileData;
 import org.example.ProjectTraninng.Common.Entities.SalaryPayment;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Common.Enums.Role;
@@ -108,12 +108,12 @@ public class PdfGenerator {
         chartImage.scaleToFit(PageSize.A4.getWidth() - 72, PageSize.A4.getHeight() - 72);
         document.add(chartImage);
 
-        fileDataRepository.save(ImageData.builder()
+        fileDataRepository.save(FileData.builder()
                 .name("chart" + time + ".png")
                 .type("image/png")
                 .filePath(chartFilePath).build());
 
-        fileDataRepository.save(ImageData.builder()
+        fileDataRepository.save(FileData.builder()
                 .name("SalaryPaymentsReport" + time + ".pdf")
                 .type("application/pdf")
                 .filePath(pdfFilePath).build());

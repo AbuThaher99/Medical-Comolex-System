@@ -15,12 +15,8 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Table(name = "departments")
-public class Department {
+public class Department extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
 
     @Column(name = "name", nullable = false)
     @NotNull(message = "Name cannot be null")
@@ -45,8 +41,4 @@ public class Department {
     @JsonBackReference("secretaryUser")
     private User secretaryId;
 
-    @Column(name = "createdDate", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @org.hibernate.annotations.CreationTimestamp
-    private Date createdDate;
 }

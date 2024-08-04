@@ -1,8 +1,7 @@
-package org.example.ProjectTraninng.config;
+package org.example.ProjectTraninng.WebApi.config;
 
 
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Audit.*;
 import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,10 +35,6 @@ public class ApplicationConfig {
         return authProvider;
     }
 
-    @Bean
-    public AuditorAware<Long> auditorAware() {
-        return new ApplicationAuditAware();
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

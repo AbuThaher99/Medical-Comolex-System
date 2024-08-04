@@ -20,12 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "patients")
-public class Patients {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+public class Patients extends BaseEntity {
 
 
     @Column(name = "firstName", nullable = false)
@@ -54,9 +49,5 @@ public class Patients {
     private List<Treatment> treatments; // done
 
 
-    @Column(name = "createdDate", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @org.hibernate.annotations.CreationTimestamp
-    private Date createdDate;
 
 }

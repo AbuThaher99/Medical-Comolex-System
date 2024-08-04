@@ -6,17 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "emails")
-public class Email {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+public class Email extends BaseEntity {
 
     @Column(name = "email", nullable = false)
     private String email;
@@ -28,6 +26,8 @@ public class Email {
 
     @Column(name = "verificationCode", nullable = false)
     private String verificationCode;
+
+
 
 
 }

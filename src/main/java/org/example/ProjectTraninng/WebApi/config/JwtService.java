@@ -1,4 +1,4 @@
-package org.example.ProjectTraninng.config;
+package org.example.ProjectTraninng.WebApi.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -19,12 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "medicine")
-public class Medicine {
+public class Medicine extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
 
     @Column(name = "name", nullable = false)
     @NotNull(message = "Name is required")
@@ -63,8 +59,4 @@ public class Medicine {
     @JsonIgnore
     private boolean isDeleted;
 
-    @Column(name = "createdDate", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @org.hibernate.annotations.CreationTimestamp
-    private Date createdDate;
 }

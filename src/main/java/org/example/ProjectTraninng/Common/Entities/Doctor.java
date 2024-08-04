@@ -22,12 +22,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "doctors")
-public class Doctor {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+public class Doctor extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "specialization", nullable = false)

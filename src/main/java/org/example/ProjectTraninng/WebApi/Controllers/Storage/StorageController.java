@@ -1,7 +1,7 @@
 package org.example.ProjectTraninng.WebApi.Controllers.Storage;
 
 import lombok.RequiredArgsConstructor;
-import org.example.ProjectTraninng.Common.Entities.ImageData;
+import org.example.ProjectTraninng.Common.Entities.FileData;
 import org.example.ProjectTraninng.Core.Servecies.StorageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,7 +26,7 @@ public class StorageController {
 
     @GetMapping("/fileSystem/{fileName}")
     public ResponseEntity<?> downloadImageFromFileSystem(@PathVariable String fileName) throws IOException {
-        ImageData imageData = service.downloadImageFromFileSystem(fileName);
+        FileData imageData = service.downloadImageFromFileSystem(fileName);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.parseMediaType(imageData.getType()))
                 .body(imageData.getData());
