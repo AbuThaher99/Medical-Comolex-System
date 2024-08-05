@@ -61,8 +61,10 @@ public class UserController extends SessionManagement {
     }
 
     @GetMapping("")
-    public Page<User> getallusers(@RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "") String search ,  @RequestParam(defaultValue = "") Role role,HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public Page<User> getallusers(@RequestParam(defaultValue = "1",required = false) int page,
+                                  @RequestParam(defaultValue = "10",required = false) int size,
+                                  @RequestParam(defaultValue = "",required = false) String search,
+                                  @RequestParam(defaultValue = "",required = false) Role role,HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
           validateLoggedInAdmin(user);

@@ -21,7 +21,7 @@ import java.io.IOException;
 public class AuthenticationController {
     private final AuthenticationService service;
 
-    @PostMapping("/authenticate")
+    @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody @Valid LoginDTO request) throws UserNotFoundException {
         return ResponseEntity.ok(service.authenticate(request));
     }

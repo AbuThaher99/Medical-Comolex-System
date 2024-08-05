@@ -56,10 +56,10 @@ public class SupplierController extends SessionManagement {
     }
 
     @GetMapping("")
-    public Page<Supplier> getAllSuppliers(@RequestParam(defaultValue = "0") int page,
+    public Page<Supplier> getAllSuppliers(@RequestParam(defaultValue = "1") int page,
                                           @RequestParam(defaultValue = "10") int size,
-                                          @RequestParam(required = false) String search ,
-                                          @RequestParam(required = false) CompanyNames companyName ,
+                                          @RequestParam(defaultValue = "",required = false) String search ,
+                                          @RequestParam(defaultValue = "",required = false) CompanyNames companyName ,
                                           HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);

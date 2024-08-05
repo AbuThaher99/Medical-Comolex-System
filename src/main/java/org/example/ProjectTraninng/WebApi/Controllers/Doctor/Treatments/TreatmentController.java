@@ -59,11 +59,11 @@ public class TreatmentController extends SessionManagement {
     }
 
     @GetMapping("")
-    public Page<Treatment> getAllTreatments(@RequestParam(defaultValue = "0") int page,
-                                            @RequestParam(defaultValue = "10") int size,
-                                            @RequestParam(required = false)List<Long> patientIds,
-                                            @RequestParam(required = false) Long patientId,
-                                            @RequestParam(required = false)String search,
+    public Page<Treatment> getAllTreatments(@RequestParam(defaultValue = "1",required = false) int page,
+                                            @RequestParam(defaultValue = "10",required = false) int size,
+                                            @RequestParam(defaultValue = "",required = false)List<Long> patientIds,
+                                            @RequestParam(defaultValue = "",required = false) Long patientId,
+                                            @RequestParam(defaultValue = "",required = false)String search,
                                             HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);

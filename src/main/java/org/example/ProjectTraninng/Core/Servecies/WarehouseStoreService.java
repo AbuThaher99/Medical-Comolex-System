@@ -49,7 +49,10 @@ public class WarehouseStoreService {
     }
     @Transactional
     public Page<WarehouseStore> getWarehouseStore(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        if (page < 1) {
+            page = 1;
+        }
+        Pageable pageable = PageRequest.of(page - 1, size);
         return warehouseStoreRepository.findAll(pageable);
 
     }

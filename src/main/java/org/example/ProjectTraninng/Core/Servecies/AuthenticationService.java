@@ -20,6 +20,7 @@ import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.WebApi.config.JwtService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -100,7 +101,11 @@ public class AuthenticationService {
     }
     @Transactional
     public Page<User> getAllUsersByRole(Role role, int page, int size) {
-        return repository.findAllByRole(role, PageRequest.of(page, size));
+        if (page < 1) {
+            page = 1;
+        }
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return repository.findAllByRole(role, pageable);
     }
     @Transactional
     public AuthenticationResponse authenticate(LoginDTO request) throws UserNotFoundException {

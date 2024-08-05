@@ -51,4 +51,8 @@ public class Treatment extends BaseEntity {
 
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;
+
+    @Column(name = "price", nullable = false)
+    @NotNull(message = "Price is required")
+    private double price;
 }

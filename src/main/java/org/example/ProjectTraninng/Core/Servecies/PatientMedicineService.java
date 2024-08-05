@@ -91,7 +91,10 @@ public class PatientMedicineService {
     }
     @Transactional
     public Page<PatientMedicine> GetAllPatientMedicines(int page , int size,String search ,List<Long> treatmentIds,List<Long> medicineIds,List<Long> patientIds) throws UserNotFoundException {
-        Pageable pageable = PageRequest.of(page, size );
+        if (page < 1) {
+            page = 1;
+        }
+        Pageable pageable = PageRequest.of(page - 1, size);
         if (patientIds != null && patientIds.isEmpty()) {
             patientIds = null;
         }

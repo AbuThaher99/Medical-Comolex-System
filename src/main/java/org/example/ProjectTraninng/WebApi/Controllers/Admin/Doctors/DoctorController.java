@@ -66,9 +66,10 @@ public class DoctorController extends SessionManagement {
     }
 
     @GetMapping("")
-    public Page<Doctor> getAllDoctors(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "10") int size,  @RequestParam(required = false) String search ,
-                                      @RequestParam(required = false) Specialization specialization,
+    public Page<Doctor> getAllDoctors(@RequestParam(defaultValue = "1") int page,
+                                      @RequestParam(defaultValue = "10") int size,
+                                      @RequestParam(defaultValue = "",required = false) String search ,
+                                      @RequestParam(defaultValue = "",required = false) Specialization specialization,
                                       HttpServletRequest httpServletRequest) throws UserNotFoundException {
        String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);

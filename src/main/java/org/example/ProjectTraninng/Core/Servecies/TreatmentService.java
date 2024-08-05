@@ -122,7 +122,10 @@ public class TreatmentService {
     }
     @Transactional
     public Page<Treatment> getAllTreatments(int page, int size,List<Long> patientIds ,Long patientId,String search) {
-        Pageable pageable = PageRequest.of(page, size);
+        if (page < 1) {
+            page = 1;
+        }
+        Pageable pageable = PageRequest.of(page - 1, size);
         if (patientIds != null && patientIds.isEmpty()) {
             patientIds = null;
         }

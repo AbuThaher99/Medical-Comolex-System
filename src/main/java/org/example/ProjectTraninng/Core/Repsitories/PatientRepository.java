@@ -19,12 +19,12 @@ public interface PatientRepository extends JpaRepository<Patients, Long> {
 
 
     @Query("SELECT p FROM Patients p WHERE " +
-            "(:search IS NULL OR :search = '' OR LOWER(p.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "LOWER(p.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "LOWER(p.address) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "LOWER(p.phone) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
+            "(:search IS NULL OR :search = '' OR " +
+            "p.firstName like %:search% or p.lastName like %:search% or p.address like %:search% or p.phone like %:search%) and" +
             "(:doctorIds IS NULL OR p.id IN (SELECT t.patient.id FROM Treatment t WHERE t.doctor.id IN :doctorIds))")
-    Page<Patients> findAll(Pageable pageable, @Param("search") String search, @Param("doctorIds") List<Long> doctorIds);
-
-
+    Page<Patients> findAll(Pageable pageable, @Param("search") String search , @Param("doctorIds") List<Long> doctorIds);
+//    @Query("select  p from Patients p where (:search IS NULL OR :search = '' OR " +
+//            "p.firstName like %:search% or p.lastName like %:search% or p.address like %:search% or p.phone like %:search%) and" +
+//            "(:doctorIds IS NULL OR p.id IN (SELECT t.patient.id FROM Treatment t WHERE t.doctor.id IN :doctorIds))")
+//    Page<Patients> findAll(Pageable pageable, @Param("search") String search, @Param("doctorIds") List<Long> doctorIds);
 }

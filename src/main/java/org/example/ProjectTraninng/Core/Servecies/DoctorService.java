@@ -106,7 +106,10 @@ public class DoctorService {
     }
     @Transactional
     public Page<Doctor> getAllDoctors(int page, int size , String search , Specialization specialization) {
-        Pageable pageable = PageRequest.of(page, size);
+        if (page < 1) {
+            page = 1;
+        }
+        Pageable pageable = PageRequest.of(page - 1, size);
         return doctorRepository.findAll(pageable, search, specialization);
     }
     private void saveUserToken(User user, String jwtToken) {

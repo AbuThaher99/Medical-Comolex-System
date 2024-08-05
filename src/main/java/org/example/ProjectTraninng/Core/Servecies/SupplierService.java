@@ -62,7 +62,10 @@ public class SupplierService {
     }
 
     public Page<Supplier> getAllSuppliers(int page, int size, String search, CompanyNames companyName) {
-        Pageable pageable = PageRequest.of(page, size);
+        if (page < 1) {
+            page = 1;
+        }
+        Pageable pageable = PageRequest.of(page - 1, size);
         return supplierRepository.findAll(pageable , search , companyName);
     }
 }
