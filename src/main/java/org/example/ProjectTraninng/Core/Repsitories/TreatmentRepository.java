@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface TreatmentRepository extends JpaRepository<Treatment, Long> {
@@ -29,6 +30,11 @@ public interface TreatmentRepository extends JpaRepository<Treatment, Long> {
                             @Param("patientIds") List<Long> patientIds,
                             @Param("patientId") Long patientId,
                             @Param("search") String search);
+
+
+   // make a query to get all treatments
+    @Query("SELECT t FROM Treatment t")
+    List<Treatment> getAllTreatments();
 
 
 }

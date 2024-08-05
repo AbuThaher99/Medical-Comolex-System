@@ -29,4 +29,17 @@ public class ReportController {
             return "Error generating PDF";
         }
     }
+
+    @GetMapping("/generateTreatment")
+    public String generatePdfForTreatments(@RequestParam String headerBgColor,
+                                           @RequestParam String headerTextColor,
+                                           @RequestParam String tableRowColor1,
+                                           @RequestParam String tableRowColor2) {
+        try {
+            return  pdfGenerator.generatePdfForTreatments( headerBgColor, headerTextColor, tableRowColor1, tableRowColor2);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error generating PDF";
+        }
+    }
 }

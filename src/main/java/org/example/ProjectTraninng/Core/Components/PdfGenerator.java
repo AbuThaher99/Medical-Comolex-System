@@ -3,12 +3,12 @@ package org.example.ProjectTraninng.Core.Components;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import lombok.Data;
-import org.example.ProjectTraninng.Common.Entities.FileData;
-import org.example.ProjectTraninng.Common.Entities.SalaryPayment;
-import org.example.ProjectTraninng.Common.Entities.User;
+import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Core.Repsitories.FileDataRepository;
+import org.example.ProjectTraninng.Core.Repsitories.TreatmentRepository;
 import org.example.ProjectTraninng.Core.Servecies.SalaryPaymentService;
+import org.example.ProjectTraninng.Core.Servecies.TreatmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,8 +31,11 @@ public class PdfGenerator {
     @Autowired
     private FileDataRepository fileDataRepository;
 
-    String pdfFiles = "C:\\Users\\AbuThaher\\Desktop\\Traning Project\\ProjectTraninng\\src\\main\\resources\\PDF\\";
-    String chartFiles = "C:\\Users\\AbuThaher\\Desktop\\Traning Project\\ProjectTraninng\\src\\main\\resources\\Chart\\";
+    @Autowired
+            private TreatmentRepository treatmentRepository;
+
+    String pdfFiles = "C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\PDF\\";
+    String chartFiles = "C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\Chart\\";
 
 
     public String generatePdfForRoles(List<Role> roles, String headerBgColor, String headerTextColor, String tableRowColor1, String tableRowColor2) throws Exception {
@@ -207,4 +210,124 @@ public class PdfGenerator {
             }
         }
     }
+
+    class HeaderFooterPageProftsEvent extends PdfPageEventHelper {
+        @Override
+        public void onEndPage(PdfWriter writer, Document document) {
+            PdfPTable header = new PdfPTable(2);
+            try {
+                header.setWidths(new int[]{1, 3});
+                header.setTotalWidth(527);
+                header.setLockedWidth(true);
+                header.getDefaultCell().setFixedHeight(50);
+                header.getDefaultCell().setBorder(Rectangle.BOTTOM);
+                header.getDefaultCell().setBorderColor(BaseColor.LIGHT_GRAY);
+
+                LocalDate localDate = LocalDate.now();
+                String formattedDate = localDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                PdfPCell dateCell = new PdfPCell(new Phrase("Date: " + formattedDate, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+                dateCell.setBorder(Rectangle.BOTTOM);
+                dateCell.setBorderColor(BaseColor.LIGHT_GRAY);
+                dateCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+                header.addCell(dateCell);
+
+                PdfPCell titleCell = new PdfPCell(new Phrase("Treatments Report", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+                titleCell.setBorder(Rectangle.BOTTOM);
+                titleCell.setBorderColor(BaseColor.LIGHT_GRAY);
+                titleCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                header.addCell(titleCell);
+
+                header.writeSelectedRows(0, -1, 34, 803, writer.getDirectContent());
+            } catch (DocumentException de) {
+                throw new ExceptionConverter(de);
+            }
+        }
+    }
+
+    public String generatePdfForTreatments(String headerBgColor, String headerTextColor, String tableRowColor1, String tableRowColor2) throws Exception {
+        List<Treatment> treatments = treatmentRepository.getAllTreatments();
+        Long time = System.currentTimeMillis();
+        String pdfFilePath = pdfFiles + "Treatments Report" + time + ".pdf";
+
+        Document document = new Document(PageSize.A4, 36, 36, 100, 36);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PdfWriter writer = PdfWriter.getInstance(document, baos);
+
+        writer.setPageEvent(new HeaderFooterPageProftsEvent());
+
+        document.open();
+
+        Paragraph title = new Paragraph("Treatments Report", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 24));
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+
+        document.add(new Paragraph(" "));
+        PdfPTable treatmentTable = new PdfPTable(5);
+        treatmentTable.setWidthPercentage(100);
+        treatmentTable.setHorizontalAlignment(Element.ALIGN_CENTER);
+        treatmentTable.setSpacingBefore(10);
+        treatmentTable.setSpacingAfter(10);
+
+        addColoredHeaderCell(treatmentTable, "ID", hexToBaseColor(headerBgColor), hexToBaseColor(headerTextColor));
+        addColoredHeaderCell(treatmentTable, "Treatment Date", hexToBaseColor(headerBgColor), hexToBaseColor(headerTextColor));
+        addColoredHeaderCell(treatmentTable, "Disease Description", hexToBaseColor(headerBgColor), hexToBaseColor(headerTextColor));
+        addColoredHeaderCell(treatmentTable, "Note", hexToBaseColor(headerBgColor), hexToBaseColor(headerTextColor));
+        addColoredHeaderCell(treatmentTable, "Total Price", hexToBaseColor(headerBgColor), hexToBaseColor(headerTextColor));
+
+        int rowIndex = 0;
+        for (Treatment treatment : treatments) {
+            double totalCost = treatment.getPrice();
+            for (PatientMedicine pm : treatment.getPatientMedicines()) {
+                totalCost += pm.getPrice() * pm.getQuantity();
+            }
+
+            addColoredRow(treatmentTable, treatment, totalCost, rowIndex++, hexToBaseColor(tableRowColor1), hexToBaseColor(tableRowColor2));
+        }
+        document.add(treatmentTable);
+        document.add(new Paragraph(" "));
+        double totalAmount = treatments.stream()
+                .mapToDouble(treatment -> {
+                    double totalCost = treatment.getPrice();
+                    for (PatientMedicine pm : treatment.getPatientMedicines()) {
+                        totalCost += pm.getPrice() * pm.getQuantity();
+                    }
+                    return totalCost;
+                })
+                .sum();
+
+        Paragraph totalAmountParagraph = new Paragraph("Total Profits: $" + totalAmount , FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16));
+        totalAmountParagraph.setAlignment(Element.ALIGN_LEFT);
+
+        document.add(totalAmountParagraph);
+
+        fileDataRepository.save(FileData.builder()
+                .name("TreatmentsReport" + time + ".pdf")
+                .type("application/pdf")
+                .filePath(pdfFilePath).build());
+
+        document.close();
+        try (FileOutputStream fos = new FileOutputStream(pdfFilePath)) {
+            baos.writeTo(fos);
+        }
+        return pdfFilePath;
+    }
+
+    private void addColoredRow(PdfPTable table, Treatment treatment, double totalCost, int rowIndex, BaseColor color1, BaseColor color2) {
+        BaseColor bgColor = (rowIndex % 2 == 0) ? color1 : color2;
+        addColoredCell(table, String.valueOf(treatment.getId()), bgColor);
+        addColoredCell(table, treatment.getTreatmentDate().toString(), bgColor);
+        addColoredCell(table, treatment.getDiseaseDescription(), bgColor);
+        addColoredCell(table, treatment.getNote(), bgColor);
+        addColoredCell(table, String.valueOf(totalCost), bgColor);
+    }
+
+    private void addColoredCell(PdfPTable table, String text, BaseColor bgColor) {
+        PdfPCell cell = new PdfPCell(new Phrase(text, FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        cell.setBackgroundColor(bgColor);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        table.addCell(cell);
+    }
+
+
 }
