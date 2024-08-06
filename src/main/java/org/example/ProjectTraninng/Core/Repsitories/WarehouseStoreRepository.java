@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface WarehouseStoreRepository extends JpaRepository<WarehouseStore, Long> {
@@ -21,5 +22,9 @@ public interface WarehouseStoreRepository extends JpaRepository<WarehouseStore, 
     WarehouseStore findByMedicineId(@Param("medicineId") Long medicineId);
     @Query("select w from WarehouseStore w where w.isDeleted = false")
     Page<WarehouseStore> findAll(Pageable pageable);
+    @Query("select w from WarehouseStore w where w.quantity between 0 and 10 and w.isDeleted = false")
+    List<WarehouseStore> findLowStockMedicines();
+
+
 
 }

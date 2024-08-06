@@ -32,5 +32,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.isDeleted = false AND " +
             "(:roles IS NULL OR u.role IN :roles)  " )
     List<User> findByRoleIn(@Param("roles") List<Role> roles);
+    @Query("SELECT u FROM User u WHERE u.role=:role AND u.isDeleted = false  " )
+    List<User> findAllByRole(@Param("role")Role role);
 
 }

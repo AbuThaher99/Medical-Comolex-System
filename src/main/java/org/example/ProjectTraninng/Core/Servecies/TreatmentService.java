@@ -32,10 +32,6 @@ public class TreatmentService {
 
         Doctor doctor = doctorRepository.findById(request.getDoctor().getId()).orElseThrow(
                 () -> new UserNotFoundException("Doctor not found"));
-        if (doctor == null) {
-            return GeneralResponse.builder().message("Doctor not found").build();
-        }
-
 
         Treatment treatment = Treatment.builder()
                 .patient(patients)
@@ -43,10 +39,10 @@ public class TreatmentService {
                 .diseaseDescription(request.getDiseaseDescription())
                 .note(request.getNote())
                 .build();
-        for (PatientMedicine patientMedicine : request.getPatientMedicines()) {
-            patientMedicine.setTreatment(treatment);
-        }
-        treatment.setPatientMedicines(request.getPatientMedicines());
+//        for (PatientMedicine patientMedicine : request.getPatientMedicines()) {
+//            patientMedicine.setTreatment(treatment);
+//        }
+//        treatment.setPatientMedicines(request.getPatientMedicines());
         treatmentRepository.save(treatment);
         return  GeneralResponse.builder().message("Treatment created successfully").build();
     }
@@ -134,10 +130,13 @@ public class TreatmentService {
     }
 
     @Transactional
-    public Page<Treatment> getAllTreatmentsForPatient(Long patientId,int size ,int page) throws UserNotFoundException {
+    public Page<Treatment> getAllTreatmentsForPatient(Long patientId,int page ,int size) throws UserNotFoundException {
         patientRepository.findById(patientId).orElseThrow(
                 () -> new UserNotFoundException("Patient not found"));
-        Pageable pageable = PageRequest.of(page, size);
+        if (page < 1) {
+            page = 1;
+        }
+        Pageable pageable = PageRequest.of(page - 1, size);
 
         return treatmentRepository.findAllByPatientId(patientId, pageable);
     }

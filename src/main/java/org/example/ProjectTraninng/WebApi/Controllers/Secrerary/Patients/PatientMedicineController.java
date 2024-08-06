@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/patient/medicine")
+@RequestMapping("secretary/patientMedicine")
 public class PatientMedicineController extends SessionManagement {
     private final PatientMedicineService patientMedicineService;
     private final AuthenticationService service;

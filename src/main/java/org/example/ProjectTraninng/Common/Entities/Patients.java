@@ -48,6 +48,11 @@ public class Patients extends BaseEntity {
     @JsonManagedReference("patient-treatment")
     private List<Treatment> treatments; // done
 
+    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY ,orphanRemoval = true)
+    @JoinColumn(name = "patientId" , referencedColumnName = "id")
+    @JsonManagedReference("patient-feedback")
+    private List<Feedback> feedbacks; // done
+
 
 
 }

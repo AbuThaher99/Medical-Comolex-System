@@ -32,9 +32,13 @@ public interface TreatmentRepository extends JpaRepository<Treatment, Long> {
                             @Param("search") String search);
 
 
-   // make a query to get all treatments
     @Query("SELECT t FROM Treatment t")
     List<Treatment> getAllTreatments();
+
+
+
+    @Query("SELECT t FROM Treatment t WHERE DATE(t.treatmentDate) = CURRENT_DATE")
+    List<Treatment> findTodayTreatments();
 
 
 }

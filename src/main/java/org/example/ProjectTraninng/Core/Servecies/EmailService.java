@@ -39,4 +39,15 @@ public class EmailService {
 
         emailSender.send(message);
     }
+
+    public void sentNotificationEmail(String to, String subject, String message) throws MessagingException {
+        MimeMessage mimeMessage = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(message, true);
+
+        emailSender.send(mimeMessage);
+    }
 }

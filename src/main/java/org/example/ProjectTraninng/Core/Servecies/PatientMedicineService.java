@@ -21,13 +21,21 @@ public class PatientMedicineService {
     private final MedicineRepository medicineRepository;
     private final PatientRepository patientsService;
     private final DeletedPatientMedicineRepository deletedPatientMedicineRepository;
+    private final WarehouseStoreRepository warehouseStoreRepository;
     @Transactional
     public GeneralResponse AddPatientMedicine(PatientMedicine patientMedicineRequest) throws UserNotFoundException {
   Treatment treatment = treatmentRepository.findById(patientMedicineRequest.getTreatment().getId())
                 .orElseThrow(() -> new UserNotFoundException("Treatment not found"));
     Medicine medicine = medicineRepository.findById(patientMedicineRequest.getMedicine().getId())
                 .orElseThrow(() -> new UserNotFoundException("Medicine not found"));
+    WarehouseStore warehouseStore = warehouseStoreRepository.findByMedicineId(medicine.getId());
 
+
+        if (warehouseStore.getQuantity() < patientMedicineRequest.getQuantity()) {
+            throw new UserNotFoundException("The quantity of the medicine is not available");
+        }
+        warehouseStore.setQuantity(warehouseStore.getQuantity() - patientMedicineRequest.getQuantity());
+        warehouseStoreRepository.save(warehouseStore);
         PatientMedicine patientMedicine = PatientMedicine.builder()
                 .quantity(patientMedicineRequest.getQuantity())
                 .price(patientMedicineRequest.getPrice())
