@@ -5,6 +5,7 @@ import com.itextpdf.text.pdf.*;
 import lombok.Data;
 import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Enums.Role;
+import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.FileDataRepository;
 import org.example.ProjectTraninng.Core.Repsitories.TreatmentRepository;
 import org.example.ProjectTraninng.Core.Servecies.SalaryPaymentService;
@@ -38,7 +39,7 @@ public class PdfGenerator {
     String chartFiles = "C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\Chart\\";
 
 
-    public String generatePdfForRoles(List<Role> roles, String headerBgColor, String headerTextColor, String tableRowColor1, String tableRowColor2) throws Exception {
+    public GeneralResponse generatePdfForRoles(List<Role> roles, String headerBgColor, String headerTextColor, String tableRowColor1, String tableRowColor2) throws Exception {
         List<SalaryPayment> payments = salaryPaymentService.getSalaryPaymentsByRoles(roles);
         Map<String, Double> totalAmountByMonth = salaryPaymentService.getTotalAmountByMonth(payments);
         double totalAmount = salaryPaymentService.getTotalAmount(payments);
@@ -124,7 +125,9 @@ public class PdfGenerator {
         try (FileOutputStream fos = new FileOutputStream(pdfFilePath)) {
             baos.writeTo(fos);
         }
-        return pdfFilePath;
+        return GeneralResponse.builder()
+                .message(pdfFilePath)
+                .build();
     }
 
     private String getTotalSalary(User user) {
@@ -244,7 +247,7 @@ public class PdfGenerator {
         }
     }
 
-    public String generatePdfForTreatments(String headerBgColor, String headerTextColor, String tableRowColor1, String tableRowColor2) throws Exception {
+    public GeneralResponse generatePdfForTreatments(String headerBgColor, String headerTextColor, String tableRowColor1, String tableRowColor2) throws Exception {
         List<Treatment> treatments = treatmentRepository.getAllTreatments();
         Long time = System.currentTimeMillis();
         String pdfFilePath = pdfFiles + "Treatments Report" + time + ".pdf";
@@ -309,7 +312,9 @@ public class PdfGenerator {
         try (FileOutputStream fos = new FileOutputStream(pdfFilePath)) {
             baos.writeTo(fos);
         }
-        return pdfFilePath;
+        return GeneralResponse.builder()
+                .message(pdfFilePath)
+                .build();
     }
 
     private void addColoredRow(PdfPTable table, Treatment treatment, double totalCost, int rowIndex, BaseColor color1, BaseColor color2) {

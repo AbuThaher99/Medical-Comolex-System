@@ -3,7 +3,7 @@ package org.example.ProjectTraninng.Core.Servecies;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.*;
-import org.example.ProjectTraninng.Common.Responses.PatientMedicineRespones;
+import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.*;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.data.domain.Page;
@@ -22,7 +22,7 @@ public class PatientMedicineService {
     private final PatientRepository patientsService;
     private final DeletedPatientMedicineRepository deletedPatientMedicineRepository;
     @Transactional
-    public PatientMedicineRespones AddPatientMedicine(PatientMedicine patientMedicineRequest) throws UserNotFoundException {
+    public GeneralResponse AddPatientMedicine(PatientMedicine patientMedicineRequest) throws UserNotFoundException {
   Treatment treatment = treatmentRepository.findById(patientMedicineRequest.getTreatment().getId())
                 .orElseThrow(() -> new UserNotFoundException("Treatment not found"));
     Medicine medicine = medicineRepository.findById(patientMedicineRequest.getMedicine().getId())
@@ -35,12 +35,12 @@ public class PatientMedicineService {
                 .medicine(medicine)
                 .build();
         patientMedicineRepository.save(patientMedicine);
-        return PatientMedicineRespones.builder()
+        return GeneralResponse.builder()
                 .message("Patient medicine created successfully")
                 .build();
     }
     @Transactional
-    public PatientMedicineRespones delete(Long id) throws UserNotFoundException {
+    public GeneralResponse delete(Long id) throws UserNotFoundException {
         PatientMedicine patientMedicine = patientMedicineRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("Patient medicine not found"));
 
@@ -54,12 +54,12 @@ public class PatientMedicineService {
         deletedPatientMedicineRepository.save(deletedPatientMedicine);
 
         patientMedicineRepository.deleteById(patientMedicine.getId());
-        return PatientMedicineRespones.builder()
+        return GeneralResponse.builder()
                 .message("Patient medicine deleted successfully")
                 .build();
     }
     @Transactional
-    public PatientMedicineRespones UpdatePatientMedicine(PatientMedicine patientMedicineRequest , Long id) throws UserNotFoundException {
+    public GeneralResponse UpdatePatientMedicine(PatientMedicine patientMedicineRequest , Long id) throws UserNotFoundException {
         PatientMedicine patientMedicine = patientMedicineRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Patient medicine not found"));
 
@@ -74,7 +74,7 @@ public class PatientMedicineService {
         patientMedicine.setTreatment(patientMedicineRequest.getTreatment());
         patientMedicine.setMedicine(patientMedicineRequest.getMedicine());
         patientMedicineRepository.save(patientMedicine);
-        return PatientMedicineRespones.builder()
+        return GeneralResponse.builder()
                 .message("Patient medicine updated successfully")
                 .build();
     }

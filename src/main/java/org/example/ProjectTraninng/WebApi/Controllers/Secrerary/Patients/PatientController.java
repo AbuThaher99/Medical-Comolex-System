@@ -5,9 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Patients;
 import org.example.ProjectTraninng.Common.Entities.User;
-import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
-import org.example.ProjectTraninng.Common.Responses.PatientResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.PatientService;
 import org.example.ProjectTraninng.SessionManagement;
@@ -29,11 +27,11 @@ public class PatientController extends SessionManagement {
     private final AuthenticationService service;
 
     @PostMapping("")
-    public ResponseEntity<PatientResponse> addPatient(@RequestBody @Valid Patients request , HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> addPatient(@RequestBody @Valid Patients request , HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInSecretary(user);
-        return ResponseEntity.ok(patientService.addPatient(request));
+        return new ResponseEntity<>(patientService.addPatient(request), HttpStatus.CREATED);
     }
 
     @GetMapping("/{firstName}")
@@ -53,7 +51,7 @@ public class PatientController extends SessionManagement {
             String token = service.extractToken(httpServletRequest);
             User user = service.extractUserFromToken(token);
             validateLoggedInSecretary(user);
-        PatientResponse isDeleted = patientService.deletePatientByFirstName(firstName);
+        GeneralResponse isDeleted = patientService.deletePatientByFirstName(firstName);
             return ResponseEntity.ok(isDeleted);
         }
 
@@ -62,7 +60,7 @@ public class PatientController extends SessionManagement {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInSecretary(user);
-        PatientResponse d= patientService.updatePatient(request, firstName);
+        GeneralResponse d= patientService.updatePatient(request, firstName);
           return ResponseEntity.ok(d);
 
     }

@@ -85,22 +85,11 @@ public class DoctorService {
         doctorRepository.save(doctor);
     }
 
-    @Transactional
-    public void deleteDoctor(Long doctorId) throws UserNotFoundException {
-        var doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new UserNotFoundException("Doctor not found"));
 
-        var user = doctor.getUser();
-        tokenRepository.deleteAllByUser(user);
-        doctorRepository.deleteById(doctorId);
-        userRepository.deleteById(user.getId());
-    }
     @Transactional
     public Doctor findDoctorByEmail(String email) throws UserNotFoundException {
         Doctor doctor = doctorRepository.findByUserEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Doctor not found with email: " + email));
-
-
         return doctor;
 
     }

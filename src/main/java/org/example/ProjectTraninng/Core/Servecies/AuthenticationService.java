@@ -10,6 +10,7 @@ import org.example.ProjectTraninng.Common.Entities.Email;
 import org.example.ProjectTraninng.Common.Entities.Token;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
+import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.DepartmentRepsitory;
 import org.example.ProjectTraninng.Core.Repsitories.EmailRepository;
 import org.example.ProjectTraninng.Core.Repsitories.TokenRepository;
@@ -58,29 +59,24 @@ public class AuthenticationService {
                 .build();
     }
     @Transactional
-    public AuthenticationResponse UpdateUser(User userRequest ,Long id) throws UserNotFoundException {
+    public GeneralResponse UpdateUser(User userRequest ,Long id) throws UserNotFoundException {
         var user = repository.findById(id)
                 .orElseThrow( () -> new UserNotFoundException("User not found") );
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        var savedUser = repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(savedUser, jwtToken);
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
+        repository.save(user);
+        return GeneralResponse.builder()
                 .message("User updated successfully")
                 .build();
     }
     @Transactional
-    public AuthenticationResponse DeleteUser(Long id) throws UserNotFoundException {
+    public GeneralResponse DeleteUser(Long id) throws UserNotFoundException {
         var user = repository.findById(id)
                 .orElseThrow( () -> new UserNotFoundException("User not found"));
         user.setDeleted(true);
         departmentRepsitory.setHeadIdToNull(id);
         departmentRepsitory.setSecretaryIdToNull(id);
         repository.save(user);
-        return AuthenticationResponse.builder()
+        return GeneralResponse.builder()
                 .message("User deleted successfully")
                  .build();
     }
@@ -126,6 +122,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .message("User LoggedIn successfully")
                 .build();
     }
 

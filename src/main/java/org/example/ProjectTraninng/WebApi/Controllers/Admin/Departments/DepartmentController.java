@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Department;
 import org.example.ProjectTraninng.Common.Entities.User;
-import org.example.ProjectTraninng.Common.Enums.Role;
-import org.example.ProjectTraninng.Common.Responses.DepartmentResponse;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.DepartmentService;
@@ -31,30 +29,30 @@ public class DepartmentController extends SessionManagement {
     private final AuthenticationService service;
 
     @PostMapping("/")
-    public ResponseEntity<DepartmentResponse> addDepartment(@RequestBody @Valid Department request, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> addDepartment(@RequestBody @Valid Department request, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInAdmin(user);
-       DepartmentResponse res = departmentService.addDepartment(request);
+        GeneralResponse res = departmentService.addDepartment(request);
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
     @PutMapping("/{departmentId}")
-    public ResponseEntity<DepartmentResponse> updateDepartment(@RequestBody @Valid  Department request, @PathVariable Long departmentId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> updateDepartment(@RequestBody @Valid  Department request, @PathVariable Long departmentId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInAdmin(user);
         departmentService.updateDepartment(request, departmentId);
-        return new ResponseEntity<>(new DepartmentResponse("Department updated successfully"), HttpStatus.OK);
+        return new ResponseEntity<>(new GeneralResponse("Department updated successfully"), HttpStatus.OK);
     }
 
     @DeleteMapping("/{departmentId}")
-    public ResponseEntity<DepartmentResponse> deleteDepartment(@PathVariable Long departmentId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> deleteDepartment(@PathVariable Long departmentId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInAdmin(user);
         departmentService.deleteDepartment(departmentId);
-        return new ResponseEntity<>(new DepartmentResponse("Department deleted successfully"), HttpStatus.OK);
+        return new ResponseEntity<>(new GeneralResponse("Department deleted successfully"), HttpStatus.OK);
     }
 
     @GetMapping("/{departmentId}")

@@ -2,7 +2,7 @@ package org.example.ProjectTraninng.Core.Servecies;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.*;
-import org.example.ProjectTraninng.Common.Responses.TreatmentResponse;
+import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.*;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.data.domain.Page;
@@ -12,9 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +25,7 @@ public class TreatmentService {
     private final DeletedPatientMedicineRepository deletedPatientMedicineRepository;
 
     @Transactional
-    public TreatmentResponse createTreatment(Treatment request) throws UserNotFoundException {
+    public GeneralResponse createTreatment(Treatment request) throws UserNotFoundException {
 
         Patients patients = patientRepository.findById(request.getPatient().getId()).orElseThrow(
                 () -> new UserNotFoundException("Patient not found"));
@@ -34,7 +33,7 @@ public class TreatmentService {
         Doctor doctor = doctorRepository.findById(request.getDoctor().getId()).orElseThrow(
                 () -> new UserNotFoundException("Doctor not found"));
         if (doctor == null) {
-            return TreatmentResponse.builder().message("Doctor not found").build();
+            return GeneralResponse.builder().message("Doctor not found").build();
         }
 
 
@@ -49,10 +48,10 @@ public class TreatmentService {
         }
         treatment.setPatientMedicines(request.getPatientMedicines());
         treatmentRepository.save(treatment);
-        return  TreatmentResponse.builder().message("Treatment created successfully").build();
+        return  GeneralResponse.builder().message("Treatment created successfully").build();
     }
     @Transactional
-    public TreatmentResponse updateTreatment(Treatment request, Long treatmentId) throws UserNotFoundException {
+    public GeneralResponse updateTreatment(Treatment request, Long treatmentId) throws UserNotFoundException {
         var treatmentOptional = treatmentRepository.findById(treatmentId).orElseThrow(
                 () -> new UserNotFoundException("Treatment not found"));
 
@@ -74,10 +73,10 @@ public class TreatmentService {
         treatment.setPatientMedicines(request.getPatientMedicines());
 
         treatmentRepository.save(treatment);
-        return TreatmentResponse.builder().message("Treatment updated successfully").build();
+        return GeneralResponse.builder().message("Treatment updated successfully").build();
     }
 
-    public TreatmentResponse deleteTreatment(Long treatmentId) throws UserNotFoundException {
+    public GeneralResponse deleteTreatment(Long treatmentId) throws UserNotFoundException {
         var treatmentOptional = treatmentRepository.findById(treatmentId).orElseThrow(
                 () -> new UserNotFoundException("Treatment not found"));
 
@@ -107,7 +106,7 @@ public class TreatmentService {
 
         treatmentRepository.delete(treatmentOptional);
 
-        return TreatmentResponse.builder().message("Treatment and associated patient medicines deleted successfully").build();
+        return GeneralResponse.builder().message("Treatment and associated patient medicines deleted successfully").build();
     }
 
     @Transactional

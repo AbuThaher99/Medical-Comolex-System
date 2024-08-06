@@ -5,14 +5,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Treatment;
 import org.example.ProjectTraninng.Common.Entities.User;
-import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
-import org.example.ProjectTraninng.Common.Responses.TreatmentResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.TreatmentService;
 import org.example.ProjectTraninng.SessionManagement;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,15 +26,15 @@ public class TreatmentController extends SessionManagement {
     private final AuthenticationService service;
 
     @PostMapping("")
-    public ResponseEntity<TreatmentResponse> addTreatment(@RequestBody @Valid Treatment request, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> addTreatment(@RequestBody @Valid Treatment request, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInDoctor(user);
-        return ResponseEntity.ok(treatmentService.createTreatment(request));
+        return new ResponseEntity<>(treatmentService.createTreatment(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{treatmentId}")
-    public ResponseEntity<TreatmentResponse> updateTreatment(@RequestBody @Valid Treatment request, @PathVariable Long treatmentId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> updateTreatment(@RequestBody @Valid Treatment request, @PathVariable Long treatmentId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
        String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInDoctor(user);
@@ -43,7 +42,7 @@ public class TreatmentController extends SessionManagement {
     }
 
     @DeleteMapping("/{treatmentId}")
-    public ResponseEntity<TreatmentResponse> deleteTreatment(@PathVariable Long treatmentId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> deleteTreatment(@PathVariable Long treatmentId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInDoctor(user);

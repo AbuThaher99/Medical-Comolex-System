@@ -5,8 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Common.Entities.WarehouseStore;
-import org.example.ProjectTraninng.Common.Enums.Role;
-import org.example.ProjectTraninng.Common.Responses.WarehouseStoreResponse;
+import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.WarehouseStoreService;
 import org.example.ProjectTraninng.SessionManagement;
@@ -21,14 +20,14 @@ public class WarehouseStoreController extends SessionManagement {
     private final WarehouseStoreService warehouseStoreService;
     private final AuthenticationService service;
     @PostMapping("/")
-    public WarehouseStoreResponse addToWarehouse(@RequestBody @Valid WarehouseStore warehouseStoreRequest, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public GeneralResponse addToWarehouse(@RequestBody @Valid WarehouseStore warehouseStoreRequest, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);
         return warehouseStoreService.addMedicineToWarehouse(warehouseStoreRequest);
     }
     @PutMapping("/{medicineId}")
-    public WarehouseStoreResponse updateWarehouseQuantity(@RequestBody @Valid WarehouseStore quantity , @PathVariable Long medicineId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public GeneralResponse updateWarehouseQuantity(@RequestBody @Valid WarehouseStore quantity , @PathVariable Long medicineId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);

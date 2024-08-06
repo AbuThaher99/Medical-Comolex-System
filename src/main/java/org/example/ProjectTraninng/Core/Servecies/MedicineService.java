@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Medicine;
 import org.example.ProjectTraninng.Common.Entities.WarehouseStore;
-import org.example.ProjectTraninng.Common.Responses.MedicineResponse;
+import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.MedicineRepository;
 import org.example.ProjectTraninng.Core.Repsitories.SupplierRepository;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
@@ -25,7 +25,7 @@ public class MedicineService  {
     private  final SupplierRepository supplierRepository;
 
     @Transactional
-    public MedicineResponse addMedicine(Medicine request) throws UserNotFoundException {
+    public GeneralResponse addMedicine(Medicine request) throws UserNotFoundException {
         boolean exists = medicineRepository.findByNameAndSupplierId(request.getName(), request.getSupplier().getId()).isPresent();
         if (exists) {
             throw new UserNotFoundException("Medicine with the same name and supplier already exists");
@@ -38,10 +38,10 @@ public class MedicineService  {
                 .supplier(request.getSupplier())
                 .build();
         medicineRepository.save(medicine);
-        return MedicineResponse.builder().message("Medicine added successfully").build();
+        return GeneralResponse.builder().message("Medicine added successfully").build();
     }
     @Transactional
-    public MedicineResponse updateMedicine(Medicine request , Long id) throws UserNotFoundException {
+    public GeneralResponse updateMedicine(Medicine request , Long id) throws UserNotFoundException {
 
         var medicineOptional = medicineRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("Medicine not found"));
@@ -52,11 +52,11 @@ public class MedicineService  {
         medicine.setPurchasePrice(request.getPurchasePrice());
         medicine.setExpirationDate(request.getExpirationDate());
         medicineRepository.save(medicine);
-        return MedicineResponse.builder().message("Medicine updated successfully").build();
+        return GeneralResponse.builder().message("Medicine updated successfully").build();
     }
 
     @Transactional
-    public MedicineResponse deleteMedicine(Long id) throws UserNotFoundException {
+    public GeneralResponse deleteMedicine(Long id) throws UserNotFoundException {
         var medicineOptional = medicineRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("Medicine not found"));
         Medicine medicine = medicineOptional;
@@ -65,12 +65,12 @@ public class MedicineService  {
 
         WarehouseStore warehouseStores = warehouseStoreRepository.findByMedicineId(medicine.getId());
         if(warehouseStores == null){
-            return MedicineResponse.builder().message("Medicine deleted successfully").build();
+            return GeneralResponse.builder().message("Medicine deleted successfully").build();
         }
         warehouseStores.setDeleted(true);
         warehouseStoreRepository.save(warehouseStores);
 
-        return MedicineResponse.builder().message("Medicine deleted successfully").build();
+        return GeneralResponse.builder().message("Medicine deleted successfully").build();
     }
 
     @Transactional

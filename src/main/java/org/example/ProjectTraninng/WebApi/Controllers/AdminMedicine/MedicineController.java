@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Medicine;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
-import org.example.ProjectTraninng.Common.Responses.MedicineResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.MedicineService;
 import org.example.ProjectTraninng.SessionManagement;
@@ -13,7 +12,6 @@ import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Entities.User;
 
 import java.util.List;
@@ -26,7 +24,7 @@ public class MedicineController extends SessionManagement {
     private final AuthenticationService service;
 
     @PostMapping("/")
-    public ResponseEntity<MedicineResponse> addMedicine(@RequestBody  Medicine request, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> addMedicine(@RequestBody  Medicine request, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);
@@ -34,7 +32,7 @@ public class MedicineController extends SessionManagement {
     }
 
     @PutMapping("/{medicineId}")
-    public ResponseEntity<MedicineResponse> updateMedicine(@RequestBody @Valid Medicine request, @PathVariable  Long medicineId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> updateMedicine(@RequestBody @Valid Medicine request, @PathVariable  Long medicineId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);
@@ -42,7 +40,7 @@ public class MedicineController extends SessionManagement {
     }
 
     @DeleteMapping("/{medicineId}")
-    public ResponseEntity<MedicineResponse> deleteMedicine(@PathVariable  Long medicineId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> deleteMedicine(@PathVariable  Long medicineId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
        String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);

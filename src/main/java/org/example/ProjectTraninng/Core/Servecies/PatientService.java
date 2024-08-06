@@ -2,7 +2,7 @@ package org.example.ProjectTraninng.Core.Servecies;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.*;
-import org.example.ProjectTraninng.Common.Responses.PatientResponse;
+import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.*;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.data.domain.Page;
@@ -24,7 +24,7 @@ public class PatientService {
     private final DeletedPatientMedicineRepository deletedPatientMedicineRepository;
     private final TreatmentDeletedRepository treatmentDeletedRepository;
     @Transactional
-    public PatientResponse addPatient(Patients request) throws UserNotFoundException {
+    public GeneralResponse addPatient(Patients request) throws UserNotFoundException {
 
 
         boolean exists =   patientRepository.findByFirstName(request.getFirstName()).isPresent();
@@ -40,7 +40,7 @@ public class PatientService {
                 .phone(request.getPhone())
                 .build();
         patientRepository.save(patient);
-        return PatientResponse.builder().message("Patient added successfully").build();
+        return GeneralResponse.builder().message("Patient added successfully").build();
     }
     @Transactional
     public Optional<Patients> getPatient(String firstName) throws UserNotFoundException {
@@ -52,7 +52,7 @@ public class PatientService {
         return patients;
     }
     @Transactional
-    public PatientResponse deletePatientByFirstName(String firstName) throws UserNotFoundException {
+    public GeneralResponse deletePatientByFirstName(String firstName) throws UserNotFoundException {
         Patients patient = patientRepository.findByFirstName(firstName)
                 .orElseThrow(() -> new UserNotFoundException("Patient not found"));
         for (Treatment treatment : new ArrayList<>(patient.getTreatments())) {
@@ -90,12 +90,12 @@ public class PatientService {
 
         patientDeletedRepository.save(patientsDeleted);
         patientRepository.delete(patient);
-        return PatientResponse.builder().message("Patient deleted successfully").build();
+        return GeneralResponse.builder().message("Patient deleted successfully").build();
     }
 
 
     @Transactional
-    public PatientResponse updatePatient(Patients request, String firstName) throws UserNotFoundException {
+    public GeneralResponse updatePatient(Patients request, String firstName) throws UserNotFoundException {
         Patients patientOptional = patientRepository.findByFirstName(firstName).orElseThrow(
                 () -> new UserNotFoundException("Patient not found"));
 
@@ -108,7 +108,7 @@ public class PatientService {
             patient.setPhone(request.getPhone());
             patientRepository.save(patient);
 
-        return PatientResponse.builder().message("Patient updated successfully").build();
+        return GeneralResponse.builder().message("Patient updated successfully").build();
     }
 
     @Transactional

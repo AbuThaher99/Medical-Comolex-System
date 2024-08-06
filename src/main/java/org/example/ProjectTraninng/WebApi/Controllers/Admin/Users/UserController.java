@@ -14,6 +14,7 @@ import org.example.ProjectTraninng.SessionManagement;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,7 +38,7 @@ public class UserController extends SessionManagement {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AuthenticationResponse> updateuser(@RequestBody @Valid User request,@PathVariable Long id, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> updateuser(@RequestBody @Valid User request,@PathVariable Long id, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInAdmin(user);
@@ -45,7 +46,7 @@ public class UserController extends SessionManagement {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<AuthenticationResponse> deleteuser(@PathVariable Long id, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> deleteuser(@PathVariable Long id, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
           validateLoggedInAdmin(user);

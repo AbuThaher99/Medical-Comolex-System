@@ -6,11 +6,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Doctor;
 import org.example.ProjectTraninng.Common.Entities.User;
-import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Enums.Specialization;
-import org.example.ProjectTraninng.Common.Responses.DoctorResponse;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
-import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.DoctorService;
 import org.example.ProjectTraninng.SessionManagement;
@@ -21,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/admin/doctors")
@@ -38,22 +34,14 @@ public class DoctorController extends SessionManagement {
     }
 
     @PutMapping ("/{doctorId}")
-    public ResponseEntity<DoctorResponse> updateDoctor(@PathVariable Long doctorId,  @RequestBody @Valid Doctor request, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> updateDoctor(@PathVariable Long doctorId,  @RequestBody @Valid Doctor request, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInAdmin(user);
         doctorService.updateDoctor(request,  doctorId);
-        return ResponseEntity.ok(DoctorResponse.builder().message("Doctor updated successfully").build());
+        return ResponseEntity.ok(GeneralResponse.builder().message("Doctor updated successfully").build());
     }
 
-    @DeleteMapping ("/{doctorId}")
-    public ResponseEntity<DoctorResponse> deleteDoctor(@PathVariable Long doctorId, HttpServletRequest httpServletRequest) throws UserNotFoundException {
-        String token = service.extractToken(httpServletRequest);
-        User user = service.extractUserFromToken(token);
-        validateLoggedInAdmin(user);
-        doctorService.deleteDoctor(doctorId);
-        return ResponseEntity.ok(DoctorResponse.builder().message("Doctor deleted successfully").build());
-    }
     @GetMapping("/{email}")
     public ResponseEntity<Doctor> getDoctor(@PathVariable String email, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);

@@ -6,14 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Supplier;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Common.Enums.CompanyNames;
-import org.example.ProjectTraninng.Common.Responses.SupplierResponse;
+import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.SupplierService;
 import org.example.ProjectTraninng.SessionManagement;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,7 +23,7 @@ public class SupplierController extends SessionManagement {
     private final AuthenticationService service;
 
     @PostMapping("/")
-    public ResponseEntity<SupplierResponse> addSupplier(@RequestBody @Valid Supplier supplier , HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> addSupplier(@RequestBody @Valid Supplier supplier , HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);
@@ -32,7 +31,7 @@ public class SupplierController extends SessionManagement {
     }
 
     @PutMapping("/")
-    public ResponseEntity<SupplierResponse> updateSupplier(@RequestBody Supplier supplier ,Long id , HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> updateSupplier(@RequestBody Supplier supplier ,Long id , HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);
@@ -48,7 +47,7 @@ public class SupplierController extends SessionManagement {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<SupplierResponse> deleteSupplier(@PathVariable Long id , HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> deleteSupplier(@PathVariable Long id , HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);

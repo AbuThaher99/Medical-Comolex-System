@@ -2,7 +2,7 @@ package org.example.ProjectTraninng.Core.Servecies;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Department;
-import org.example.ProjectTraninng.Common.Responses.DepartmentResponse;
+import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.DepartmentRepsitory;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.Common.Entities.User;
@@ -14,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,7 +26,7 @@ public class DepartmentService {
     private  UserRepository userRepository;
 
     @Transactional
-    public DepartmentResponse addDepartment(Department request) throws UserNotFoundException {
+    public GeneralResponse addDepartment(Department request) throws UserNotFoundException {
         Optional<User> headSecretary = userRepository.findById(request.getHeadId().getId());
         if (headSecretary.isEmpty()) {
             throw new UserNotFoundException("User not found");
@@ -45,7 +43,7 @@ public class DepartmentService {
                 secretaryId(secretary.get())
                 .build();
         departmentRepository.save(department);
-      return   DepartmentResponse.builder().message("Department added successfully").build();
+      return   GeneralResponse.builder().message("Department added successfully").build();
     }
 
     @Transactional

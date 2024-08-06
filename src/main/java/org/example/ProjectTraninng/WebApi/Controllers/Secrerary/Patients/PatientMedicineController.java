@@ -5,15 +5,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.PatientMedicine;
 import org.example.ProjectTraninng.Common.Entities.User;
-import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
-import org.example.ProjectTraninng.Common.Responses.PatientMedicineRespones;
-import org.example.ProjectTraninng.Common.Responses.PatientResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.PatientMedicineService;
 import org.example.ProjectTraninng.SessionManagement;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,14 +25,14 @@ public class PatientMedicineController extends SessionManagement {
     private final AuthenticationService service;
 
      @PostMapping("")
-    public PatientMedicineRespones AddPatientMedicine(@RequestBody @Valid PatientMedicine patientMedicineRequest, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public ResponseEntity<GeneralResponse> AddPatientMedicine(@RequestBody @Valid PatientMedicine patientMedicineRequest, HttpServletRequest httpServletRequest) throws UserNotFoundException {
          String token = service.extractToken(httpServletRequest);
             User user = service.extractUserFromToken(token);
          validateLoggedInSecretary(user);
-         return patientMedicineService.AddPatientMedicine(patientMedicineRequest);
+         return new ResponseEntity<>( patientMedicineService.AddPatientMedicine(patientMedicineRequest), HttpStatus.CREATED);
      }
      @PutMapping("/{id}")
-    public PatientMedicineRespones UpdatePatientMedicine(@RequestBody @Valid PatientMedicine patientMedicineRequest , @PathVariable Long id, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public GeneralResponse UpdatePatientMedicine(@RequestBody @Valid PatientMedicine patientMedicineRequest , @PathVariable Long id, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
          validateLoggedInSecretary(user);
@@ -97,7 +95,7 @@ public class PatientMedicineController extends SessionManagement {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
             validateLoggedInSecretary(user);
-            PatientMedicineRespones isDeleted = patientMedicineService.delete(id);
+            GeneralResponse isDeleted = patientMedicineService.delete(id);
             return ResponseEntity.ok(isDeleted);
         }
 
