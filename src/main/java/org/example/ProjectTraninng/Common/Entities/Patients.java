@@ -1,6 +1,7 @@
 package org.example.ProjectTraninng.Common.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +10,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.ProjectTraninng.Common.Enums.Role;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -23,25 +28,16 @@ import java.util.Set;
 public class Patients extends BaseEntity {
 
 
-    @Column(name = "firstName", nullable = false)
-    @NotNull(message = "First name is required")
-    private String firstName;
-
-    @Column(name = "lastName", nullable = false)
-    @NotNull(message = "Last name is required")
-    private String lastName;
 
     @Column(name = "age", nullable = false)
     @NotNull(message = "Age is required")
     private Integer age;
 
-    @Column(name = "address", nullable = false)
-    @NotNull(message = "Address is required")
-    private String address;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId",nullable = false)
+    @JsonBackReference("patientUser")
+    private User user;
 
-    @Column(name = "phone")
-    @Pattern(regexp = "^(\\+\\d{1,3}[-]?)?\\d{10}$", message = "Invalid phone number")
-    private String phone;
 
     @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY ,orphanRemoval = true)
     @JoinColumn(name = "patientId" , referencedColumnName = "id")
@@ -51,8 +47,12 @@ public class Patients extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY ,orphanRemoval = true)
     @JoinColumn(name = "patientId" , referencedColumnName = "id")
     @JsonManagedReference("patient-feedback")
-    private List<Feedback> feedbacks; // done
+    private List<Feedback> feedbacks;
 
+    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY ,orphanRemoval = true)
+    @JoinColumn(name = "patientId" , referencedColumnName = "id")
+    @JsonManagedReference("patient-notification")
+    private List<Notification> notifications;
 
 
 }

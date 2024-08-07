@@ -3,10 +3,7 @@ package org.example.ProjectTraninng.Core.Servecies;
 import jakarta.mail.MessagingException;
 import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Enums.Role;
-import org.example.ProjectTraninng.Core.Repsitories.PatientRepository;
-import org.example.ProjectTraninng.Core.Repsitories.TreatmentRepository;
-import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
-import org.example.ProjectTraninng.Core.Repsitories.WarehouseStoreRepository;
+import org.example.ProjectTraninng.Core.Repsitories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -30,9 +27,12 @@ public class NotificationService {
     @Autowired
     private WarehouseStoreRepository warehouseStoreRepository;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
+
 
     @Scheduled(cron = "0 43 10 * * ?")
-    public void sendTreatmentNotifications() {
+    public void sendTreatmentNotificationsDoctor() {
         List<Treatment> todayTreatments = treatmentRepository.findTodayTreatments();
         System.out.println("Today's Treatments: " + todayTreatments.size());
         for (Treatment treatment : todayTreatments) {
@@ -44,7 +44,7 @@ public class NotificationService {
             String subject = "Today's Treatment Notification";
             String message = "Dear Dr. " + user.getFirstName() + " " + user.getLastName() + ",<br>"
                     + "You have a treatment scheduled for today.<br>"
-                    + "Patient: " + patients.getFirstName() + " " + patients.getLastName() + "<br>"
+                    + "Patient: " + patients.getUser().getFirstName() + " " + patients.getUser().getLastName() + "<br>"
                     + "Disease Description: " + treatment.getDiseaseDescription() + "<br>"
                     + "Note: " + treatment.getNote() + "<br>"
                     + "Please be prepared.";
@@ -79,6 +79,44 @@ public class NotificationService {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+
+    public void createNotification(Patients patient, String message) {
+        Notification notification = Notification.builder()
+                .patient(patient)
+                .message(message)
+                .build();
+        notificationRepository.save(notification);
+    }
+
+    public List<Notification> getUnreadNotifications(Long patientId) {
+        return notificationRepository.findByPatientIdAndIsReadFalse(patientId);
+    }
+
+    public void markNotificationAsRead(Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow();
+        notification.setRead(true);
+        notificationRepository.save(notification);
+    }
+
+
+    @Scheduled(cron = "0 53 16 * * ?")
+    public void sendTreatmentNotifications() {
+        List<Treatment> todayTreatments = treatmentRepository.findTodayTreatments();
+
+        for (Treatment treatment : todayTreatments) {
+            Patients patient = treatment.getPatient();
+            String message = "You have a treatment scheduled for today with Dr. " +
+                    treatment.getDoctor().getUser().getFirstName() + " " +
+                    treatment.getDoctor().getUser().getLastName() + ".\n" +
+                    "Disease Description: " + treatment.getDiseaseDescription() + "\n" +
+                    "Note: " + treatment.getNote();
+                    createNotification(patient, message);
+                    treatment.setNotificationSent(true);
+                    treatmentRepository.save(treatment);
+
         }
     }
 

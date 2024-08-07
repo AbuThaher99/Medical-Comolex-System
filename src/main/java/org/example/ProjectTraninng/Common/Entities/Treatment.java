@@ -41,8 +41,7 @@ public class Treatment extends BaseEntity {
 
 
     @Column(name = "treatmentDate", updatable = false , nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @org.hibernate.annotations.CreationTimestamp
+    @NotNull(message = "Treatment date is required")
     private Date treatmentDate;
 
     @Column(name = "diseaseDescription", nullable = false, length = 255)
@@ -55,4 +54,9 @@ public class Treatment extends BaseEntity {
     @Column(name = "price", nullable = false)
     @NotNull(message = "Price is required")
     private double price;
+
+
+    @Column(name = "notificationSent", nullable = false)
+    @Builder.Default
+    private boolean notificationSent = false;
 }

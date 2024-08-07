@@ -1,16 +1,26 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.*;
+import org.example.ProjectTraninng.Common.Enums.Role;
+import org.example.ProjectTraninng.Common.Enums.TokenType;
+import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.*;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
+import org.example.ProjectTraninng.WebApi.config.JwtService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,38 +33,111 @@ public class PatientService {
     private final TreatmentRepository treatmentRepository;
     private final DeletedPatientMedicineRepository deletedPatientMedicineRepository;
     private final TreatmentDeletedRepository treatmentDeletedRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final TokenRepository tokenRepository;
     @Transactional
-    public GeneralResponse addPatient(Patients request) throws UserNotFoundException {
+    public AuthenticationResponse addPatient(Patients request) throws UserNotFoundException {
+        User user = request.getUser();
 
-
-        boolean exists =   patientRepository.findByFirstName(request.getFirstName()).isPresent();
-        if (exists) {
-            throw new UserNotFoundException("Patient already exists");
+        User existingUser = userRepository.findByEmail(user.getEmail())
+                .orElse(null);
+        if (existingUser != null) {
+            if (existingUser.getDoctor() != null) {
+                throw new UserNotFoundException("User already has an associated doctor");
+            } else {
+                user = existingUser;
+            }
+        } else {
+            user.setRole(Role.PATIENT);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setSalary(null);
+            user.setImage(null);
+            user = userRepository.save(user);
         }
 
+
         Patients patient = Patients.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .user(user)
                 .age(request.getAge())
-                .address(request.getAddress())
-                .phone(request.getPhone())
                 .build();
         patientRepository.save(patient);
-        return GeneralResponse.builder().message("Patient added successfully").build();
+        var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+        saveUserToken(user, jwtToken);
+        return AuthenticationResponse.builder()
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .message("Doctor added successfully")
+                .build();
     }
-    @Transactional
-    public Optional<Patients> getPatient(String firstName) throws UserNotFoundException {
 
-     Optional<Patients> patients = patientRepository.findByFirstName(firstName);
+    private void saveUserToken(User user, String jwtToken) {
+        var token = Token.builder()
+                .user(user)
+                .token(jwtToken)
+                .tokenType(TokenType.BEARER)
+                .expired(false)
+                .revoked(false)
+                .build();
+        tokenRepository.save(token);
+    }
+
+
+
+    private void revokeAllUserTokens(User user) {
+        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+        if (validUserTokens.isEmpty())
+            return;
+        validUserTokens.forEach(token -> {
+            token.setExpired(true);
+            token.setRevoked(true);
+        });
+        tokenRepository.saveAll(validUserTokens);
+    }
+
+
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String refreshToken;
+        final String userEmail;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return;
+        }
+        refreshToken = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(refreshToken);
+        if (userEmail != null) {
+            var user = this.userRepository.findByEmail(userEmail)
+                    .orElseThrow();
+            if (jwtService.isTokenValid(refreshToken, user)) {
+                var accessToken = jwtService.generateToken(user);
+                revokeAllUserTokens(user);
+                saveUserToken(user, accessToken);
+                var authResponse = AuthenticationResponse.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
+                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+            }
+        }
+    }
+
+
+    @Transactional
+    public Optional<Patients> getPatient(String email) throws UserNotFoundException {
+
+     Optional<Patients> patients = patientRepository.findByUserEmail(email);
         if (patients.isEmpty()) {
             throw new UserNotFoundException("Patient not found");
         }
         return patients;
     }
     @Transactional
-    public GeneralResponse deletePatientByFirstName(String firstName) throws UserNotFoundException {
-        Patients patient = patientRepository.findByFirstName(firstName)
+    public GeneralResponse deletePatientByFirstName(String email) throws UserNotFoundException {
+        Patients patient = patientRepository.findByUserEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Patient not found"));
+        User user = patient.getUser();
         for (Treatment treatment : new ArrayList<>(patient.getTreatments())) {
             TreatmentDeleted treatmentDeleted = TreatmentDeleted.builder()
                     .treatmentDeletedId(treatment.getId())
@@ -81,31 +164,35 @@ public class PatientService {
 
         PatientsDeleted patientsDeleted = PatientsDeleted.builder()
                 .patientDeletedId(patient.getId())
-                .firstName(patient.getFirstName())
-                .lastName(patient.getLastName())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .age(patient.getAge())
-                .address(patient.getAddress())
-                .phone(patient.getPhone())
+                .address(user.getAddress())
+                .phone(user.getPhone())
                 .build();
 
         patientDeletedRepository.save(patientsDeleted);
+        user.setDeleted(true);
         patientRepository.delete(patient);
         return GeneralResponse.builder().message("Patient deleted successfully").build();
     }
 
 
     @Transactional
-    public GeneralResponse updatePatient(Patients request, String firstName) throws UserNotFoundException {
-        Patients patientOptional = patientRepository.findByFirstName(firstName).orElseThrow(
-                () -> new UserNotFoundException("Patient not found"));
+    public GeneralResponse updatePatient(Patients request, String email) throws UserNotFoundException {
+        Patients patient = patientRepository.findByUserEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Patient not found"));
+        User user = patient.getUser();
 
-            Patients patient = patientOptional;
 
-            patient.setFirstName(request.getFirstName());
-            patient.setLastName(request.getLastName());
+
+            user.setFirstName(request.getUser().getFirstName());
+            user.setLastName(request.getUser().getLastName());
             patient.setAge(request.getAge());
-            patient.setAddress(request.getAddress());
-            patient.setPhone(request.getPhone());
+            user.setAddress(request.getUser().getAddress());
+            user.setPhone(request.getUser().getPhone());
+            user.setDateOfBirth(request.getUser().getDateOfBirth());
+            user.setEmail(request.getUser().getEmail());
             patientRepository.save(patient);
 
         return GeneralResponse.builder().message("Patient updated successfully").build();
@@ -120,5 +207,7 @@ public class PatientService {
 
         return patientRepository.findAll(pageable , search , doctorIds);
     }
+
+
 
 }

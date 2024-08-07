@@ -37,7 +37,7 @@ public interface TreatmentRepository extends JpaRepository<Treatment, Long> {
 
 
 
-    @Query("SELECT t FROM Treatment t WHERE DATE(t.treatmentDate) = CURRENT_DATE")
+    @Query("SELECT t FROM Treatment t WHERE DATE(t.treatmentDate) = CURRENT_DATE and t.notificationSent = false")
     List<Treatment> findTodayTreatments();
 
 

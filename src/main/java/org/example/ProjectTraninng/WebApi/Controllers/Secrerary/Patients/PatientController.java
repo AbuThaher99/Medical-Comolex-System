@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.Entities.Patients;
 import org.example.ProjectTraninng.Common.Entities.User;
+import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
 import org.example.ProjectTraninng.Core.Servecies.PatientService;
@@ -26,44 +27,27 @@ public class PatientController extends SessionManagement {
     private final PatientService patientService;
     private final AuthenticationService service;
 
-    @PostMapping("")
-    public ResponseEntity<GeneralResponse> addPatient(@RequestBody @Valid Patients request , HttpServletRequest httpServletRequest) throws UserNotFoundException {
-        String token = service.extractToken(httpServletRequest);
-        User user = service.extractUserFromToken(token);
-        validateLoggedInSecretary(user);
-        return new ResponseEntity<>(patientService.addPatient(request), HttpStatus.CREATED);
-    }
 
-    @GetMapping("/{firstName}")
-    public ResponseEntity<?> getPatient(@PathVariable String firstName, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    @GetMapping("/{email}")
+    public ResponseEntity<?> getPatient(@PathVariable String email, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInSecretary(user);
-        Optional<Patients> patientRequest = patientService.getPatient(firstName);
+        Optional<Patients> patientRequest = patientService.getPatient(email);
         if (patientRequest.isPresent()) {
             return ResponseEntity.ok(patientRequest.get());
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient not found");
         }
     }
-    @DeleteMapping("/{firstName}")
-        public ResponseEntity<?> deletePatientByEmail(@PathVariable String firstName, HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    @DeleteMapping("/{email}")
+        public ResponseEntity<?> deletePatientByEmail(@PathVariable String email, HttpServletRequest httpServletRequest) throws UserNotFoundException {
             String token = service.extractToken(httpServletRequest);
             User user = service.extractUserFromToken(token);
             validateLoggedInSecretary(user);
-        GeneralResponse isDeleted = patientService.deletePatientByFirstName(firstName);
+        GeneralResponse isDeleted = patientService.deletePatientByFirstName(email);
             return ResponseEntity.ok(isDeleted);
         }
-
-    @PutMapping("/{firstName}")
-    public ResponseEntity<?> updatePatient(@RequestBody @Valid Patients request, @PathVariable String firstName, HttpServletRequest httpServletRequest) throws UserNotFoundException {
-        String token = service.extractToken(httpServletRequest);
-        User user = service.extractUserFromToken(token);
-        validateLoggedInSecretary(user);
-        GeneralResponse d= patientService.updatePatient(request, firstName);
-          return ResponseEntity.ok(d);
-
-    }
 
     @GetMapping("")
     public Page<Patients> getAllPatients(@RequestParam(defaultValue = "1",required = false) int page,
@@ -79,6 +63,5 @@ public class PatientController extends SessionManagement {
         }
         return patientService.getAllPatients(page, size , search , doctorIds);
     }
-
 
 }

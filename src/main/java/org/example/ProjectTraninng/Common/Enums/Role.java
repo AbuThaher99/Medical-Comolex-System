@@ -37,7 +37,11 @@ public enum Role {
                     Permission.DRUG_STORE_EMPLOYEE_READ,
                     Permission.DRUG_STORE_EMPLOYEE_UPDATE
             )
-    );
+    ),PATIENT(
+            Set.of(
+                    Permission.PATIENT_READ,
+                    Permission.PATIENT_UPDATE
+            ));
 
     private final Set<Permission> permissions;
 

@@ -29,6 +29,18 @@ public class SessionManagement {
         }
     }
 
+    public void validateLoggedInPatient(User user) throws UserNotFoundException {
+        if(user.getRole() != Role.PATIENT){
+            throw new UserNotFoundException("You are not authorized to perform this operation");
+        }
+    }
+
+    public void validateLoggedInAll(User user) throws UserNotFoundException {
+        if(user.getRole() != Role.ADMIN && user.getRole() != Role.SECRETARY && user.getRole() != Role.PATIENT){
+            throw new UserNotFoundException("You are not authorized to perform this operation");
+        }
+    }
+
 
 
 }

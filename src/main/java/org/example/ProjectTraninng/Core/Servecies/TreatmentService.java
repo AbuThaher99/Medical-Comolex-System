@@ -38,6 +38,8 @@ public class TreatmentService {
                 .doctor(doctor)
                 .diseaseDescription(request.getDiseaseDescription())
                 .note(request.getNote())
+                .treatmentDate(request.getTreatmentDate())
+                .price(request.getPrice())
                 .build();
 //        for (PatientMedicine patientMedicine : request.getPatientMedicines()) {
 //            patientMedicine.setTreatment(treatment);

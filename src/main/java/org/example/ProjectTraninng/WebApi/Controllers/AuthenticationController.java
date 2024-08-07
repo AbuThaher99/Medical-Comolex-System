@@ -22,10 +22,9 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody @Valid LoginDTO request) throws UserNotFoundException {
+    public ResponseEntity<AuthenticationResponse> Login(@RequestBody @Valid LoginDTO request) throws UserNotFoundException {
         return ResponseEntity.ok(service.authenticate(request));
     }
-
     @PostMapping("/refresh-token")
     public void refreshToken(
             HttpServletRequest request,

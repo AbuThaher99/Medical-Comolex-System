@@ -18,7 +18,9 @@ public enum Permission {
     SECRETARY_READ("Secretary:read"),
     SECRETARY_UPDATE("Secretary:update"),
     DRUG_STORE_EMPLOYEE_READ("DrugStoreEmployee:read"),
-    DRUG_STORE_EMPLOYEE_UPDATE("DrugStoreEmployee:update");
+    DRUG_STORE_EMPLOYEE_UPDATE("DrugStoreEmployee:update"),
+    PATIENT_READ("Patient:read"),
+    PATIENT_UPDATE("Patient:update");
 
     private final String permission;
 }

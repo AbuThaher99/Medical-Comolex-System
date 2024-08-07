@@ -29,8 +29,8 @@ public class StorageService {
 
     @Autowired
     private UserRepository userRepository;
-    String imageFolder = "C:\\Users\\AbuThaher\\Desktop\\Traning Project\\ProjectTraninng\\src\\main\\resources\\Images\\";
-    String excelFolder = "C:\\Users\\AbuThaher\\Desktop\\Traning Project\\ProjectTraninng\\src\\main\\resources\\Excels\\";
+    String imageFolder = "C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\Images\\";
+    String excelFolder = "C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\Excels\\";
     public String uploadImageToFileSystem(MultipartFile file) throws IOException {
         String filePath=imageFolder+file.getOriginalFilename();
 
@@ -75,14 +75,15 @@ public class StorageService {
 
         for (int i = 0; i < pations.size(); i++) {
             Patients patient = pations.get(i);
+            User user = userRepository.findById(patient.getUser().getId()).get();
             Row row = sheet.createRow(i + 1);
             row.createCell(0).setCellValue(patient.getId());
-            row.createCell(1).setCellValue(patient.getAddress());
+            row.createCell(1).setCellValue(user.getAddress());
             row.createCell(2).setCellValue(patient.getAge());
             row.createCell(3).setCellValue(patient.getCreatedDate().toString());
-            row.createCell(4).setCellValue(patient.getFirstName());
-            row.createCell(5).setCellValue(patient.getLastName());
-            row.createCell(6).setCellValue(patient.getPhone());
+            row.createCell(4).setCellValue(user.getFirstName());
+            row.createCell(5).setCellValue(user.getLastName());
+            row.createCell(6).setCellValue(user.getPhone());
         }
         try (OutputStream fileOut = new FileOutputStream(filePath)) {
             workbook.write(fileOut);
@@ -199,11 +200,12 @@ public class StorageService {
         medicineHeaderStyle.setFont(headerFont2);
 
         for (Patients patient : patientTreatments) {
+
             if (rowIndex > 0) {
                 rowIndex++;
             }
 
-
+            User user = userRepository.findById(patient.getUser().getId()).get();
             Row patientHeaderRow = sheet.createRow(rowIndex++);
             patientHeaderRow.setRowStyle(dataCellStyle);
             Cell patientHeaderCell1 = patientHeaderRow.createCell(0);
@@ -221,16 +223,16 @@ public class StorageService {
 
             Row patientRow = sheet.createRow(rowIndex++);
             Cell patientCell1 = patientRow.createCell(0);
-            patientCell1.setCellValue(patient.getFirstName() + " " + patient.getLastName());
+            patientCell1.setCellValue(user.getFirstName() + " " + user.getLastName());
             patientCell1.setCellStyle(dataCellStyle);
             Cell patientCell2 = patientRow.createCell(1);
             patientCell2.setCellValue(patient.getAge());
             patientCell2.setCellStyle(dataCellStyle);
             Cell patientCell3 = patientRow.createCell(2);
-            patientCell3.setCellValue(patient.getAddress());
+            patientCell3.setCellValue(user.getAddress());
             patientCell3.setCellStyle(dataCellStyle);
             Cell patientCell4 = patientRow.createCell(3);
-            patientCell4.setCellValue(patient.getPhone());
+            patientCell4.setCellValue(user.getPhone());
             patientCell4.setCellStyle(dataCellStyle);
 
             List<Treatment> treatments = patient.getTreatments();

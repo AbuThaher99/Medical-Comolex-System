@@ -27,7 +27,6 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "image")
     private String image;
 
-
     @Column(name = "password", nullable = false)
     @NotNull(message = "Password cannot be blank")
     private String password;
@@ -58,7 +57,6 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "salary", columnDefinition = "JSON")
     @Convert(converter = MapToJsonConverter.class)
-    @NotNull(message = "Salary cannot be blank")
     private Map<String, Object> salary;
 
     @Column(name = "role", nullable = false)
@@ -72,6 +70,10 @@ public class User extends BaseEntity implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL , fetch = FetchType.LAZY)
     @JsonBackReference("doctorUser")
     private Doctor doctor;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @JsonBackReference("patientUser")
+    private Patients patient;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "headId" , referencedColumnName = "id")

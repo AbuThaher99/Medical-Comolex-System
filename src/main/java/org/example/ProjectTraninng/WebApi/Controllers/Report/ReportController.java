@@ -18,13 +18,12 @@ import java.util.List;
 public class ReportController {
     @Autowired
     private PdfGenerator pdfGenerator;
-
     @GetMapping("/generateSalary")
     public ResponseEntity<GeneralResponse> generateReport(@RequestParam List<Role> roles,
-                                         @RequestParam String headerBgColor,
-                                         @RequestParam String headerTextColor,
-                                         @RequestParam String tableRowColor1,
-                                         @RequestParam String tableRowColor2) {
+                                                         @RequestParam(defaultValue = "#4F81BD") String headerBgColor,
+                                                         @RequestParam(defaultValue = "#FFFFFF") String headerTextColor,
+                                                         @RequestParam(defaultValue = "#B8CCE4") String tableRowColor1,
+                                                         @RequestParam(defaultValue = "#DBE5F1") String tableRowColor2) {
         try {
             return new ResponseEntity<>(pdfGenerator.generatePdfForRoles(roles , headerBgColor, headerTextColor, tableRowColor1, tableRowColor2), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -34,10 +33,10 @@ public class ReportController {
     }
 
     @GetMapping("/generateTreatmentProfits")
-    public ResponseEntity<GeneralResponse> generatePdfForTreatments(@RequestParam String headerBgColor,
-                                           @RequestParam String headerTextColor,
-                                           @RequestParam String tableRowColor1,
-                                           @RequestParam String tableRowColor2) {
+    public ResponseEntity<GeneralResponse> generatePdfForTreatments(@RequestParam(defaultValue = "#4F81BD") String headerBgColor,
+                                                                    @RequestParam(defaultValue = "#FFFFFF") String headerTextColor,
+                                                                    @RequestParam(defaultValue = "#B8CCE4") String tableRowColor1,
+                                                                    @RequestParam(defaultValue = "#DBE5F1") String tableRowColor2) {
         try {
             return new ResponseEntity<>( pdfGenerator.generatePdfForTreatments( headerBgColor, headerTextColor, tableRowColor1, tableRowColor2), HttpStatus.CREATED);
         } catch (Exception e) {

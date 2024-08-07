@@ -7,16 +7,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.DTOs.LoginDTO;
 import org.example.ProjectTraninng.Common.Entities.Email;
+import org.example.ProjectTraninng.Common.Entities.Patients;
 import org.example.ProjectTraninng.Common.Entities.Token;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
-import org.example.ProjectTraninng.Core.Repsitories.DepartmentRepsitory;
-import org.example.ProjectTraninng.Core.Repsitories.EmailRepository;
-import org.example.ProjectTraninng.Core.Repsitories.TokenRepository;
+import org.example.ProjectTraninng.Core.Repsitories.*;
 import org.example.ProjectTraninng.Common.Enums.TokenType;
 import org.example.ProjectTraninng.Common.Entities.User;
-import org.example.ProjectTraninng.Core.Repsitories.UserRepository;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.WebApi.config.JwtService;
 import org.springframework.data.domain.Page;
@@ -137,6 +135,8 @@ public class AuthenticationService {
         tokenRepository.save(token);
     }
 
+
+
     private void revokeAllUserTokens(User user) {
         var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
         if (validUserTokens.isEmpty())
@@ -147,6 +147,7 @@ public class AuthenticationService {
         });
         tokenRepository.saveAll(validUserTokens);
     }
+
 
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
