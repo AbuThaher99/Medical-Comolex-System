@@ -73,6 +73,9 @@ public class SalaryPaymentService {
                 .salaryType("MONTHLY")
                 .build();
         salaryPaymentRepository.save(payment);
+        salary.put("salaryAmount", 0.0);
+        user.setSalary(salary);
+        userRepository.save(user);
     }
 
     private void processHourlySalary(User user, Map<String, Object> salary) {
@@ -86,5 +89,8 @@ public class SalaryPaymentService {
                 .salaryType("HOURLY")
                 .build();
         salaryPaymentRepository.save(payment);
+        salary.put("hourWork", 0);
+        user.setSalary(salary);
+        userRepository.save(user);
     }
 }

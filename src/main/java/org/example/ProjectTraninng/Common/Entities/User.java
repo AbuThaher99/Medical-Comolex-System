@@ -96,6 +96,16 @@ public class User extends BaseEntity implements UserDetails {
     @JsonManagedReference("salaryUser")
     private List<SalaryPayment> salaryId;
 
+    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId" , referencedColumnName = "id")
+    @JsonManagedReference("checkInOutUser")
+    private List<UserCheckInOut> userCheckInOuts;
+
+    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @JoinColumn(name = "madeByUserId" , referencedColumnName = "id")
+    @JsonManagedReference("checkInOutMadeByUser")
+    private List<UserCheckInOut> madeByUserCheckInOuts;
+
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {

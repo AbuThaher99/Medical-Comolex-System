@@ -42,5 +42,11 @@ public class SessionManagement {
     }
 
 
+    public void validateLoggedInCheckInOut(User user) throws UserNotFoundException {
+        if(user.getRole() != Role.ADMIN && user.getRole() != Role.SECRETARY && user.getRole() != Role.DOCTOR && user.getRole() != Role.WAREHOUSE_EMPLOYEE){
+            throw new UserNotFoundException("You are not authorized to perform this operation");
+        }
+    }
+
 
 }

@@ -6,15 +6,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.DTOs.LoginDTO;
-import org.example.ProjectTraninng.Common.Entities.Email;
-import org.example.ProjectTraninng.Common.Entities.Patients;
-import org.example.ProjectTraninng.Common.Entities.Token;
+import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.*;
 import org.example.ProjectTraninng.Common.Enums.TokenType;
-import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.WebApi.Exceptions.UserNotFoundException;
 import org.example.ProjectTraninng.WebApi.config.JwtService;
 import org.springframework.data.domain.Page;
@@ -28,6 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -43,7 +43,7 @@ public class AuthenticationService {
     private final EmailRepository emailRepository;
 
     @Transactional
-    public AuthenticationResponse adduser(User user ) throws UserNotFoundException, IOException {
+    public AuthenticationResponse adduser(User user) throws UserNotFoundException, IOException {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setDeleted(false);
         var savedUser = repository.save(user);
@@ -53,46 +53,51 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .message("User " +user.getRole()+ " added successfully")
+                .message("User " + user.getRole() + " added successfully")
                 .build();
     }
+
     @Transactional
-    public GeneralResponse UpdateUser(User userRequest ,Long id) throws UserNotFoundException {
+    public GeneralResponse UpdateUser(User userRequest, Long id) throws UserNotFoundException {
         var user = repository.findById(id)
-                .orElseThrow( () -> new UserNotFoundException("User not found") );
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         repository.save(user);
         return GeneralResponse.builder()
                 .message("User updated successfully")
                 .build();
     }
+
     @Transactional
     public GeneralResponse DeleteUser(Long id) throws UserNotFoundException {
         var user = repository.findById(id)
-                .orElseThrow( () -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         user.setDeleted(true);
         departmentRepsitory.setHeadIdToNull(id);
         departmentRepsitory.setSecretaryIdToNull(id);
         repository.save(user);
         return GeneralResponse.builder()
                 .message("User deleted successfully")
-                 .build();
+                .build();
     }
+
     @Transactional
     public User GetUser(Long id) throws UserNotFoundException {
         var user = repository.findById(id)
-                .orElseThrow( () -> new UserNotFoundException("User not found") );
-        if(user.isDeleted()){
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (user.isDeleted()) {
             throw new UserNotFoundException("User not found");
         }
 
         return user;
     }
+
     @Transactional
-    public Page<User> GetAllUsers( int page, int size ,String search ,Role role) {
+    public Page<User> GetAllUsers(int page, int size, String search, Role role) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        return repository.findAll(pageRequest,search,role);
+        return repository.findAll(pageRequest, search, role);
     }
+
     @Transactional
     public Page<User> getAllUsersByRole(Role role, int page, int size) {
         if (page < 1) {
@@ -101,6 +106,7 @@ public class AuthenticationService {
         Pageable pageable = PageRequest.of(page - 1, size);
         return repository.findAllByRole(role, pageable);
     }
+
     @Transactional
     public AuthenticationResponse authenticate(LoginDTO request) throws UserNotFoundException {
         authenticationManager.authenticate(
@@ -134,7 +140,6 @@ public class AuthenticationService {
                 .build();
         tokenRepository.save(token);
     }
-
 
 
     private void revokeAllUserTokens(User user) {
@@ -181,6 +186,7 @@ public class AuthenticationService {
         }
         return null;
     }
+
     public User extractUserFromToken(String token) {
         String username = jwtService.extractUsername(token);
         return repository.findByEmail(username).orElse(null);
@@ -224,13 +230,13 @@ public class AuthenticationService {
     public AuthenticationResponse verifyCodeAndResetPassword(String email, String verificationCode, String newPassword) throws UserNotFoundException {
         Email emailEntity = emailRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("email not found"));
-        if(emailEntity.getVerificationCode().equals(verificationCode)) {
+        if (emailEntity.getVerificationCode().equals(verificationCode)) {
             emailEntity.setVerified(true);
             emailRepository.save(emailEntity);
-        }else{
+        } else {
             throw new UserNotFoundException("Invalid verification code ");
         }
-           return resetPassword(email, newPassword);
+        return resetPassword(email, newPassword);
     }
 
 
@@ -253,4 +259,122 @@ public class AuthenticationService {
             throw new UserNotFoundException("Invalid old password");
         }
     }
+
+    @Transactional
+    public GeneralResponse CheckIn(Long userId,Long madebyUser) throws UserNotFoundException {
+        var user = repository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        var madeByUser = repository.findById(madebyUser)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (user.getRole().equals(Role.PATIENT)) {
+            throw new UserNotFoundException("Patients cannot check in");
+        }
+
+        var lastRecord = user.getUserCheckInOuts().stream()
+                .filter(record -> "CHECKED_IN".equals(record.getStatus()))
+                .findFirst();
+
+        if (lastRecord.isPresent()) {
+            return GeneralResponse.builder()
+                    .message("User is already checked in")
+                    .build();
+        }
+
+        var checkInRecord = UserCheckInOut.builder()
+                .user(user)
+                .checkIn(LocalDateTime.now())
+                .status("CHECKED_IN")
+                .madeByUser(madeByUser)
+                .build();
+        user.getUserCheckInOuts().add(checkInRecord);
+        repository.save(user);
+
+        return GeneralResponse.builder()
+                .message("User checked in successfully")
+                .build();
+    }
+
+    @Transactional
+    public GeneralResponse checkOut(Long userId, Long madebyUser) throws UserNotFoundException {
+        var user = repository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        var madeByUser = repository.findById(madebyUser)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        var lastRecord = user.getUserCheckInOuts().stream()
+                .filter(record -> "CHECKED_IN".equals(record.getStatus()))
+                .findFirst()
+                .orElseThrow(() -> new UserNotFoundException("User has not checked in yet"));
+
+        LocalDateTime checkOutTime = LocalDateTime.now();
+        lastRecord.setCheckOut(checkOutTime);
+        long hoursWorked = java.time.Duration.between(lastRecord.getCheckIn(), checkOutTime).toHours();
+        lastRecord.setHoursWorked((double) hoursWorked);
+        lastRecord.setStatus("CHECKED_OUT");
+        lastRecord.setMadeByUser(madeByUser);
+
+        Map<String, Object> salary = user.getSalary();
+
+        String salaryType = (String) salary.get("salaryType");
+
+        if (!salary.containsKey("hourWork")) {
+            salary.put("hourWork", 0.0);
+        }
+        double totalWork = ((Number) salary.get("hourWork")).doubleValue();
+        totalWork += hoursWorked;
+        salary.put("hourWork", totalWork);
+
+
+        if ("HOURLY".equals(salaryType)) {
+            double hourRate = ((Number) salary.get("hourRate")).doubleValue();
+            salary.put("hourWork", totalWork);
+        } else if ("MONTHLY".equals(salaryType)) {
+            adjustMonthlySalary(user, hoursWorked);
+        }
+
+        repository.save(user);
+
+        return GeneralResponse.builder()
+                .message("User checked out successfully")
+                .build();
+    }
+
+    private void adjustMonthlySalary(User user, double totalWork) {
+        double fixedSalary = ((Number) user.getSalary().get("fixedSalary")).doubleValue();
+        System.out.println("fixedSalary: " + fixedSalary);
+        int daysInMonth = 30;
+        int hoursPerDay = 8;
+        int standardHours = daysInMonth * hoursPerDay;
+        System.out.println("standardHours: " + standardHours);
+        System.out.println("totalWork: " + totalWork);
+
+        if (!user.getSalary().containsKey("salaryAmount")) {
+            user.getSalary().put("salaryAmount", fixedSalary);
+        }
+        double salaryAmount = ((Number) user.getSalary().get("salaryAmount")).doubleValue();
+        double extraHours = totalWork - hoursPerDay;
+        System.out.println("extraHours: " + extraHours);
+
+        if (extraHours > 0) {
+            double bonusRate = 1.5;
+            double bonus = extraHours * (fixedSalary / standardHours) * bonusRate;
+            System.out.println("bonus: " + bonus);
+            user.getSalary().put("salaryAmount", salaryAmount + bonus);
+        } else if (extraHours < 0) {
+            System.out.println("penalty");
+            double penaltyRate = 1.0;
+            double penalty = Math.abs(extraHours) * (fixedSalary / standardHours) * penaltyRate;
+            user.getSalary().put("salaryAmount", salaryAmount - penalty);
+        }else {
+            user.getSalary().put("salaryAmount", salaryAmount);
+        }
+
+
+
+
+
+    }
+
+
 }

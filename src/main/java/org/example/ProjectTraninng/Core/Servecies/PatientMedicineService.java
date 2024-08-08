@@ -38,7 +38,7 @@ public class PatientMedicineService {
         warehouseStoreRepository.save(warehouseStore);
         PatientMedicine patientMedicine = PatientMedicine.builder()
                 .quantity(patientMedicineRequest.getQuantity())
-                .price(patientMedicineRequest.getPrice())
+                .price(medicine.getBuyPrice())
                 .treatment(treatment)
                 .medicine(medicine)
                 .build();

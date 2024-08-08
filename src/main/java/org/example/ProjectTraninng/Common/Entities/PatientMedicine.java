@@ -22,7 +22,7 @@ public class PatientMedicine extends BaseEntity {
     private Integer quantity;
 
     @Column(name = "price", nullable = false)
-    @NotNull(message = "Price is required")
+ //   @NotNull(message = "Price is required")
     private Double price;
 
     @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
