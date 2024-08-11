@@ -16,6 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `bloodtype`
+--
+
+DROP TABLE IF EXISTS `bloodtype`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `bloodtype` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `createdDate` datetime(6) NOT NULL,
+  `quantity` int NOT NULL,
+  `type` enum('AB_NEGATIVE','AB_POSITIVE','A_NEGATIVE','A_POSITIVE','B_NEGATIVE','B_POSITIVE','O_NEGATIVE','O_POSITIVE') NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK3bnxy89bkep7xq99fkg5lfybm` (`type`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `bloodtype`
+--
+
+LOCK TABLES `bloodtype` WRITE;
+/*!40000 ALTER TABLE `bloodtype` DISABLE KEYS */;
+INSERT INTO `bloodtype` VALUES (1,'2024-08-11 11:14:40.553000',0,'A_POSITIVE'),(2,'2024-08-11 11:14:40.590000',25,'A_NEGATIVE'),(3,'2024-08-11 11:14:40.600000',51,'B_POSITIVE'),(4,'2024-08-11 11:14:40.609000',11,'B_NEGATIVE'),(5,'2024-08-11 11:14:40.620000',253,'O_POSITIVE'),(6,'2024-08-11 11:14:40.630000',27,'O_NEGATIVE'),(7,'2024-08-11 11:14:40.641000',49,'AB_POSITIVE'),(8,'2024-08-11 11:14:40.651000',43,'AB_NEGATIVE');
+/*!40000 ALTER TABLE `bloodtype` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `checkinout`
 --
 
@@ -144,6 +171,68 @@ INSERT INTO `doctors` VALUES (1,'09:00:00.000000','17:00:00.000000','PEDIATRICIA
 UNLOCK TABLES;
 
 --
+-- Table structure for table `donations`
+--
+
+DROP TABLE IF EXISTS `donations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `donations` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `createdDate` datetime(6) NOT NULL,
+  `donationDate` datetime(6) NOT NULL,
+  `quantity` int NOT NULL,
+  `bloodTypeId` bigint NOT NULL,
+  `donorId` bigint NOT NULL,
+  `isDeleted` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKbh68hn6gqb0siqehptgbfctjw` (`bloodTypeId`),
+  KEY `FKmwockgweh3f9le82aarv956v7` (`donorId`),
+  CONSTRAINT `FKbh68hn6gqb0siqehptgbfctjw` FOREIGN KEY (`bloodTypeId`) REFERENCES `bloodtype` (`id`),
+  CONSTRAINT `FKmwockgweh3f9le82aarv956v7` FOREIGN KEY (`donorId`) REFERENCES `donors` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `donations`
+--
+
+LOCK TABLES `donations` WRITE;
+/*!40000 ALTER TABLE `donations` DISABLE KEYS */;
+INSERT INTO `donations` VALUES (1,'2024-08-11 14:23:10.629000','2024-08-11 03:00:00.000000',15,5,1,_binary '\0'),(2,'2024-08-11 14:23:46.365000','2024-08-11 03:00:00.000000',15,5,1,_binary '\0'),(3,'2024-08-11 14:23:49.292000','2024-08-11 03:00:00.000000',15,5,1,_binary '\0'),(4,'2024-08-11 14:23:52.679000','2024-08-11 03:00:00.000000',15,5,1,_binary '\0'),(5,'2024-08-11 14:23:55.969000','2024-08-11 03:00:00.000000',15,5,1,_binary '\0'),(6,'2024-08-11 14:23:59.657000','2024-08-11 03:00:00.000000',15,5,1,_binary '\0'),(7,'2024-08-11 14:24:03.871000','2024-08-11 03:00:00.000000',15,5,1,_binary '\0'),(8,'2024-08-11 14:24:07.690000','2024-08-11 03:00:00.000000',15,5,1,_binary '\0'),(9,'2024-08-11 14:24:12.874000','2024-08-11 03:00:00.000000',15,5,1,_binary '\0'),(10,'2024-08-11 14:24:16.824000','2024-08-11 03:00:00.000000',15,5,1,_binary '\0'),(11,'2024-08-11 14:24:22.588000','2024-08-11 03:00:00.000000',15,5,1,_binary '\0'),(12,'2024-08-11 14:24:37.549000','2024-08-11 03:00:00.000000',15,5,1,_binary '\0'),(13,'2024-08-11 14:25:26.174000','2024-08-11 03:00:00.000000',15,5,2,_binary '\0'),(14,'2024-08-11 14:25:27.143000','2024-08-11 03:00:00.000000',15,5,2,_binary '\0'),(15,'2024-08-11 14:25:27.819000','2024-08-11 03:00:00.000000',15,5,2,_binary '\0'),(16,'2024-08-11 14:25:28.439000','2024-08-11 03:00:00.000000',15,5,2,_binary '\0'),(17,'2024-08-11 14:25:32.426000','2024-08-11 03:00:00.000000',13,5,2,_binary '\0'),(18,'2024-08-11 14:25:38.249000','2024-08-11 03:00:00.000000',5,5,2,_binary '\0'),(19,'2024-08-11 14:25:42.155000','2024-08-11 03:00:00.000000',5,3,3,_binary '\0'),(20,'2024-08-11 14:25:45.665000','2024-08-11 03:00:00.000000',10,3,3,_binary '\0'),(21,'2024-08-11 14:25:49.904000','2024-08-11 03:00:00.000000',6,3,3,_binary '\0'),(22,'2024-08-11 14:25:53.341000','2024-08-11 03:00:00.000000',8,3,3,_binary '\0'),(23,'2024-08-11 14:25:58.287000','2024-08-11 03:00:00.000000',8,3,4,_binary '\0'),(24,'2024-08-11 14:26:01.606000','2024-08-11 03:00:00.000000',10,3,4,_binary '\0'),(25,'2024-08-11 14:26:07.549000','2024-08-11 03:00:00.000000',15,3,4,_binary '\0'),(26,'2024-08-11 14:26:11.431000','2024-08-11 03:00:00.000000',4,3,4,_binary '\0'),(27,'2024-08-11 14:26:18.396000','2024-08-11 03:00:00.000000',4,7,5,_binary '\0'),(28,'2024-08-11 14:26:22.199000','2024-08-11 03:00:00.000000',8,7,5,_binary '\0'),(29,'2024-08-11 14:26:25.718000','2024-08-11 03:00:00.000000',12,7,5,_binary '\0'),(30,'2024-08-11 14:26:29.814000','2024-08-11 03:00:00.000000',16,7,5,_binary '\0'),(31,'2024-08-11 14:26:33.078000','2024-08-11 03:00:00.000000',16,8,6,_binary '\0'),(32,'2024-08-11 14:26:37.716000','2024-08-11 03:00:00.000000',10,8,6,_binary '\0'),(33,'2024-08-11 14:26:40.644000','2024-08-11 03:00:00.000000',10,4,7,_binary '\0'),(34,'2024-08-11 14:26:44.200000','2024-08-11 03:00:00.000000',6,4,7,_binary '\0'),(35,'2024-08-11 14:26:47.853000','2024-08-11 03:00:00.000000',6,2,8,_binary '\0'),(36,'2024-08-11 14:26:51.195000','2024-08-11 03:00:00.000000',14,2,8,_binary '\0'),(37,'2024-08-11 14:26:55.590000','2024-08-11 03:00:00.000000',14,6,9,_binary '\0'),(38,'2024-08-11 14:26:58.735000','2024-08-11 03:00:00.000000',5,6,9,_binary '\0'),(39,'2024-08-11 14:27:02.839000','2024-08-11 03:00:00.000000',5,6,10,_binary '\0'),(40,'2024-08-11 14:27:09.801000','2024-08-11 03:00:00.000000',13,6,10,_binary '\0'),(41,'2024-08-11 14:27:14.504000','2024-08-11 03:00:00.000000',13,2,11,_binary '\0'),(42,'2024-08-11 14:27:18.780000','2024-08-11 03:00:00.000000',17,2,11,_binary '\0'),(43,'2024-08-11 14:27:23.264000','2024-08-11 03:00:00.000000',17,8,12,_binary '\0'),(44,'2024-08-11 14:27:27.647000','2024-08-11 03:00:00.000000',15,8,12,_binary '\0'),(45,'2024-08-11 14:27:31.079000','2024-08-11 03:00:00.000000',15,7,13,_binary '\0'),(46,'2024-08-11 14:27:35.390000','2024-08-11 03:00:00.000000',9,7,13,_binary '\0');
+/*!40000 ALTER TABLE `donations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `donors`
+--
+
+DROP TABLE IF EXISTS `donors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `donors` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `createdDate` datetime(6) NOT NULL,
+  `bloodType` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `phone` varchar(255) NOT NULL,
+  `gender` enum('FEMALE','MALE') NOT NULL,
+  `isDeleted` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `donors`
+--
+
+LOCK TABLES `donors` WRITE;
+/*!40000 ALTER TABLE `donors` DISABLE KEYS */;
+INSERT INTO `donors` VALUES (1,'2024-08-11 13:56:09.639000','O_POSITIVE','mohammad','0599782941','MALE',_binary '\0'),(2,'2024-08-11 13:56:58.893000','O_POSITIVE','OBADA','0569482508','MALE',_binary '\0'),(3,'2024-08-11 13:57:09.487000','B_POSITIVE','ahmad','0599782941','FEMALE',_binary '\0'),(4,'2024-08-11 13:57:23.618000','B_POSITIVE','rami','0599782941','FEMALE',_binary '\0'),(5,'2024-08-11 13:58:09.917000','AB_POSITIVE','rami','0599782941','FEMALE',_binary '\0'),(6,'2024-08-11 13:58:37.636000','AB_NEGATIVE','NOOR','0599782941','FEMALE',_binary '\0'),(7,'2024-08-11 13:58:44.103000','B_NEGATIVE','NOOR','0599782941','FEMALE',_binary '\0'),(8,'2024-08-11 13:58:52.975000','A_NEGATIVE','NADER','0599782941','FEMALE',_binary '\0'),(9,'2024-08-11 13:59:08.014000','O_NEGATIVE','Mohtadi','0599782941','FEMALE',_binary '\0'),(10,'2024-08-11 13:59:26.001000','O_NEGATIVE','Yuosef','0599782941','MALE',_binary '\0'),(11,'2024-08-11 13:59:32.122000','A_NEGATIVE','Aws','0599782941','MALE',_binary '\0'),(12,'2024-08-11 14:00:07.120000','AB_NEGATIVE','Abed','0599782941','MALE',_binary '\0'),(13,'2024-08-11 14:00:40.198000','AB_POSITIVE','osiad','0599782941','MALE',_binary '\0');
+/*!40000 ALTER TABLE `donors` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `emails`
 --
 
@@ -216,7 +305,7 @@ CREATE TABLE `filedata` (
   `name` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -225,7 +314,7 @@ CREATE TABLE `filedata` (
 
 LOCK TABLES `filedata` WRITE;
 /*!40000 ALTER TABLE `filedata` DISABLE KEYS */;
-INSERT INTO `filedata` VALUES (1,'2024-08-05 13:36:29.069000','C:\\Users\\AbuThaher\\Desktop\\Traning Project\\ProjectTraninng\\src\\main\\resources\\PDF\\Treatments Report1722854188550.pdf','TreatmentsReport1722854188550.pdf','application/pdf'),(2,'2024-08-05 13:38:35.209000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\PDF\\Treatments Report1722854314715.pdf','TreatmentsReport1722854314715.pdf','application/pdf'),(3,'2024-08-05 13:40:09.299000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\PDF\\Treatments Report1722854408794.pdf','TreatmentsReport1722854408794.pdf','application/pdf'),(4,'2024-08-05 13:59:26.105000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\PDF\\Treatments Report1722855565597.pdf','TreatmentsReport1722855565597.pdf','application/pdf'),(5,'2024-08-05 14:02:05.990000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\PDF\\Treatments Report1722855725480.pdf','TreatmentsReport1722855725480.pdf','application/pdf'),(6,'2024-08-07 14:57:43.206000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\Excels\\PationData1723031862927.xls','PationData1723031863199.xls','application/vnd.ms-excel');
+INSERT INTO `filedata` VALUES (1,'2024-08-05 13:36:29.069000','C:\\Users\\AbuThaher\\Desktop\\Traning Project\\ProjectTraninng\\src\\main\\resources\\PDF\\Treatments Report1722854188550.pdf','TreatmentsReport1722854188550.pdf','application/pdf'),(2,'2024-08-05 13:38:35.209000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\PDF\\Treatments Report1722854314715.pdf','TreatmentsReport1722854314715.pdf','application/pdf'),(3,'2024-08-05 13:40:09.299000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\PDF\\Treatments Report1722854408794.pdf','TreatmentsReport1722854408794.pdf','application/pdf'),(4,'2024-08-05 13:59:26.105000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\PDF\\Treatments Report1722855565597.pdf','TreatmentsReport1722855565597.pdf','application/pdf'),(5,'2024-08-05 14:02:05.990000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\PDF\\Treatments Report1722855725480.pdf','TreatmentsReport1722855725480.pdf','application/pdf'),(6,'2024-08-07 14:57:43.206000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\Excels\\PationData1723031862927.xls','PationData1723031863199.xls','application/vnd.ms-excel'),(7,'2024-08-09 03:03:20.085000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\Chart\\chart1723161799405.png','chart1723161799405.png','image/png'),(8,'2024-08-09 03:03:20.129000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\PDF\\SalaryPaymentsReport1723161799405.pdf','SalaryPaymentsReport1723161799405.pdf','application/pdf'),(9,'2024-08-09 03:04:06.046000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\Chart\\chart1723161845905.png','chart1723161845905.png','image/png'),(10,'2024-08-09 03:04:06.076000','C:\\Users\\moham\\Desktop\\ProjectFinalTraninng\\projecttraning\\src\\main\\resources\\PDF\\SalaryPaymentsReport1723161845905.pdf','SalaryPaymentsReport1723161845905.pdf','application/pdf');
 /*!40000 ALTER TABLE `filedata` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -334,8 +423,11 @@ CREATE TABLE `patients` (
   `age` int NOT NULL,
   `createdDate` datetime(6) NOT NULL,
   `userId` bigint NOT NULL,
+  `bloodTypeId` bigint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FKigjhgvbk9kjqx1yg9bpt99d3v` (`userId`),
+  KEY `FKac7vrxwh6hlcm92q5xvdhx6i9` (`bloodTypeId`),
+  CONSTRAINT `FKac7vrxwh6hlcm92q5xvdhx6i9` FOREIGN KEY (`bloodTypeId`) REFERENCES `bloodtype` (`id`),
   CONSTRAINT `FKigjhgvbk9kjqx1yg9bpt99d3v` FOREIGN KEY (`userId`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -346,7 +438,7 @@ CREATE TABLE `patients` (
 
 LOCK TABLES `patients` WRITE;
 /*!40000 ALTER TABLE `patients` DISABLE KEYS */;
-INSERT INTO `patients` VALUES (1,50,'2024-07-25 10:43:40.895000',81),(2,50,'2024-07-25 10:49:01.629000',82),(53,25,'2023-01-10 10:00:00.000000',83),(54,30,'2023-02-12 11:00:00.000000',84),(55,35,'2023-03-15 12:00:00.000000',85),(56,40,'2023-04-18 13:00:00.000000',86),(57,45,'2023-05-20 14:00:00.000000',87),(58,50,'2023-06-22 15:00:00.000000',88),(59,55,'2023-07-25 16:00:00.000000',89),(60,60,'2023-08-28 17:00:00.000000',90),(61,65,'2023-09-30 18:00:00.000000',91),(62,70,'2023-10-12 19:00:00.000000',92),(63,75,'2023-11-14 20:00:00.000000',93),(64,80,'2023-12-16 21:00:00.000000',94),(65,85,'2024-01-18 22:00:00.000000',95),(66,90,'2024-02-20 23:00:00.000000',96),(67,95,'2024-03-22 23:00:00.000000',97),(68,100,'2024-04-24 00:00:00.000000',98),(69,105,'2024-05-26 01:00:00.000000',99),(70,110,'2024-06-28 02:00:00.000000',100),(71,115,'2024-07-30 03:00:00.000000',101),(72,120,'2024-08-01 04:00:00.000000',102),(73,125,'2024-09-02 05:00:00.000000',103),(74,130,'2024-10-03 06:00:00.000000',104),(75,135,'2024-11-04 07:00:00.000000',105),(76,140,'2024-12-05 08:00:00.000000',106),(77,145,'2025-01-06 09:00:00.000000',107),(78,150,'2025-02-07 10:00:00.000000',108),(79,155,'2025-03-08 11:00:00.000000',109),(80,160,'2025-04-09 12:00:00.000000',110),(81,165,'2025-05-10 13:00:00.000000',111),(82,170,'2025-06-11 14:00:00.000000',112),(83,175,'2025-07-12 15:00:00.000000',113),(84,180,'2025-08-13 16:00:00.000000',114),(85,185,'2025-09-14 17:00:00.000000',115),(86,190,'2025-10-15 18:00:00.000000',116),(87,195,'2025-11-16 19:00:00.000000',117),(88,200,'2025-12-17 20:00:00.000000',118),(89,205,'2026-01-18 21:00:00.000000',119),(90,210,'2026-02-19 22:00:00.000000',120),(91,215,'2026-03-20 23:00:00.000000',121),(92,220,'2026-04-21 00:00:00.000000',122),(93,225,'2026-05-22 01:00:00.000000',123),(94,230,'2026-06-23 02:00:00.000000',124),(95,235,'2026-07-24 03:00:00.000000',125),(96,240,'2026-08-25 04:00:00.000000',126),(97,245,'2026-09-26 05:00:00.000000',127),(98,250,'2026-10-27 06:00:00.000000',128),(99,255,'2026-11-28 07:00:00.000000',129),(100,260,'2026-12-29 08:00:00.000000',130),(101,265,'2027-01-30 09:00:00.000000',131),(102,270,'2024-08-07 13:21:17.000000',132),(103,56,'2024-08-07 13:25:26.384000',133);
+INSERT INTO `patients` VALUES (1,50,'2024-07-25 10:43:40.895000',81,1),(2,50,'2024-07-25 10:49:01.629000',82,2),(53,25,'2023-01-10 10:00:00.000000',83,3),(54,30,'2023-02-12 11:00:00.000000',84,4),(55,35,'2023-03-15 12:00:00.000000',85,5),(56,40,'2023-04-18 13:00:00.000000',86,6),(57,45,'2023-05-20 14:00:00.000000',87,7),(58,50,'2023-06-22 15:00:00.000000',88,8),(59,55,'2023-07-25 16:00:00.000000',89,1),(60,60,'2023-08-28 17:00:00.000000',90,2),(61,65,'2023-09-30 18:00:00.000000',91,3),(62,70,'2023-10-12 19:00:00.000000',92,4),(63,75,'2023-11-14 20:00:00.000000',93,5),(64,80,'2023-12-16 21:00:00.000000',94,6),(65,85,'2024-01-18 22:00:00.000000',95,7),(66,90,'2024-02-20 23:00:00.000000',96,8),(67,95,'2024-03-22 23:00:00.000000',97,1),(68,100,'2024-04-24 00:00:00.000000',98,2),(69,105,'2024-05-26 01:00:00.000000',99,4),(70,110,'2024-06-28 02:00:00.000000',100,3),(71,115,'2024-07-30 03:00:00.000000',101,5),(72,120,'2024-08-01 04:00:00.000000',102,6),(73,125,'2024-09-02 05:00:00.000000',103,7),(74,130,'2024-10-03 06:00:00.000000',104,8),(75,135,'2024-11-04 07:00:00.000000',105,1),(76,140,'2024-12-05 08:00:00.000000',106,2),(77,145,'2025-01-06 09:00:00.000000',107,3),(78,150,'2025-02-07 10:00:00.000000',108,4),(79,155,'2025-03-08 11:00:00.000000',109,5),(80,160,'2025-04-09 12:00:00.000000',110,6),(81,165,'2025-05-10 13:00:00.000000',111,7),(82,170,'2025-06-11 14:00:00.000000',112,8),(83,175,'2025-07-12 15:00:00.000000',113,1),(84,180,'2025-08-13 16:00:00.000000',114,2),(85,185,'2025-09-14 17:00:00.000000',115,3),(86,190,'2025-10-15 18:00:00.000000',116,4),(87,195,'2025-11-16 19:00:00.000000',117,5),(88,200,'2025-12-17 20:00:00.000000',118,6),(89,205,'2026-01-18 21:00:00.000000',119,7),(90,210,'2026-02-19 22:00:00.000000',120,8),(91,215,'2026-03-20 23:00:00.000000',121,1),(92,220,'2026-04-21 00:00:00.000000',122,2),(93,225,'2026-05-22 01:00:00.000000',123,3),(94,230,'2026-06-23 02:00:00.000000',124,4),(95,235,'2026-07-24 03:00:00.000000',125,5),(96,240,'2026-08-25 04:00:00.000000',126,6),(97,245,'2026-09-26 05:00:00.000000',127,7),(98,250,'2026-10-27 06:00:00.000000',128,8),(99,255,'2026-11-28 07:00:00.000000',129,1),(100,260,'2026-12-29 08:00:00.000000',130,2),(101,265,'2027-01-30 09:00:00.000000',131,3),(102,270,'2024-08-07 13:21:17.000000',132,4),(103,56,'2024-08-07 13:25:26.384000',133,6);
 /*!40000 ALTER TABLE `patients` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -377,6 +469,38 @@ CREATE TABLE `patients_deleted` (
 LOCK TABLES `patients_deleted` WRITE;
 /*!40000 ALTER TABLE `patients_deleted` DISABLE KEYS */;
 /*!40000 ALTER TABLE `patients_deleted` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `patientsblood`
+--
+
+DROP TABLE IF EXISTS `patientsblood`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `patientsblood` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `createdDate` datetime(6) NOT NULL,
+  `patientId` bigint NOT NULL,
+  `patientsBloodId` bigint NOT NULL,
+  `isDeleted` bit(1) DEFAULT NULL,
+  `quantity` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKtrhg3lof9mhge0i2l4vpw9wuw` (`patientId`),
+  KEY `FKpvpt8ff7v25axv7igltkqi3qp` (`patientsBloodId`),
+  CONSTRAINT `FKpvpt8ff7v25axv7igltkqi3qp` FOREIGN KEY (`patientsBloodId`) REFERENCES `bloodtype` (`id`),
+  CONSTRAINT `FKtrhg3lof9mhge0i2l4vpw9wuw` FOREIGN KEY (`patientId`) REFERENCES `patients` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `patientsblood`
+--
+
+LOCK TABLES `patientsblood` WRITE;
+/*!40000 ALTER TABLE `patientsblood` DISABLE KEYS */;
+INSERT INTO `patientsblood` VALUES (1,'2024-08-11 16:55:33.714000',2,2,_binary '\0',15),(2,'2024-08-11 16:56:49.648000',2,2,_binary '\0',5),(3,'2024-08-11 17:00:12.969000',53,3,_binary '\0',5),(4,'2024-08-11 17:00:20.684000',53,3,_binary '\0',5),(5,'2024-08-11 17:00:26.405000',54,4,_binary '\0',5),(6,'2024-08-11 17:00:32.429000',55,5,_binary '\0',5),(7,'2024-08-11 17:00:37.691000',56,6,_binary '\0',5),(8,'2024-08-11 17:00:44.500000',57,7,_binary '\0',5),(9,'2024-08-11 17:00:51.083000',57,7,_binary '\0',10),(10,'2024-08-11 17:01:00.629000',58,8,_binary '\0',10),(11,'2024-08-11 17:01:05.103000',58,8,_binary '\0',5),(12,'2024-08-11 17:01:26.949000',60,2,_binary '\0',5),(13,'2024-08-11 17:01:32.561000',61,3,_binary '\0',5),(14,'2024-08-11 17:02:12.606000',64,6,_binary '\0',5);
+/*!40000 ALTER TABLE `patientsblood` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -457,7 +581,7 @@ CREATE TABLE `token` (
   UNIQUE KEY `UK3wi2t4g8oiplxjflw3o2lkv2y` (`token`),
   KEY `FKed879fkhgwgjlc8vsaig5fere` (`userId`),
   CONSTRAINT `FKed879fkhgwgjlc8vsaig5fere` FOREIGN KEY (`userId`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -466,7 +590,7 @@ CREATE TABLE `token` (
 
 LOCK TABLES `token` WRITE;
 /*!40000 ALTER TABLE `token` DISABLE KEYS */;
-INSERT INTO `token` VALUES (1,'2024-08-07 11:57:15.509000',_binary '',_binary '','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2hhbW1hZEBnbWFpbC5jb20iLCJpYXQiOjE3MjMwMjEwMzUsImV4cCI6MTcyMzEwNzQzNX0.mcrnLjAEj6CF9tcWjeYJQMl5YVtXkvuhVuFd1qaJfug','BEARER',1),(2,'2024-08-07 13:25:26.392000',_binary '',_binary '','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYXRpZW50NTNAZ21haWwuY29tIiwiaWF0IjoxNzIzMDI2MzI2LCJleHAiOjE3MjMxMTI3MjZ9._gG5v1BhqCM-5i7uKfHXvk4R3g1GGCB78hSJaGNZcEI','BEARER',133),(3,'2024-08-07 13:26:08.225000',_binary '\0',_binary '\0','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYXRpZW50NTNAZ21haWwuY29tIiwiaWF0IjoxNzIzMDI2MzY4LCJleHAiOjE3MjMxMTI3Njh9.jwPyFeFXbDvHB1BZ-KcOXfyAyEvYWibRMieY9CBfXRI','BEARER',133),(4,'2024-08-08 13:45:26.816000',_binary '\0',_binary '\0','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2hhbW1hZEBnbWFpbC5jb20iLCJpYXQiOjE3MjMxMTM5MjYsImV4cCI6MTcyMzIwMDMyNn0.lJ6vWef2Pg7ali9U9U9fp8RP4q0tnL7wfnmK66f52po','BEARER',1);
+INSERT INTO `token` VALUES (1,'2024-08-07 11:57:15.509000',_binary '',_binary '','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2hhbW1hZEBnbWFpbC5jb20iLCJpYXQiOjE3MjMwMjEwMzUsImV4cCI6MTcyMzEwNzQzNX0.mcrnLjAEj6CF9tcWjeYJQMl5YVtXkvuhVuFd1qaJfug','BEARER',1),(2,'2024-08-07 13:25:26.392000',_binary '',_binary '','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYXRpZW50NTNAZ21haWwuY29tIiwiaWF0IjoxNzIzMDI2MzI2LCJleHAiOjE3MjMxMTI3MjZ9._gG5v1BhqCM-5i7uKfHXvk4R3g1GGCB78hSJaGNZcEI','BEARER',133),(3,'2024-08-07 13:26:08.225000',_binary '\0',_binary '\0','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYXRpZW50NTNAZ21haWwuY29tIiwiaWF0IjoxNzIzMDI2MzY4LCJleHAiOjE3MjMxMTI3Njh9.jwPyFeFXbDvHB1BZ-KcOXfyAyEvYWibRMieY9CBfXRI','BEARER',133),(4,'2024-08-08 13:45:26.816000',_binary '',_binary '','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2hhbW1hZEBnbWFpbC5jb20iLCJpYXQiOjE3MjMxMTM5MjYsImV4cCI6MTcyMzIwMDMyNn0.lJ6vWef2Pg7ali9U9U9fp8RP4q0tnL7wfnmK66f52po','BEARER',1),(5,'2024-08-11 13:54:32.667000',_binary '\0',_binary '\0','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2hhbW1hZEBnbWFpbC5jb20iLCJpYXQiOjE3MjMzNzM2NzIsImV4cCI6MTcyMzQ2MDA3Mn0.FNfbQS4CHtWbg3nXMS3obaUsnS5sKY26DKhqLdJ2r8Q','BEARER',1);
 /*!40000 ALTER TABLE `token` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -661,4 +785,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-08 23:39:13
+-- Dump completed on 2024-08-11 18:45:00

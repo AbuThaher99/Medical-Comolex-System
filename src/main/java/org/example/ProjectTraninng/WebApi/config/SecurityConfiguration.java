@@ -26,7 +26,9 @@ public class SecurityConfiguration {
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
-            "http://127.0.0.1:5500"};
+            "http://127.0.0.1:5500",
+            "/swagger-ui/**",
+            "/swagger-ui.html",};
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;

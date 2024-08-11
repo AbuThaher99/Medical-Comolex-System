@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.ProjectTraninng.Common.Enums.BloodTypes;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,7 +39,6 @@ public class Patients extends BaseEntity {
     @JsonBackReference("patientUser")
     private User user;
 
-
     @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY ,orphanRemoval = true)
     @JoinColumn(name = "patientId" , referencedColumnName = "id")
     @JsonManagedReference("patient-treatment")
@@ -53,6 +53,18 @@ public class Patients extends BaseEntity {
     @JoinColumn(name = "patientId" , referencedColumnName = "id")
     @JsonManagedReference("patient-notification")
     private List<Notification> notifications;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "bloodTypeId", nullable = false)
+    @JsonBackReference("patient-bloodType")
+    private BloodType bloodType;
+
+    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY , orphanRemoval = true)
+    @JoinColumn(name = "patientId" , referencedColumnName = "id")
+    @JsonManagedReference("patientsBloodTaken")
+    private List<PatientsBlood> patientsBloods;
+
+
 
 
 }
