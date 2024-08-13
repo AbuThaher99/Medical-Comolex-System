@@ -23,22 +23,26 @@ public class PatientAuthenticationController extends SessionManagement {
     private final PatientService patientService;
     private final AuthenticationService service;
 
-    @PostMapping("")
-    public ResponseEntity<AuthenticationResponse> Register(@RequestBody @Valid Patients request , HttpServletRequest httpServletRequest) throws UserNotFoundException {
-        String token = service.extractToken(httpServletRequest);
-        User user = service.extractUserFromToken(token);
-        validateLoggedInAll(user);
-        return new ResponseEntity<>(patientService.addPatient(request), HttpStatus.CREATED);
-    }
-
     @PutMapping("/{email}")
     public ResponseEntity<?> updatePatient(@RequestBody @Valid Patients request, @PathVariable String email, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
-        validateLoggedInAll(user);
+        validateLoggedInPatient(user);
         GeneralResponse d= patientService.updatePatient(request, email);
         return ResponseEntity.ok(d);
 
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<AuthenticationResponse> changePassword(@RequestParam String email,
+                                                                 @RequestParam String oldPassword,
+                                                                 @RequestParam String newPassword,
+                                                                 HttpServletRequest httpServletRequest) throws UserNotFoundException {
+        String token = service.extractToken(httpServletRequest);
+        User user = service.extractUserFromToken(token);
+        validateLoggedInPatient(user);
+        AuthenticationResponse response = service.ChangePassword(email, oldPassword, newPassword);
+        return ResponseEntity.ok(response);
     }
 
 

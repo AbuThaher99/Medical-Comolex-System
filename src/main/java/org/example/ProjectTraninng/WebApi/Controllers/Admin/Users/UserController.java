@@ -82,14 +82,17 @@ public class UserController extends SessionManagement {
         return service.getAllUsersByRole(role, page, size);
     }
 
-    @PostMapping("/refresh-token")
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
-        service.refreshToken(request, response);
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<AuthenticationResponse> changePassword(@RequestParam String email,
+                                                                 @RequestParam String oldPassword,
+                                                                 @RequestParam String newPassword,
+                                                                 HttpServletRequest httpServletRequest) throws UserNotFoundException {
+        String token = service.extractToken(httpServletRequest);
+        User user = service.extractUserFromToken(token);
+        validateLoggedInAllUser(user);
+        AuthenticationResponse response = service.ChangePassword(email, oldPassword, newPassword);
+        return ResponseEntity.ok(response);
     }
-
-
 
 }
