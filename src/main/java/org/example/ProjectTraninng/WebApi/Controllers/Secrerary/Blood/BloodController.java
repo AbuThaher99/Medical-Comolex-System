@@ -1,6 +1,7 @@
 package org.example.ProjectTraninng.WebApi.Controllers.Secrerary.Blood;
 
 import lombok.AllArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.Donation;
 import org.example.ProjectTraninng.Common.Entities.Donor;
 import org.example.ProjectTraninng.Common.Entities.PatientsBlood;
@@ -47,7 +48,7 @@ public class BloodController {
 
 
     @GetMapping("/donors")
-    public Page<Donor> getDonors(
+    public PaginationDTO<Donor> getDonors(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false ,defaultValue = "") String search,
@@ -69,7 +70,7 @@ public class BloodController {
     }
 
     @GetMapping("/donations")
-    public Page<Donation> getDonations(
+    public PaginationDTO<Donation> getDonations(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false ,defaultValue = "") String search,
@@ -85,7 +86,7 @@ public class BloodController {
     }
 
     @GetMapping("/patientsBlood")
-    public Page<PatientsBlood> getPatientsBlood(
+    public PaginationDTO<PatientsBlood> getPatientsBlood(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false ,defaultValue = "") String search,

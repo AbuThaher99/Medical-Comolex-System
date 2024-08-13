@@ -3,6 +3,7 @@ package org.example.ProjectTraninng.WebApi.Controllers.AdminMedicine;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.Supplier;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Common.Enums.CompanyNames;
@@ -55,11 +56,11 @@ public class SupplierController extends SessionManagement {
     }
 
     @GetMapping("")
-    public Page<Supplier> getAllSuppliers(@RequestParam(defaultValue = "1") int page,
-                                          @RequestParam(defaultValue = "10") int size,
-                                          @RequestParam(defaultValue = "",required = false) String search ,
-                                          @RequestParam(defaultValue = "",required = false) CompanyNames companyName ,
-                                          HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public PaginationDTO<Supplier> getAllSuppliers(@RequestParam(defaultValue = "1") int page,
+                                                   @RequestParam(defaultValue = "10") int size,
+                                                   @RequestParam(defaultValue = "",required = false) String search ,
+                                                   @RequestParam(defaultValue = "",required = false) CompanyNames companyName ,
+                                                   HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);

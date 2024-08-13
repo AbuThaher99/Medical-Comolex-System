@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Enums.TokenType;
@@ -199,13 +200,27 @@ public class PatientService {
     }
 
     @Transactional
-    public Page<Patients> getAllPatients(int page, int size ,String search , List<Long> doctorIds) {
+    public PaginationDTO<Patients> getAllPatients(int page, int size , String search , List<Long> doctorIds) {
+        if(doctorIds != null && doctorIds.isEmpty()){
+            doctorIds = null;
+        }
+        if(search!=null && search.isEmpty()){
+            search = null;
+        }
         if (page < 1) {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Patients> patients = patientRepository.findAll(pageable , search , doctorIds);
+        PaginationDTO<Patients> paginationDTO = new PaginationDTO<>();
+        paginationDTO.setTotalElements(patients.getTotalElements());
+        paginationDTO.setTotalPages(patients.getTotalPages());
+        paginationDTO.setSize(patients.getSize());
+        paginationDTO.setNumber(patients.getNumber() + 1);
+        paginationDTO.setNumberOfElements(patients.getNumberOfElements());
+        paginationDTO.setContent(patients.getContent());
 
-        return patientRepository.findAll(pageable , search , doctorIds);
+        return paginationDTO;
     }
 
 

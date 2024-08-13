@@ -3,6 +3,7 @@ package org.example.ProjectTraninng.WebApi.Controllers.Doctor.Treatments;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.Treatment;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
@@ -58,12 +59,12 @@ public class TreatmentController extends SessionManagement {
     }
 
     @GetMapping("")
-    public Page<Treatment> getAllTreatments(@RequestParam(defaultValue = "1",required = false) int page,
-                                            @RequestParam(defaultValue = "10",required = false) int size,
-                                            @RequestParam(defaultValue = "",required = false)List<Long> patientIds,
-                                            @RequestParam(defaultValue = "",required = false) Long patientId,
-                                            @RequestParam(defaultValue = "",required = false)String search,
-                                            HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public PaginationDTO<Treatment> getAllTreatments(@RequestParam(defaultValue = "1",required = false) int page,
+                                                     @RequestParam(defaultValue = "10",required = false) int size,
+                                                     @RequestParam(defaultValue = "",required = false)List<Long> patientIds,
+                                                     @RequestParam(defaultValue = "",required = false) Long patientId,
+                                                     @RequestParam(defaultValue = "",required = false)String search,
+                                                     HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInDoctor(user);

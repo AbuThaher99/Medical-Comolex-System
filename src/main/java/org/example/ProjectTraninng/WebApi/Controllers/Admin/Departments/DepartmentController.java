@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.Department;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
@@ -65,10 +66,10 @@ public class DepartmentController extends SessionManagement {
     }
 
     @GetMapping("")
-    public Page<Department> getAllDepartments(@RequestParam(defaultValue = "1", required = false) int page,
-                                              @RequestParam(defaultValue = "10" ,required = false) int size,
-                                              @RequestParam(defaultValue = "",required = false) String search  ,
-                                              HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public PaginationDTO<Department> getAllDepartments(@RequestParam(defaultValue = "1", required = false) int page,
+                                                       @RequestParam(defaultValue = "10" ,required = false) int size,
+                                                       @RequestParam(defaultValue = "",required = false) String search  ,
+                                                       HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInAdmin(user);

@@ -2,6 +2,7 @@ package org.example.ProjectTraninng.Core.Servecies;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.*;
@@ -98,11 +99,7 @@ public class PatientMedicineService {
                 .build();
     }
     @Transactional
-    public Page<PatientMedicine> GetAllPatientMedicines(int page , int size,String search ,List<Long> treatmentIds,List<Long> medicineIds,List<Long> patientIds) throws UserNotFoundException {
-        if (page < 1) {
-            page = 1;
-        }
-        Pageable pageable = PageRequest.of(page - 1, size);
+    public PaginationDTO<PatientMedicine> GetAllPatientMedicines(int page , int size, String search , List<Long> treatmentIds, List<Long> medicineIds, List<Long> patientIds) throws UserNotFoundException {
         if (patientIds != null && patientIds.isEmpty()) {
             patientIds = null;
         }
@@ -113,7 +110,21 @@ public class PatientMedicineService {
         if (medicineIds != null && medicineIds.isEmpty()) {
             medicineIds = null;
         }
-        return patientMedicineRepository.findAll(pageable,search, treatmentIds,medicineIds,patientIds);
+
+        if (page < 1) {
+            page = 1;
+        }
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<PatientMedicine> patientMedicines = patientMedicineRepository.findAll(pageable,search, treatmentIds,medicineIds,patientIds);
+        PaginationDTO<PatientMedicine> paginationDTO = new PaginationDTO<>();
+        paginationDTO.setTotalElements(patientMedicines.getTotalElements());
+        paginationDTO.setTotalPages(patientMedicines.getTotalPages());
+        paginationDTO.setSize(patientMedicines.getSize());
+        paginationDTO.setNumber(patientMedicines.getNumber() + 1);
+        paginationDTO.setNumberOfElements(patientMedicines.getNumberOfElements());
+        paginationDTO.setContent(patientMedicines.getContent());
+
+        return paginationDTO;
     }
     @Transactional
     public Page<PatientMedicine> getAllPatientMedicinesByTreatmentId(Long treatmentId,int size , int page) throws UserNotFoundException {

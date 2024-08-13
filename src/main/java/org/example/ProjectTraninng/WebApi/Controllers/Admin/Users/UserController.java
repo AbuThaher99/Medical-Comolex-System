@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.example.ProjectTraninng.Common.DTOs.LoginDTO;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
@@ -62,10 +63,10 @@ public class UserController extends SessionManagement {
     }
 
     @GetMapping("")
-    public Page<User> getallusers(@RequestParam(defaultValue = "1",required = false) int page,
-                                  @RequestParam(defaultValue = "10",required = false) int size,
-                                  @RequestParam(defaultValue = "",required = false) String search,
-                                  @RequestParam(defaultValue = "",required = false) Role role,HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public PaginationDTO<User> getallusers(@RequestParam(defaultValue = "1",required = false) int page,
+                                           @RequestParam(defaultValue = "10",required = false) int size,
+                                           @RequestParam(defaultValue = "",required = false) String search,
+                                           @RequestParam(defaultValue = "",required = false) Role role, HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
           validateLoggedInAdmin(user);

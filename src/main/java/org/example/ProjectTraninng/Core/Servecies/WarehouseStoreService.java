@@ -1,6 +1,7 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.WarehouseStore;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.MedicineRepository;
@@ -48,12 +49,20 @@ public class WarehouseStoreService {
                 .build();
     }
     @Transactional
-    public Page<WarehouseStore> getWarehouseStore(int page, int size) {
+    public PaginationDTO<WarehouseStore> getWarehouseStore(int page, int size) {
         if (page < 1) {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, size);
-        return warehouseStoreRepository.findAll(pageable);
+        Page<WarehouseStore> warehouseStores = warehouseStoreRepository.findAll(pageable);
+        PaginationDTO<WarehouseStore> paginationDTO = new PaginationDTO<>();
+        paginationDTO.setTotalElements(warehouseStores.getTotalElements());
+        paginationDTO.setTotalPages(warehouseStores.getTotalPages());
+        paginationDTO.setSize(warehouseStores.getSize());
+        paginationDTO.setNumber(warehouseStores.getNumber() + 1);
+        paginationDTO.setNumberOfElements(warehouseStores.getNumberOfElements());
+        paginationDTO.setContent(warehouseStores.getContent());
+        return paginationDTO;
 
     }
 

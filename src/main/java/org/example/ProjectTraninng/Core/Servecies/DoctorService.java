@@ -2,6 +2,7 @@ package org.example.ProjectTraninng.Core.Servecies;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Enums.Specialization;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.EnumSet;
 
 @Service
 @RequiredArgsConstructor
@@ -94,12 +97,26 @@ public class DoctorService {
 
     }
     @Transactional
-    public Page<Doctor> getAllDoctors(int page, int size , String search , Specialization specialization) {
+    public PaginationDTO<Doctor> getAllDoctors(int page, int size , String search , Specialization specialization) {
         if (page < 1) {
             page = 1;
         }
+        if(search!=null && search.isEmpty()){
+            search = null;
+        }
+        if(specialization!=null &&   !EnumSet.allOf(Specialization.class).contains(specialization)){
+            specialization = null;
+        }
         Pageable pageable = PageRequest.of(page - 1, size);
-        return doctorRepository.findAll(pageable, search, specialization);
+        Page<Doctor> doctors = doctorRepository.findAll(pageable, search, specialization);
+        PaginationDTO<Doctor> paginationDTO = new PaginationDTO<>();
+        paginationDTO.setTotalElements(doctors.getTotalElements());
+        paginationDTO.setTotalPages(doctors.getTotalPages());
+        paginationDTO.setSize(doctors.getSize());
+        paginationDTO.setNumber(doctors.getNumber() + 1);
+        paginationDTO.setNumberOfElements(doctors.getNumberOfElements());
+        paginationDTO.setContent(doctors.getContent());
+        return paginationDTO;
     }
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()

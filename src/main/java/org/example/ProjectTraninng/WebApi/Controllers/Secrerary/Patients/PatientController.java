@@ -3,6 +3,7 @@ package org.example.ProjectTraninng.WebApi.Controllers.Secrerary.Patients;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.Patients;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
@@ -50,11 +51,11 @@ public class PatientController extends SessionManagement {
         }
 
     @GetMapping("")
-    public Page<Patients> getAllPatients(@RequestParam(defaultValue = "1",required = false) int page,
-                                         @RequestParam(defaultValue = "10",required = false) int size,
-                                         @RequestParam(defaultValue = "",required = false) String search ,
-                                         @RequestParam(defaultValue = "",required = false) List<Long> doctorIds ,
-                                         HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public PaginationDTO<Patients> getAllPatients(@RequestParam(defaultValue = "1",required = false) int page,
+                                                  @RequestParam(defaultValue = "10",required = false) int size,
+                                                  @RequestParam(defaultValue = "",required = false) String search ,
+                                                  @RequestParam(defaultValue = "",required = false) List<Long> doctorIds ,
+                                                  HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInSecretary(user);

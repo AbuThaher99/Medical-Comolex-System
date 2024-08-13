@@ -2,6 +2,7 @@ package org.example.ProjectTraninng.Core.Servecies;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.Medicine;
 import org.example.ProjectTraninng.Common.Entities.WarehouseStore;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
@@ -22,7 +23,6 @@ import java.util.List;
 public class MedicineService  {
     private final MedicineRepository medicineRepository;
     private final WarehouseStoreRepository warehouseStoreRepository;
-    private  final SupplierRepository supplierRepository;
 
     @Transactional
     public GeneralResponse addMedicine(Medicine request) throws UserNotFoundException {
@@ -81,11 +81,22 @@ public class MedicineService  {
         return medicineOptional;
     }
     @Transactional
-    public Page<Medicine> getAllMedicines(int page, int size , String search) {
+    public PaginationDTO<Medicine> getAllMedicines(int page, int size , String search) {
+        if(search!=null && search.isEmpty()){
+            search = null;
+        }
         if (page < 1) {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, size);
-        return medicineRepository.findAll(pageable , search);
+        Page<Medicine> medicines = medicineRepository.findAll(pageable , search);
+        PaginationDTO<Medicine> paginationDTO = new PaginationDTO<>();
+        paginationDTO.setTotalElements(medicines.getTotalElements());
+        paginationDTO.setTotalPages(medicines.getTotalPages());
+        paginationDTO.setSize(medicines.getSize());
+        paginationDTO.setNumber(medicines.getNumber() + 1);
+        paginationDTO.setNumberOfElements(medicines.getNumberOfElements());
+        paginationDTO.setContent(medicines.getContent());
+        return paginationDTO;
     }
 }

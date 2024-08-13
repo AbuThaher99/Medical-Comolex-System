@@ -3,6 +3,7 @@ package org.example.ProjectTraninng.WebApi.Controllers.Secrerary.Patients;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.PatientMedicine;
 import org.example.ProjectTraninng.Common.Entities.User;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
@@ -48,13 +49,13 @@ public class PatientMedicineController extends SessionManagement {
      }
 
      @GetMapping("")
-    public Page<PatientMedicine> GetAllPatientMedicine(@RequestParam(defaultValue = "1") int page,
-                                                       @RequestParam(defaultValue = "10") int size,
-                                                       @RequestParam(defaultValue = "") String search,
-                                                       @RequestParam(defaultValue = "",required = false) List<Long> treatmentIds,
-                                                       @RequestParam(defaultValue = "",required = false) List<Long> medicineIds,
-                                                       @RequestParam(defaultValue = "",required = false) List<Long> patientIds,
-                                                       HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public PaginationDTO<PatientMedicine> GetAllPatientMedicine(@RequestParam(defaultValue = "1") int page,
+                                                                @RequestParam(defaultValue = "10") int size,
+                                                                @RequestParam(defaultValue = "") String search,
+                                                                @RequestParam(defaultValue = "",required = false) List<Long> treatmentIds,
+                                                                @RequestParam(defaultValue = "",required = false) List<Long> medicineIds,
+                                                                @RequestParam(defaultValue = "",required = false) List<Long> patientIds,
+                                                                HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
          validateLoggedInSecretary(user);

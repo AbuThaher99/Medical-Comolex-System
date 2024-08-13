@@ -3,6 +3,7 @@ package org.example.ProjectTraninng.WebApi.Controllers.AdminMedicine;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.Medicine;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Servecies.AuthenticationService;
@@ -56,10 +57,10 @@ public class MedicineController extends SessionManagement {
     }
 
     @GetMapping("")
-    public Page<Medicine> getAllMedicines(@RequestParam(defaultValue = "1",required = false) int page,
-                                          @RequestParam(defaultValue = "10",required = false) int size,
-                                          @RequestParam(defaultValue = "",required = false ) String search ,
-                                          HttpServletRequest httpServletRequest) throws UserNotFoundException {
+    public PaginationDTO<Medicine> getAllMedicines(@RequestParam(defaultValue = "1",required = false) int page,
+                                                   @RequestParam(defaultValue = "10",required = false) int size,
+                                                   @RequestParam(defaultValue = "",required = false ) String search ,
+                                                   HttpServletRequest httpServletRequest) throws UserNotFoundException {
         String token = service.extractToken(httpServletRequest);
         User user = service.extractUserFromToken(token);
         validateLoggedInWarehouseEmployee(user);

@@ -16,5 +16,5 @@ public interface PatientsBloodRepository extends JpaRepository<PatientsBlood, Lo
             "(:bloodType is null or pb.patientsBlood.type = :bloodType) and " +
             "(:patientIds is null or pb.patients.id in :patientIds) and " +
             "(:quantity is null or pb.quantity = :quantity)")
-    Page<PatientsBlood> findAll(Pageable pageable, @Param("search") String search, @Param("patientIds") List<Long> patientIds, @Param("bloodType")BloodTypes bloodType, @Param("patientIds") Integer quantity);
+    Page<PatientsBlood> findAll(Pageable pageable, @Param("search") String search, @Param("patientIds") List<Long> patientIds, @Param("bloodType")BloodTypes bloodType, @Param("quantity") Integer quantity);
 }

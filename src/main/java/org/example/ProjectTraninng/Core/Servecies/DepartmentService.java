@@ -1,6 +1,7 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.Department;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.DepartmentRepsitory;
@@ -79,11 +80,19 @@ public class DepartmentService {
     }
 
     @Transactional
-    public Page<Department> getAllDepartment(int page, int size , String search) {
+    public PaginationDTO<Department> getAllDepartment(int page, int size , String search) {
         if (page < 1) {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, size);
-        return departmentRepository.findAll(pageable,search);
+        Page<Department> departments = departmentRepository.findAll(pageable,search);
+        PaginationDTO<Department> paginationDTO = new PaginationDTO<>();
+        paginationDTO.setTotalElements(departments.getTotalElements());
+        paginationDTO.setTotalPages(departments.getTotalPages());
+        paginationDTO.setSize(departments.getSize());
+        paginationDTO.setNumber(departments.getNumber() + 1);
+        paginationDTO.setNumberOfElements(departments.getNumberOfElements());
+        paginationDTO.setContent(departments.getContent());
+        return paginationDTO;
     }
 }

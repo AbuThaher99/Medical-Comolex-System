@@ -6,7 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.DTOs.LoginDTO;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.*;
+import org.example.ProjectTraninng.Common.Enums.BloodTypes;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -93,9 +96,29 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public Page<User> GetAllUsers(int page, int size, String search, Role role) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        return repository.findAll(pageRequest, search, role);
+    public PaginationDTO<User> GetAllUsers(int page, int size, String search, Role role) {
+
+        if(search != null && search.isEmpty()){
+            search = null;
+        }
+        if(role != null && !EnumSet.allOf(Role.class).contains(role)){
+            role = null;
+        }
+        if (page < 1) {
+            page = 1;
+        }
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
+        Page<User> userPage = repository.findAll(pageRequest, search, role);
+
+        PaginationDTO<User> paginationDTO = new PaginationDTO<>();
+        paginationDTO.setTotalElements(userPage.getTotalElements());
+        paginationDTO.setTotalPages(userPage.getTotalPages());
+        paginationDTO.setSize(userPage.getSize());
+        paginationDTO.setNumber(userPage.getNumber() + 1);
+        paginationDTO.setNumberOfElements(userPage.getNumberOfElements());
+        paginationDTO.setContent(userPage.getContent());
+
+        return paginationDTO;
     }
 
     @Transactional

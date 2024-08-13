@@ -1,6 +1,7 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
 
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Enums.BloodTypes;
 
@@ -89,7 +90,7 @@ public class BloodTypeService {
         return donorRepository.findById(donorId).orElseThrow(
                 () -> new UserNotFoundException("Donor not found"));
     }
-    public Page<Donor> getDonors(int page, int size , String search, BloodTypes bloodType, List<Long> donorIds, Gender gender) {
+    public PaginationDTO<Donor> getDonors(int page, int size , String search, BloodTypes bloodType, List<Long> donorIds, Gender gender) {
         if(search!=null && search.isEmpty()){
             search = null;
         }
@@ -110,7 +111,15 @@ public class BloodTypeService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, size);
-        return donorRepository.findAll(pageable, search, bloodType, donorIds,gender);
+        Page<Donor> donors = donorRepository.findAll(pageable, search, bloodType, donorIds ,gender);
+        PaginationDTO<Donor> paginationDTO = new PaginationDTO<>();
+        paginationDTO.setTotalElements(donors.getTotalElements());
+        paginationDTO.setTotalPages(donors.getTotalPages());
+        paginationDTO.setSize(donors.getSize());
+        paginationDTO.setNumber(donors.getNumber() + 1);
+        paginationDTO.setNumberOfElements(donors.getNumberOfElements());
+        paginationDTO.setContent(donors.getContent());
+        return paginationDTO;
     }
 
 
@@ -132,7 +141,7 @@ public class BloodTypeService {
 //    }
 
 
-    public Page<Donation> getDonations(int page, int size , String search, BloodTypes bloodType, List<Long> donorIds,Integer quantity) {
+    public PaginationDTO<Donation> getDonations(int page, int size , String search, BloodTypes bloodType, List<Long> donorIds,Integer quantity) {
         if(search!=null && search.isEmpty()){
             search = null;
         }
@@ -152,7 +161,15 @@ public class BloodTypeService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, size);
-        return donationRepository.findAll(pageable, search, bloodType, donorIds , quantity);
+        Page<Donation> donations = donationRepository.findAll(pageable, search, bloodType, donorIds, quantity);
+        PaginationDTO<Donation> paginationBloodDTO = new PaginationDTO<>();
+        paginationBloodDTO.setTotalElements(donations.getTotalElements());
+        paginationBloodDTO.setTotalPages(donations.getTotalPages());
+        paginationBloodDTO.setSize(donations.getSize());
+        paginationBloodDTO.setNumber(donations.getNumber() + 1);
+        paginationBloodDTO.setNumberOfElements(donations.getNumberOfElements());
+        paginationBloodDTO.setContent(donations.getContent());
+        return paginationBloodDTO;
     }
 
 
@@ -190,7 +207,7 @@ public class BloodTypeService {
         return GeneralResponse.builder().message("Blood taken successfully").build();
     }
 
-    public Page<PatientsBlood> getPatientsBlood(int page, int size , String search, List<Long> patientIds, BloodTypes bloodType, Integer quantity) {
+    public PaginationDTO<PatientsBlood> getPatientsBlood(int page, int size , String search, List<Long> patientIds, BloodTypes bloodType, Integer quantity) {
         if(search!=null && search.isEmpty()){
             search = null;
         }
@@ -210,7 +227,16 @@ public class BloodTypeService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, size);
-        return patientsBloodRepository.findAll(pageable, search, patientIds, bloodType, quantity);
+        Page<PatientsBlood> patientsBlood = patientsBloodRepository.findAll(pageable, search, patientIds, bloodType, quantity);
+        PaginationDTO<PatientsBlood> paginationDTO = new PaginationDTO<>();
+        paginationDTO.setTotalElements(patientsBlood.getTotalElements());
+        paginationDTO.setTotalPages(patientsBlood.getTotalPages());
+        paginationDTO.setSize(patientsBlood.getSize());
+        paginationDTO.setNumber(patientsBlood.getNumber() + 1);
+        paginationDTO.setNumberOfElements(patientsBlood.getNumberOfElements());
+        paginationDTO.setContent(patientsBlood.getContent());
+
+        return paginationDTO;
     }
 
 

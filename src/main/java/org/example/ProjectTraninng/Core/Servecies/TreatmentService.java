@@ -1,6 +1,7 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
 import lombok.RequiredArgsConstructor;
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.*;
 import org.example.ProjectTraninng.Common.Responses.GeneralResponse;
 import org.example.ProjectTraninng.Core.Repsitories.*;
@@ -120,15 +121,30 @@ public class TreatmentService {
                 .build();
     }
     @Transactional
-    public Page<Treatment> getAllTreatments(int page, int size,List<Long> patientIds ,Long patientId,String search) {
+    public PaginationDTO<Treatment> getAllTreatments(int page, int size,List<Long> patientIds ,Long patientId,String search) {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, size);
         if (patientIds != null && patientIds.isEmpty()) {
             patientIds = null;
         }
-        return treatmentRepository.findAll(pageable,patientIds,patientId,search);
+        if (search != null && search.isEmpty()) {
+            search = null;
+        }
+        if(patientId != null && patientId == 0){
+            patientId = null;
+        }
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Treatment> treatments = treatmentRepository.findAll(pageable,patientIds,patientId,search);
+        PaginationDTO<Treatment> paginationDTO = new PaginationDTO<>();
+        paginationDTO.setTotalElements(treatments.getTotalElements());
+        paginationDTO.setTotalPages(treatments.getTotalPages());
+        paginationDTO.setSize(treatments.getSize());
+        paginationDTO.setNumber(treatments.getNumber() + 1);
+        paginationDTO.setNumberOfElements(treatments.getNumberOfElements());
+        paginationDTO.setContent(treatments.getContent());
+
+        return paginationDTO;
     }
 
     @Transactional

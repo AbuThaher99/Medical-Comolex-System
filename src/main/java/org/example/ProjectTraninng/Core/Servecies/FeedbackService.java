@@ -1,5 +1,6 @@
 package org.example.ProjectTraninng.Core.Servecies;
 
+import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.Doctor;
 import org.example.ProjectTraninng.Common.Entities.Feedback;
 import org.example.ProjectTraninng.Common.Entities.Patients;
@@ -39,13 +40,24 @@ public class FeedbackService {
         return feedbackRepository.save(feedback);
     }
 
-    public Page<Feedback> getFeedbackByDoctor(int page , int size,Long doctorId) {
+    public PaginationDTO<Feedback> getFeedbackByDoctor(int page , int size, Long doctorId) {
+        if(doctorId!=null && doctorId == 0){
+            doctorId = null;
+
+        }
         if (page < 1) {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Feedback> feedbacks = feedbackRepository.findAllByDoctorId(pageable,doctorId);
-        return feedbacks;
+        PaginationDTO<Feedback> feedbackPaginationDTO = new PaginationDTO<>();
+        feedbackPaginationDTO.setTotalElements(feedbacks.getTotalElements());
+        feedbackPaginationDTO.setTotalPages(feedbacks.getTotalPages());
+        feedbackPaginationDTO.setSize(feedbacks.getSize());
+        feedbackPaginationDTO.setNumber(feedbacks.getNumber() + 1);
+        feedbackPaginationDTO.setNumberOfElements(feedbacks.getNumberOfElements());
+        feedbackPaginationDTO.setContent(feedbacks.getContent());
+        return feedbackPaginationDTO;
     }
 
 
