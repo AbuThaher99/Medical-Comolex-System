@@ -22,13 +22,13 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-    private static final String[] WHITE_LIST_URL = {"/auth/login/**",
+    private static final String[] WHITE_LIST_URL = {"/auth/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
             "http://127.0.0.1:5500",
             "/swagger-ui/**",
-            "/swagger-ui.html",};
+            "/swagger-ui.html","/resetPasswordPage" ,};
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;

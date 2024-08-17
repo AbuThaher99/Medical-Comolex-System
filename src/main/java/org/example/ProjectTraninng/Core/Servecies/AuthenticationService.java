@@ -217,18 +217,16 @@ public class AuthenticationService {
 
 
     @Transactional
-    public AuthenticationResponse resetPassword(String email, String password) throws UserNotFoundException {
+    public GeneralResponse resetPassword(String email, String password) throws UserNotFoundException {
         var user = repository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         user.setPassword(passwordEncoder.encode(password));
-        var savedUser = repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(savedUser, jwtToken);
+         repository.save(user);
+//        var jwtToken = jwtService.generateToken(user);
+//        var refreshToken = jwtService.generateRefreshToken(user);
+//        saveUserToken(savedUser, jwtToken);
 
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
+        return GeneralResponse.builder()
                 .message("Password reset successfully")
                 .build();
     }
@@ -245,12 +243,12 @@ public class AuthenticationService {
                 .verified(false)
                 .build();
         emailRepository.save(emailEntity);
-        String verificationUrl = "http://localhost:8080/Login/resetPassword?verificationCode=" + verificationCode + "&email=" + email;
+        String verificationUrl = "http://localhost:8080/resetPasswordPage?verificationCode=" + verificationCode + "&email=" + email;
         emailService.sendVerificationEmail(email, "Email Verification", verificationUrl);
     }
 
     @Transactional
-    public AuthenticationResponse verifyCodeAndResetPassword(String email, String verificationCode, String newPassword) throws UserNotFoundException {
+    public GeneralResponse verifyCodeAndResetPassword(String email, String verificationCode, String newPassword) throws UserNotFoundException {
         Email emailEntity = emailRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("email not found"));
         if (emailEntity.getVerificationCode().equals(verificationCode)) {
@@ -399,5 +397,14 @@ public class AuthenticationService {
 
     }
 
+    @Transactional
+    public boolean expiredToken(Long id, String token)  {
+        boolean userToken = tokenRepository.findValidTokenByUserAndToken(id, token).isPresent();
+
+        if(userToken){
+            return false;
+        }
+        return true;
+    }
 
 }

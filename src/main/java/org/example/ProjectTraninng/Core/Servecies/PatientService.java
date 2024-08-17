@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.ProjectTraninng.Common.DTOs.PaginationDTO;
 import org.example.ProjectTraninng.Common.Entities.*;
+import org.example.ProjectTraninng.Common.Enums.BloodTypes;
 import org.example.ProjectTraninng.Common.Enums.Role;
 import org.example.ProjectTraninng.Common.Enums.TokenType;
 import org.example.ProjectTraninng.Common.Responses.AuthenticationResponse;
@@ -38,6 +39,7 @@ public class PatientService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
+    private final BloodTypeRepository bloodTypeRepository;
     @Transactional
     public AuthenticationResponse addPatient(Patients request) throws UserNotFoundException {
         User user = request.getUser();
@@ -57,10 +59,12 @@ public class PatientService {
             user.setImage(null);
             user = userRepository.save(user);
         }
-
+        BloodType bloodType = bloodTypeRepository.findById(request.getBloodType().getId())
+                .orElseThrow();
 
         Patients patient = Patients.builder()
                 .user(user)
+                .bloodType(bloodType)
                 .age(request.getAge())
                 .build();
         patientRepository.save(patient);

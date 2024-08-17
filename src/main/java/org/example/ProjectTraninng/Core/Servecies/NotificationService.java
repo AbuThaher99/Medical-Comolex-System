@@ -75,7 +75,6 @@ public class NotificationService {
                 try {
                     emailService.sentNotificationEmail(employee.getEmail(), subject, message.toString());
                 } catch (MessagingException e) {
-                    // Handle the exception (e.g., log the error)
                     e.printStackTrace();
                 }
             }
