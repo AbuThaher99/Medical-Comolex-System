@@ -15,17 +15,7 @@ spring:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       ddl-auto: update
-  mail:
-    username: mohammadmashhour24@gmail.com
-    host: smtp.gmail.com
-    port: '587'
-    properties:
-      mail:
-        smtp:
-          starttls:
-            enable: 'true'
-          auth: 'true'
-    password: fzkq khke mbxe yukj
+
   application:
     name: ProjectTraninng
   servlet:
